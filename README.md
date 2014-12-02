@@ -30,7 +30,7 @@ Only a small handful of AVPs are implemented - more can be added just by editing
 ### Completeness
 * Implement more AVPs
 * Make it possible to add AVPs without code edits (loading CSV files?)
-* Implement the full range of possible AVP types (e.g. Float64, Time, etc.)
+* Implement the remaining Derived AVP Data Formats (Time, UTF8String, DiameterURI, DiameterIdentity)
 
 ### Stack
 * Add a stack that can:

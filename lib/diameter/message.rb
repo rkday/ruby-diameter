@@ -54,9 +54,22 @@ class DiameterMessage
     @length
   end
 
-  def getAVP(name)
+  def avp_by_name(name)
     code, type, vendor = AVPNames.get(name)
     avps.each {|a| return a if a.code == code}
+  end
+
+  def all_avps_by_name(name)
+    code, type, vendor = AVPNames.get(name)
+    avps.select {|a| a.code == code}
+  end
+
+  def avp_by_code(code)
+    avps.each {|a| return a if a.code == code}
+  end
+
+  def all_avps_by_code(code)
+    avps.select {|a| a.code == code}
   end
 
   def self.from_header(header)
@@ -68,8 +81,17 @@ class DiameterMessage
     DiameterMessage.new(version: version, length: length, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: request, proxyable: false, retransmitted: false, error: false)
   end
 
-  def response
-    DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: false, proxyable: false, retransmitted: false, error: false)
+  def response(origin_host=nil)
+    # Is this a request?
+
+    # Copy the Session-Id and Proxy-Info
+
+    # Insert Origin-Host (should the stack do this?)
+
+    # Don't require or insert a Result-Code - we might want
+    # Experimental-Result-Code instead
+
+    DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: false, proxyable: @proxyable, retransmitted: false, error: false)
   end
 
   def parse_avps(bytes)

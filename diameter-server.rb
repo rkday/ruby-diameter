@@ -12,7 +12,9 @@ avps = client.recv(cer.length-20)
 cer.parse_avps(avps)
 
 puts cer
-puts cer.getAVP("Origin-Host").getOctetString
+puts cer.avp_by_name("Origin-Host").octet_string
+puts cer.all_avps_by_name("Host-IP-Address").collect &:ip_address
+
 cea = cer.response
 
 cea.avps = [AVP.create("Result-Code", 2001),
@@ -35,7 +37,7 @@ else
   mar.parse_avps(avps)
 
   puts mar
-  puts mar.getAVP("Origin-Host")
+  puts mar.avp_by_name("Origin-Host")
   maa = mar.response
 
   maa.avps = [AVP.create("Result-Code", 2001),
