@@ -17,6 +17,7 @@ class AVPNames
       "Auth-Application-Id" => [258, I32],
       "Session-Id" => [263, OCTETSTRING],
       "Auth-Session-State" => [277, I32],
+      "Inband-Security-Id" => [299, I32],
       "Origin-Host" => [264, OCTETSTRING],
       "Result-Code" => [268, I32],
       "Origin-Realm" => [296, OCTETSTRING],
