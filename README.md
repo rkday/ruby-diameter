@@ -14,8 +14,36 @@ This repository contains a simple Diameter parser/message creation library in Ru
 
 The message parsing and sending code has been verified (using Wireshark to check that the parsed values are correct and that the sent message is valid).
 
-There are no UTs, although they should be easy to add.
-
 There's no full stack - you'll need to handle CERs and CEAs manually. For short scripted tests there should be no need to handle watchdog or disconnect requests.
 
 Only a small handful of AVPs are implemented - more can be added just by editing the dictionary in the AVPNames class in `avp.rb`.
+
+## TODOs
+
+### Infrastructure
+* Set up Rakefile
+* Package as a gem
+* Set up test running and code coverage
+* Set up appropriate RDoc (or similar) documentation
+* Set up handwritten documentation
+
+### Completeness
+* Implement more AVPs
+* Make it possible to add AVPs without code edits (loading CSV files?)
+* Implement the full range of possible AVP types (e.g. Float64, Time, etc.)
+
+### Stack
+* Add a stack that can:
+  * handle TCP/SCTP connections to peers behind the scenes
+  * handle CER/CEA, DWR/DWA and DPR/DPA messages automatically
+  * handle failover/failback
+
+### APIs
+* Test the APIs in a variety of use-cases (e.g. server and client, test tools, maybe a real app?)
+
+### Style
+* Ensure conformance to https://github.com/bbatsov/ruby-style-guide
+
+### Tests
+* Have more testcases
+* Set up an infrastructure for reading and parsing .pcap files, so parsed messages can be manually checked against Wireshark
