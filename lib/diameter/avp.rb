@@ -12,6 +12,7 @@ TGPP = 10_415
 GROUPED = 0
 U32 = 1
 OCTETSTRING = 2
+IPADDR = 3
 
 class AVPNames
   @names = {
@@ -27,7 +28,7 @@ class AVPNames
     'Destination-Host' => [293, OCTETSTRING],
     'Destination-Realm' => [283, OCTETSTRING],
     'User-Name' => [1, OCTETSTRING],
-    'Host-IP-Address' => [257, OCTETSTRING],
+    'Host-IP-Address' => [257, IPADDR],
     'Public-Identity' => [601, OCTETSTRING, TGPP],
     'Server-Name' => [602, OCTETSTRING, TGPP],
     'SIP-Number-Auth-Items' => [607, U32, TGPP],
@@ -72,6 +73,8 @@ class AVP
       self.uint32 = val
     when OCTETSTRING
       self.octet_string = val
+    when IPADDR
+      self.ip_address = val
     end
   end
 
@@ -95,7 +98,7 @@ class AVP
     could_be_64bit_num = (@content.length == 8)
 
     could_be_ip = (@content.length == 6 && @content[0..1] == "\x00\x01") ||
-      (@content.length == 18 && @content[0..1] == "\x00\n")
+      (@content.length == 18 && @content[0..1] == "\x00\x02")
 
     maybe_grouped = !(has_all_ascii_values ||
                       could_be_64bit_num ||
@@ -188,9 +191,9 @@ class AVP
 
   def ip_address=(val)
     bytes = if val.ipv4?
-              [Socket::Constants::AF_INET].pack('n')
+              [1].pack('n')
             else
-              [Socket::Constants::AF_INET].pack('n')
+              [2].pack('n')
             end
 
     bytes += val.hton
