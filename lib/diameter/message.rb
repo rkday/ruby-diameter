@@ -65,7 +65,15 @@ class DiameterMessage
   end
 
   def all_avps_by_code(code, vendor=0)
-    avps.select {|a| (a.code == code) and (a.vendor_id == vendor)}
+    avps.select do |a|
+      vendor_match =
+        if a.vendor_specific
+          a.vendor_id == vendor
+        else
+          vendor == 0
+        end
+      (a.code == code) and vendor_match
+    end
   end
 
   def self.from_header(header)

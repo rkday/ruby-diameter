@@ -35,6 +35,9 @@ describe "AVP", "A simple example" do
 
     # Wire representation taken from Wireshark
     avp.to_wire.must_equal "\x00\x00\x01\x01\x40\x00\x00\x0e\x00\x01\xac\x18\x43\x18\x00\x00".force_encoding("ASCII-8BIT")
+
+    # Check that the string form includes the IP address
+    avp.to_s.must_include "172.24.67.24"
   end
 
   it "can create a grouped AVP" do
@@ -56,6 +59,9 @@ describe "AVP", "A simple example" do
     avp.uint32.must_equal 1
     avp.vendor_id.must_equal 10415
 
+    # Check that the string form includes the Vendor-ID
+    avp.to_s.must_include "10415"
+    
     # Wire representation taken from Wireshark
     avp.to_wire.must_equal "\x00\x00\x02\x5f\xc0\x00\x00\x10\x00\x00\x28\xaf\x00\x00\x00\x01".force_encoding("ASCII-8BIT")
   end

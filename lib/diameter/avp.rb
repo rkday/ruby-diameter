@@ -33,7 +33,9 @@ class AVPNames
     'SIP-Authentication-Scheme' => [608, OCTETSTRING, TGPP] }
 
   def self.get(name)
-    @names[name]
+    code, type, vendor = @names[name]
+    vendor ||= 0
+    [code, type, vendor]
   end
 end
 
@@ -51,7 +53,7 @@ class AVP
 
   def self.create(name, val, options={})
     code, type, vendor = AVPNames.get(name)
-    avp = if vendor
+    avp = if (vendor != 0)
             VendorSpecificAVP.new(options.merge({ :code => code, :vendor_id => vendor }))
           else
             AVP.new(options.merge({ :code => code }))
@@ -146,7 +148,7 @@ class AVP
   def inner_avps(name)
     code, _type, _vendor = AVPNames.get(name)
 
-    parse_avps_int(@content).select { |a| a.code == code}
+    self.grouped_value.select { |a| a.code == code}
   end
 
   def octet_string
