@@ -1,5 +1,5 @@
-require "minitest/autorun"
-require_relative "../lib/diameter/avp.rb"
+require "minitest_helper"
+require "diameter/avp"
 
 describe "AVP", "A simple example" do
 
