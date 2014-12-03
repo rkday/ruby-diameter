@@ -41,6 +41,12 @@ class AVPNames
   end
 end
 
+# The AVP class is a sensible, coherent whole - it's just big,
+# particularly because of all the various ways to interpret the
+# content. Ignore the class length guidelines.
+
+# rubocop:disable Metrics/ClassLength
+
 class AVP
   attr_reader :code, :mandatory
 
@@ -84,12 +90,17 @@ class AVP
     avp_flags = '01000000'
     header = [@code, avp_flags, alength_8, alength_16].pack('NB8Cn')
     wire_content = @content
-    while ((wire_content.length % 4) != 0)
-      wire_content += "\x00"
-    end
+    wire_content += "\x00" while ((wire_content.length % 4) != 0)
     header + wire_content
   end
 
+  # Guessing the type of an AVP and displaying it sensibly is complex,
+  # so this is a complex method (but one that has a unity of purpose,
+  # so can't easily be broken down). Disable several Rubocop
+  # complexity metrics to reflect this.
+
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity
   def to_s
     has_all_ascii_values =
       @content.bytes.reject { |c| (32 < c && c < 126) }.empty?
@@ -97,12 +108,12 @@ class AVP
     could_be_32bit_num = (@content.length == 4)
     could_be_64bit_num = (@content.length == 8)
 
-    could_be_ip = (@content.length == 6 && @content[0..1] == "\x00\x01") ||
-      (@content.length == 18 && @content[0..1] == "\x00\x02")
+    could_be_ip = ((@content.length == 6 && @content[0..1] == "\x00\x01") ||
+                   (@content.length == 18 && @content[0..1] == "\x00\x02"))
 
     maybe_grouped = !(has_all_ascii_values ||
-                      could_be_64bit_num ||
-                      could_be_32bit_num ||
+                      could_be_64bit_num   ||
+                      could_be_32bit_num   ||
                       could_be_ip)
 
     s = "AVP #{@code}, mandatory: #{@mandatory}"
@@ -114,6 +125,8 @@ class AVP
 
     s
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/MethodLength, Metrics/PerceivedComplexity
 
   def vendor_specific
     false
@@ -129,6 +142,12 @@ class AVP
     @content = new_content
   end
 
+  # Even though it is just "the raw bytes in the content",
+  # octet_string is only one way of interpreting the AVP content and
+  # shouldn't be treated differently to the others, so disable the
+  # TrivialAccessors warning.
+
+  # rubocop:disable Style/TrivialAccessors
   def octet_string
     @content
   end
@@ -136,6 +155,7 @@ class AVP
   def octet_string=(val)
     @content = val
   end
+  # rubocop:enable Style/TrivialAccessors
 
   def int32
     @content.unpack('l>')[0]
@@ -200,6 +220,7 @@ class AVP
     @content = bytes
   end
 end
+# rubocop:enable Metrics/ClassLength
 
 class VendorSpecificAVP < AVP
   attr_reader :vendor_id
@@ -219,9 +240,7 @@ class VendorSpecificAVP < AVP
     avp_flags = '11000000'
     header = [code, avp_flags, alength_8, alength_16, @vendor_id].pack('NB8CnN')
     wire_content = @content
-    while ((wire_content.length % 4) != 0)
-      wire_content += "\x00"
-    end
+    wire_content += "\x00" while ((wire_content.length % 4) != 0)
     header + wire_content
   end
 
