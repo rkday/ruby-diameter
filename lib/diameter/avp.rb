@@ -1,11 +1,6 @@
-require_relative './avp_parser.rb'
+require 'diameter/avp_parser'
+require 'diameter/u24'
 require 'ipaddr'
-
-def b24_to_8_and_16(twentyfourb)
-  top_eight = twentyfourb >> 16
-  bottom_sixteen = twentyfourb - (top_eight << 16)
-  [top_eight, bottom_sixteen]
-end
 
 TGPP = 10_415
 
@@ -80,16 +75,23 @@ class AVP
     end
   end
 
-  def to_wire
-    length = @content.length + 8
-    alength_8, alength_16 = b24_to_8_and_16(length)
-    avp_flags = @mandatory ? '01000000' : '00000000'
-    header = [@code, avp_flags, alength_8, alength_16].pack('NB8Cn')
+  def padded_content
     wire_content = @content
     while ((wire_content.length % 4) != 0)
       wire_content += "\x00"
     end
-    header + wire_content
+    wire_content
+  end
+  
+  def to_wire
+    length_8, length_16 = u24_to_u8_and_u16(@content.length + 8)
+    avp_flags = @mandatory ? '01000000' : '00000000'
+    header = [@code, avp_flags, length_8, length_16].pack('NB8Cn')
+    header + self.padded_content
+  end
+
+  def to_s_first_line
+    "AVP #{@code}, mandatory: #{@mandatory}"
   end
 
   def to_s
@@ -107,7 +109,7 @@ class AVP
                       could_be_32bit_num ||
                       could_be_ip)
 
-    s = "AVP #{@code}, mandatory: #{@mandatory}"
+    s = to_s_first_line
     s += ", content as string: #{@content}" if has_all_ascii_values
     s += ", content as int32: #{uint32}" if could_be_32bit_num
     s += ", content as int64: #{uint64}" if could_be_64bit_num
@@ -232,18 +234,13 @@ class VendorSpecificAVP < AVP
   end
 
   def to_wire
-    length = @content.length + 12
-    alength_8, alength_16 = b24_to_8_and_16(length)
+    length_8, length_16 = u24_to_u8_and_u16(@content.length + 12)
     avp_flags = @mandatory ? '11000000' : '10000000'
-    header = [code, avp_flags, alength_8, alength_16, @vendor_id].pack('NB8CnN')
-    wire_content = @content
-    while ((wire_content.length % 4) != 0)
-      wire_content += "\x00"
-    end
-    header + wire_content
+    header = [@code, avp_flags, length_8, length_16, @vendor_id].pack('NB8CnN')
+    header + self.padded_content
   end
 
-  def to_s
+  def to_s_first_line
     "AVP #{@code}, Vendor-ID #{@vendor_id}, mandatory: #{@mandatory}"
   end
 end

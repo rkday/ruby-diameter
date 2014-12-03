@@ -1,14 +1,5 @@
-require_relative './avp_parser.rb'
-
-def b8_and_16_to_24(eightb, sixteenb)
-  (eightb << 16) + sixteenb
-end
-
-def b24_to_8_and_16(twentyfourb)
-  top_eight = twentyfourb >> 16
-  bottom_sixteen = twentyfourb - (top_eight << 16)
-  [top_eight, bottom_sixteen]
-end
+require 'diameter/avp_parser'
+require 'diameter/u24'
 
 class DiameterMessage
   include AVPParser
@@ -38,8 +29,8 @@ class DiameterMessage
   def to_wire
     content = ""
     @avps.each {|a| content += a.to_wire}
-    length_8, length_16 = b24_to_8_and_16(content.length + 20)
-    code_8, code_16 = b24_to_8_and_16(@command_code)
+    length_8, length_16 = u24_to_u8_and_u16(content.length + 20)
+    code_8, code_16 = u24_to_u8_and_u16(@command_code)
     if @request
       flags_str = "10000000"
     else
@@ -55,27 +46,32 @@ class DiameterMessage
   end
 
   def avp_by_name(name)
-    code, type, vendor = AVPNames.get(name)
-    avps.each {|a| return a if a.code == code}
+    code, _type, vendor = AVPNames.get(name)
+    avp_by_code(code, vendor)
   end
 
   def all_avps_by_name(name)
-    code, type, vendor = AVPNames.get(name)
-    avps.select {|a| a.code == code}
+    code, _type, vendor = AVPNames.get(name)
+    all_avps_by_code(code, vendor)
   end
 
-  def avp_by_code(code)
-    avps.each {|a| return a if a.code == code}
+  def avp_by_code(code, vendor=0)
+    avps = all_avps_by_code(code, vendor)
+    if avps.empty?
+      nil
+    else
+      avps[0]
+    end
   end
 
-  def all_avps_by_code(code)
-    avps.select {|a| a.code == code}
+  def all_avps_by_code(code, vendor=0)
+    avps.select {|a| (a.code == code) and (a.vendor_id == vendor)}
   end
 
   def self.from_header(header)
     version, length_8, length_16, flags_str, code_8, code_16, app_id, hbh, ete = header.unpack('CCnB8CnNNN')
-    length = b8_and_16_to_24(length_8, length_16)
-    command_code = b8_and_16_to_24(code_8, code_16)
+    length = u8_and_u16_to_u24(length_8, length_16)
+    command_code = u8_and_u16_to_u24(code_8, code_16)
 
     request = (flags_str[0] == "1")
     DiameterMessage.new(version: version, length: length, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: request, proxyable: false, retransmitted: false, error: false)
