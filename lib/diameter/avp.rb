@@ -230,7 +230,7 @@ class VendorSpecificAVP < AVP
   end
 
   def to_wire
-    length = @content.length + 8
+    length = @content.length + 12
     alength_8, alength_16 = b24_to_8_and_16(length)
     avp_flags = '11000000'
     header = [code, avp_flags, alength_8, alength_16, @vendor_id].pack('NB8CnN')
