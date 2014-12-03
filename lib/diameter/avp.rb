@@ -23,6 +23,7 @@ class AVPNames
     'Auth-Session-State' => [277, U32],
     'Inband-Security-Id' => [299, U32],
     'Origin-Host' => [264, OCTETSTRING],
+    'Firmware-Revision' => [267, U32],
     'Result-Code' => [268, U32],
     'Origin-Realm' => [296, OCTETSTRING],
     'Destination-Host' => [293, OCTETSTRING],
@@ -49,15 +50,16 @@ class AVP
   def initialize(options = {})
     @code = options[:code] || 0
     @content = options[:content] || ''
-    @mandatory = options[:mandatory] || true
+    @mandatory = options[:mandatory]
+    @mandatory = true if @mandatory.nil?
   end
 
-  def self.create(name, val)
+  def self.create(name, val, options={})
     code, type, vendor = AVPNames.get(name)
     avp = if vendor
-            VendorSpecificAVP.new(code: code, vendor_id: vendor)
+            VendorSpecificAVP.new(options.merge({ :code => code, :vendor_id => vendor }))
           else
-            AVP.new(code: code)
+            AVP.new(options.merge({ :code => code }))
           end
 
     avp.set_content(type, val)
@@ -81,7 +83,7 @@ class AVP
   def to_wire
     length = @content.length + 8
     alength_8, alength_16 = b24_to_8_and_16(length)
-    avp_flags = '01000000'
+    avp_flags = @mandatory ? '01000000' : '00000000'
     header = [@code, avp_flags, alength_8, alength_16].pack('NB8Cn')
     wire_content = @content
     while ((wire_content.length % 4) != 0)
@@ -232,7 +234,7 @@ class VendorSpecificAVP < AVP
   def to_wire
     length = @content.length + 12
     alength_8, alength_16 = b24_to_8_and_16(length)
-    avp_flags = '11000000'
+    avp_flags = @mandatory ? '11000000' : '10000000'
     header = [code, avp_flags, alength_8, alength_16, @vendor_id].pack('NB8CnN')
     wire_content = @content
     while ((wire_content.length % 4) != 0)

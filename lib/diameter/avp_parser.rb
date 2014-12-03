@@ -46,6 +46,7 @@ module AVPParser
                            mandatory: mandatory_bit(avp_flags),
                            vendor_id: avp_vendor,
                            content: avp_content)
+
       avps.push parsed_avp
     end
     avps

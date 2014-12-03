@@ -60,4 +60,13 @@ describe "AVP", "A simple example" do
     avp.to_wire.must_equal "\x00\x00\x02\x5f\xc0\x00\x00\x10\x00\x00\x28\xaf\x00\x00\x00\x01".force_encoding("ASCII-8BIT")
   end
 
+  it "can create a non-mandatory AVP" do
+    avp = AVP.create("Firmware-Revision", 10200, mandatory: false)
+    avp.code.must_equal 267
+    avp.uint32.must_equal 10200
+
+    # Wire representation taken from Wireshark
+    avp.to_wire.must_equal "\x00\x00\x01\x0b\x00\x00\x00\x0c\x00\x00\x27\xd8".force_encoding("ASCII-8BIT")
+  end
+
 end
