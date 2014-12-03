@@ -43,6 +43,9 @@ describe "AVP", "A simple example" do
                      AVP.create("Vendor-Id", 10415)])
     avp.code.must_equal 260
 
+    avp.inner_avp("Vendor-Id").code.must_equal 266
+    avp.inner_avp("Vendor-Id").uint32.must_equal 10415
+
     # Wire representation taken from Wireshark
     avp.to_wire.must_equal "\x00\x00\x01\x04\x40\x00\x00\x20\x00\x00\x01\x02\x40\x00\x00\x0c\x01\x00\x00\x00\x00\x00\x01\x0a\x40\x00\x00\x0c\x00\x00\x28\xaf".force_encoding("ASCII-8BIT")
   end

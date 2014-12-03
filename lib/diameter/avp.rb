@@ -129,6 +129,22 @@ class AVP
     @content = new_content
   end
 
+  def inner_avp(name)
+    avps = inner_avps(name)
+
+    if avps.empty?
+      nil
+    else
+      avps[0]
+    end
+  end
+
+  def inner_avps(name)
+    code, _type, _vendor = AVPNames.get(name)
+
+    parse_avps_int(@content).select { |a| a.code == code}
+  end
+
   def octet_string
     @content
   end
