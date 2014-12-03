@@ -44,11 +44,17 @@ module AVPParser
       position += avp_content_length + padding
 
       # Construct an AVP object from the parsed data
-      parsed_avp = AVP.new(code: code,
-                           mandatory: mandatory_bit(avp_flags),
-                           vendor_id: avp_vendor,
-                           content: avp_content)
-
+      parsed_avp =
+        if vendor_id_bit(avp_flags)
+          VendorSpecificAVP.new(code: code,
+                                mandatory: mandatory_bit(avp_flags),
+                                vendor_id: avp_vendor,
+                                content: avp_content)
+        else
+          AVP.new(code: code,
+                  mandatory: mandatory_bit(avp_flags),
+                  content: avp_content)
+        end
       avps.push parsed_avp
     end
     avps

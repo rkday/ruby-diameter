@@ -17,7 +17,7 @@ class DiameterMessage
     @ete = options[:ete]
 
     @request = options[:request] || false
-    @proxyable = false
+    @proxyable = options[:proxyable] || false
     @retransmitted = false
     @error = false
   end
@@ -31,11 +31,9 @@ class DiameterMessage
     @avps.each {|a| content += a.to_wire}
     length_8, length_16 = u24_to_u8_and_u16(content.length + 20)
     code_8, code_16 = u24_to_u8_and_u16(@command_code)
-    if @request
-      flags_str = "10000000"
-    else
-      flags_str = "00000000"
-    end
+    request_flag = @request ? "1" : "0"
+    proxy_flag = @proxyable? "1" : "0"
+    flags_str = "#{request_flag}#{proxy_flag}000000"
     
     header = [@version, length_8, length_16, flags_str, code_8, code_16, @app_id, @hbh, @ete].pack('CCnB8CnNNN')
     header + content
@@ -82,7 +80,8 @@ class DiameterMessage
     command_code = u8_and_u16_to_u24(code_8, code_16)
 
     request = (flags_str[0] == "1")
-    DiameterMessage.new(version: version, length: length, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: request, proxyable: false, retransmitted: false, error: false)
+    proxyable = (flags_str[1] == "1")
+    DiameterMessage.new(version: version, length: length, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: request, proxyable: proxyable, retransmitted: false, error: false)
   end
 
   def response(origin_host=nil)
