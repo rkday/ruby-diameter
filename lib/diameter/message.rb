@@ -65,7 +65,7 @@ class DiameterMessage
   def all_avps_by_code(code, vendor=0)
     avps.select do |a|
       vendor_match =
-        if a.vendor_specific
+        if a.vendor_specific?
           a.vendor_id == vendor
         else
           vendor == 0

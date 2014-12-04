@@ -4,10 +4,10 @@ require "diameter/message"
 describe "Message parsing", "Parsing a CER" do
 
   it "can be parsed" do
-    header = IO.binread('test_messages/cer.bin', 20)
+    header = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin', 20)
     # read the header
     msg = DiameterMessage.from_header(header)
-    avps = IO.binread('test_messages/cer.bin', msg.length-20, 20)
+    avps = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin', msg.length-20, 20)
     msg.parse_avps(avps)
 
     msg.command_code.must_equal 257
@@ -17,10 +17,10 @@ describe "Message parsing", "Parsing a CER" do
   end
 
   it "can generate a response" do
-    header = IO.binread('test_messages/cer.bin', 20)
+    header = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin', 20)
     # read the header
     msg = DiameterMessage.from_header(header)
-    avps = IO.binread('test_messages/cer.bin', msg.length-20, 20)
+    avps = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin', msg.length-20, 20)
     msg.parse_avps(avps)
 
     cea = msg.response
@@ -30,7 +30,7 @@ describe "Message parsing", "Parsing a CER" do
   end
 
   it "serialises back to its original form" do
-    bytes = IO.binread('test_messages/cer.bin')
+    bytes = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin')
     header = bytes[0..20]
     # read the header
     msg = DiameterMessage.from_header(header)
@@ -41,7 +41,7 @@ describe "Message parsing", "Parsing a CER" do
   end
 
   it "should have a string representation showing its Command-Code and AVPs" do
-    bytes = IO.binread('test_messages/cer.bin')
+    bytes = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin')
     header = bytes[0..20]
     # read the header
     msg = DiameterMessage.from_header(header)
@@ -57,10 +57,10 @@ end
 describe "Message parsing", "Parsing a MAR" do
 
   it "can be parsed" do
-    header = IO.binread('test_messages/mar.bin', 20)
+    header = IO.binread(File.dirname(__FILE__)+'/test_messages/mar.bin', 20)
     # read the header
     msg = DiameterMessage.from_header(header)
-    avps = IO.binread('test_messages/mar.bin', msg.length-20, 20)
+    avps = IO.binread(File.dirname(__FILE__)+'/test_messages/mar.bin', msg.length-20, 20)
     msg.parse_avps(avps)
 
     msg.command_code.must_equal 303
@@ -69,7 +69,7 @@ describe "Message parsing", "Parsing a MAR" do
   end
 
   it "serialises back to its original form" do
-    bytes = IO.binread('test_messages/mar.bin')
+    bytes = IO.binread(File.dirname(__FILE__)+'/test_messages/mar.bin')
     header = bytes[0..20]
     # read the header
     msg = DiameterMessage.from_header(header)

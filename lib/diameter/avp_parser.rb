@@ -46,12 +46,12 @@ module AVPParser
       # Construct an AVP object from the parsed data
       parsed_avp =
         if vendor_id_bit(avp_flags)
-          VendorSpecificAVP.new(code: code,
+          VendorSpecificAVP.new(code,
+                                avp_vendor,
                                 mandatory: mandatory_bit(avp_flags),
-                                vendor_id: avp_vendor,
                                 content: avp_content)
         else
-          AVP.new(code: code,
+          AVP.new(code,
                   mandatory: mandatory_bit(avp_flags),
                   content: avp_content)
         end
