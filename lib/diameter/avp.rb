@@ -9,11 +9,21 @@ end
 
 TGPP = 10_415
 
-GROUPED = 0
-U32 = 1
-OCTETSTRING = 2
-IPADDR = 3
+# Represents the type of data a particular AVP should be interpreted
+# as. Valid values are:
+# * GROUPED
+# * U32
+# * OCTETSTRING
+# * IPADDR
+class AVPType
+end
 
+GROUPED = AVPType.new
+U32 = AVPType.new
+OCTETSTRING = AVPType.new
+IPADDR = AVPType.new
+
+# Maps AVP names to their on-the-wire values and data definitions.
 class AVPNames
   @names = {
     'Vendor-Specific-Application-Id' => [260, GROUPED],
@@ -36,6 +46,12 @@ class AVPNames
     'SIP-Item-Number' => [613, U32, TGPP],
     'SIP-Authentication-Scheme' => [608, OCTETSTRING, TGPP] }
 
+  # Converts an AVP name into its code number, data type, and (if
+  # applicable) vendor ID.
+  #
+  # @param [String] name The AVP name
+  # @return [Array(Fixnum, AVPType)] if this is not vendor-specific
+  # @return [Array(Fixnum, AVPType, Fixnum)] if this is vendor-specific
   def self.get(name)
     @names[name]
   end
@@ -47,23 +63,33 @@ end
 
 # rubocop:disable Metrics/ClassLength
 
+# Represents a Diameter AVP. Use this for non-vendor-specific AVPs,
+# and its subclass VendorSpecificAVP for ones defined for a particular vendor.
 class AVP
   attr_reader :code, :mandatory
 
   include AVPParser
 
-  def initialize(options = {})
-    @code = options[:code] || 0
+  def initialize(code, options = {})
+    @code = code
     @content = options[:content] || ''
     @mandatory = options[:mandatory] || true
   end
 
+  # Creates an AVP by name, and assigns it a value.
+  #
+  # @param name The name of the AVP, e.g. "Origin-Host"
+  # @param val The value of the AVP. Must be of the type defined for
+  #   that AVP - e.g. a Fixnum for an AVP defined as Unsigned32, a
+  #   String for an AVP defined as OctetString, or an IPAddr for an AVP
+  #   defined as IPAddress.
+  # @return [AVP] The AVP that was created.
   def self.create(name, val)
     code, type, vendor = AVPNames.get(name)
     avp = if vendor
-            VendorSpecificAVP.new(code: code, vendor_id: vendor)
+            VendorSpecificAVP.new(code, vendor)
           else
-            AVP.new(code: code)
+            AVP.new(code)
           end
 
     avp.set_content(type, val)
@@ -71,19 +97,10 @@ class AVP
     avp
   end
 
-  def set_content(type, val)
-    case type
-    when GROUPED
-      self.grouped_value = val
-    when U32
-      self.uint32 = val
-    when OCTETSTRING
-      self.octet_string = val
-    when IPADDR
-      self.ip_address = val
-    end
-  end
-
+  # Returns this AVP encoded properly as bytes in network byte order,
+  # suitable for sending over a TCP or SCTP connection.
+  #
+  # @return [String] The bytes representing this AVP
   def to_wire
     length = @content.length + 8
     alength_8, alength_16 = b24_to_8_and_16(length)
@@ -101,6 +118,13 @@ class AVP
 
   # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
   # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity
+
+  # Returns a string representation of this AVP. Makes a best-effort
+  # attempt to guess the type of the content (even for unknown AVPs)
+  # and display it sensibly.
+  #
+  # @example
+  #   avp.to_s => "AVP 267, mandatory: true, content as int32: 1"
   def to_s
     has_all_ascii_values =
       @content.bytes.reject { |c| (32 < c && c < 126) }.empty?
@@ -128,14 +152,25 @@ class AVP
   # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/MethodLength, Metrics/PerceivedComplexity
 
-  def vendor_specific
+  # Is this AVP vendor-specific or not?
+  #
+  # @return [true, false]
+  def vendor_specific?
     false
   end
 
+  # Returns this AVP's byte data, interpreted as a Grouped AVP.
+  #
+  # @return [Array<AVP>] The contained AVPs.
   def grouped_value
     parse_avps_int(@content)
   end
 
+  # Sets this AVP's byte data to a Grouped AVP.
+  #
+  # @param [Array<AVP>] avps The AVPs that should be contained within
+  #   this AVP.
+  # @return [void]
   def grouped_value=(avps)
     new_content = ''
     avps.each { |a| new_content += a.to_wire }
@@ -148,6 +183,10 @@ class AVP
   # TrivialAccessors warning.
 
   # rubocop:disable Style/TrivialAccessors
+
+  # Returns this AVP's byte data, interpreted as an OctetString.
+  #
+  # @return [String] The contained OctetString.
   def octet_string
     @content
   end
@@ -157,6 +196,9 @@ class AVP
   end
   # rubocop:enable Style/TrivialAccessors
 
+  # Returns this AVP's byte data, interpreted as an Integer32.
+  #
+  # @return [Fixnum] The contained Integer32.
   def int32
     @content.unpack('l>')[0]
   end
@@ -165,6 +207,9 @@ class AVP
     @content = [val].pack('l>')
   end
 
+  # Returns this AVP's byte data, interpreted as an Integer64.
+  #
+  # @return [Fixnum] The contained Integer64.
   def int64
     @content.unpack('q>')[0]
   end
@@ -173,6 +218,9 @@ class AVP
     @content = [val].pack('q>')
   end
 
+  # Returns this AVP's byte data, interpreted as an Unsigned32.
+  #
+  # @return [Fixnum] The contained Unsigned32.
   def uint32
     @content.unpack('N')[0]
   end
@@ -219,18 +267,41 @@ class AVP
     bytes += val.hton
     @content = bytes
   end
+
+#  protected
+  
+  def set_content(type, val)
+    case type
+    when GROUPED
+      self.grouped_value = val
+    when U32
+      self.uint32 = val
+    when OCTETSTRING
+      self.octet_string = val
+    when IPADDR
+      self.ip_address = val
+    end
+  end
+
 end
+
+
+
 # rubocop:enable Metrics/ClassLength
 
 class VendorSpecificAVP < AVP
   attr_reader :vendor_id
 
-  def initialize(options = {})
-    @vendor_id = options[:vendor_id]
-    super(options)
+  # @param code
+  # @param vendor_id
+  # @see AVP#initialize
+  def initialize(code, vendor_id, options = {})
+    @vendor_id = vendor_id
+    super(code, options)
   end
 
-  def vendor_specific
+  # @see AVP#vendor_specific?
+  def vendor_specific?
     true
   end
 
