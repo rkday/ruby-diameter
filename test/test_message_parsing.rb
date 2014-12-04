@@ -39,6 +39,18 @@ describe "Message parsing", "Parsing a CER" do
     msg.to_wire.force_encoding("ASCII-8BIT").must_equal bytes.force_encoding("ASCII-8BIT")
   end
 
+  it "should have a string representation showing its Command-Code and AVPs" do
+    bytes = IO.binread('test_messages/cer.bin')
+    header = bytes[0..20]
+    # read the header
+    msg = DiameterMessage.from_header(header)
+    avps = bytes[20..-1]
+    msg.parse_avps(avps)
+
+    msg.to_s.must_include "257"
+    msg.to_s.must_include "172.24.68.104" # Host-IP-Address
+  end
+
 end
 
 describe "Message parsing", "Parsing a MAR" do
