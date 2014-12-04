@@ -1,11 +1,6 @@
-require_relative './avp_parser.rb'
+require 'diameter/avp_parser'
+require 'diameter/u24'
 require 'ipaddr'
-
-def b24_to_8_and_16(twentyfourb)
-  top_eight = twentyfourb >> 16
-  bottom_sixteen = twentyfourb - (top_eight << 16)
-  [top_eight, bottom_sixteen]
-end
 
 TGPP = 10_415
 
@@ -33,6 +28,7 @@ class AVPNames
     'Auth-Session-State' => [277, U32],
     'Inband-Security-Id' => [299, U32],
     'Origin-Host' => [264, OCTETSTRING],
+    'Firmware-Revision' => [267, U32],
     'Result-Code' => [268, U32],
     'Origin-Realm' => [296, OCTETSTRING],
     'Destination-Host' => [293, OCTETSTRING],
@@ -53,7 +49,9 @@ class AVPNames
   # @return [Array(Fixnum, AVPType)] if this is not vendor-specific
   # @return [Array(Fixnum, AVPType, Fixnum)] if this is vendor-specific
   def self.get(name)
-    @names[name]
+    code, type, vendor = @names[name]
+    vendor ||= 0
+    [code, type, vendor]
   end
 end
 
@@ -73,7 +71,8 @@ class AVP
   def initialize(code, options = {})
     @code = code
     @content = options[:content] || ''
-    @mandatory = options[:mandatory] || true
+    @mandatory = options[:mandatory]
+    @mandatory = true if @mandatory.nil?
   end
 
   # Creates an AVP by name, and assigns it a value.
@@ -84,12 +83,12 @@ class AVP
   #   String for an AVP defined as OctetString, or an IPAddr for an AVP
   #   defined as IPAddress.
   # @return [AVP] The AVP that was created.
-  def self.create(name, val)
+  def self.create(name, val, options={})
     code, type, vendor = AVPNames.get(name)
-    avp = if vendor
-            VendorSpecificAVP.new(code, vendor)
+    avp = if (vendor != 0)
+            VendorSpecificAVP.new(code, vendor, options)
           else
-            AVP.new(code)
+            AVP.new(code, options)
           end
 
     avp.set_content(type, val)
@@ -102,13 +101,22 @@ class AVP
   #
   # @return [String] The bytes representing this AVP
   def to_wire
-    length = @content.length + 8
-    alength_8, alength_16 = b24_to_8_and_16(length)
-    avp_flags = '01000000'
-    header = [@code, avp_flags, alength_8, alength_16].pack('NB8Cn')
+    length_8, length_16 = u24_to_u8_and_u16(@content.length + 8)
+    avp_flags = @mandatory ? '01000000' : '00000000'
+    header = [@code, avp_flags, length_8, length_16].pack('NB8Cn')
+    header + self.padded_content
+  end
+
+  def padded_content
     wire_content = @content
-    wire_content += "\x00" while ((wire_content.length % 4) != 0)
-    header + wire_content
+    while ((wire_content.length % 4) != 0)
+      wire_content += "\x00"
+    end
+    wire_content
+  end
+  
+  def to_s_first_line
+    "AVP #{@code}, mandatory: #{@mandatory}"
   end
 
   # Guessing the type of an AVP and displaying it sensibly is complex,
@@ -140,7 +148,7 @@ class AVP
                       could_be_32bit_num   ||
                       could_be_ip)
 
-    s = "AVP #{@code}, mandatory: #{@mandatory}"
+    s = to_s_first_line
     s += ", content as string: #{@content}" if has_all_ascii_values
     s += ", content as int32: #{uint32}" if could_be_32bit_num
     s += ", content as int64: #{uint64}" if could_be_64bit_num
@@ -177,6 +185,22 @@ class AVP
     @content = new_content
   end
 
+  def inner_avp(name)
+    avps = inner_avps(name)
+
+    if avps.empty?
+      nil
+    else
+      avps[0]
+    end
+  end
+
+  def inner_avps(name)
+    code, _type, _vendor = AVPNames.get(name)
+
+    self.grouped_value.select { |a| a.code == code}
+  end
+
   # Even though it is just "the raw bytes in the content",
   # octet_string is only one way of interpreting the AVP content and
   # shouldn't be treated differently to the others, so disable the
@@ -194,6 +218,7 @@ class AVP
   def octet_string=(val)
     @content = val
   end
+
   # rubocop:enable Style/TrivialAccessors
 
   # Returns this AVP's byte data, interpreted as an Integer32.
@@ -306,16 +331,13 @@ class VendorSpecificAVP < AVP
   end
 
   def to_wire
-    length = @content.length + 8
-    alength_8, alength_16 = b24_to_8_and_16(length)
-    avp_flags = '11000000'
-    header = [code, avp_flags, alength_8, alength_16, @vendor_id].pack('NB8CnN')
-    wire_content = @content
-    wire_content += "\x00" while ((wire_content.length % 4) != 0)
-    header + wire_content
+    length_8, length_16 = u24_to_u8_and_u16(@content.length + 12)
+    avp_flags = @mandatory ? '11000000' : '10000000'
+    header = [@code, avp_flags, length_8, length_16, @vendor_id].pack('NB8CnN')
+    header + self.padded_content
   end
 
-  def to_s
+  def to_s_first_line
     "AVP #{@code}, Vendor-ID #{@vendor_id}, mandatory: #{@mandatory}"
   end
 end

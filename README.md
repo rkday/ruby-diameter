@@ -21,10 +21,8 @@ Only a small handful of AVPs are implemented - more can be added just by editing
 ## TODOs
 
 ### Infrastructure
-* Set up Rakefile
 * Package as a gem
-* Set up test running and code coverage
-* Set up appropriate RDoc (or similar) documentation
+* Set up appropriate YARD API documentation
 * Set up handwritten documentation
 
 ### Completeness

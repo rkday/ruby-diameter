@@ -1,3 +1,5 @@
+require "diameter/u24"
+
 module AVPParser
   def vendor_id_bit(flags)
     flags[0] == '1'
@@ -18,7 +20,7 @@ module AVPParser
       # Parse them
       code, avp_flags, alength_8, alength_16 = first_avp_header.unpack('NB8Cn')
 
-      # length = b8
+      length = u8_and_u16_to_u24(alength_8, alength_16)
 
       # Default values in the case where this isn't vendor-specific
       avp_consumed = 8
@@ -33,7 +35,7 @@ module AVPParser
       end
 
       # Read the content, ensuring it aligns to a 32-byte boundary
-      avp_content_length = alength_16 - avp_consumed
+      avp_content_length = length - avp_consumed
       avp_content = bytes[position..(position + avp_content_length) - 1]
 
       padding = 0
@@ -42,10 +44,17 @@ module AVPParser
       position += avp_content_length + padding
 
       # Construct an AVP object from the parsed data
-      parsed_avp = AVP.new(code: code,
-                           mandatory: mandatory_bit(avp_flags),
-                           vendor_id: avp_vendor,
-                           content: avp_content)
+      parsed_avp =
+        if vendor_id_bit(avp_flags)
+          VendorSpecificAVP.new(code: code,
+                                mandatory: mandatory_bit(avp_flags),
+                                vendor_id: avp_vendor,
+                                content: avp_content)
+        else
+          AVP.new(code: code,
+                  mandatory: mandatory_bit(avp_flags),
+                  content: avp_content)
+        end
       avps.push parsed_avp
     end
     avps
