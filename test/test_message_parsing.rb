@@ -77,7 +77,7 @@ describe "Message parsing", "Parsing a MAR" do
     msg.parse_avps(avps)
 
     msg.to_wire.length.must_equal bytes.length
-    msg.to_wire[0..54].force_encoding("ASCII-8BIT").must_equal bytes[0..54].force_encoding("ASCII-8BIT")
+    msg.to_wire.force_encoding("ASCII-8BIT").must_equal bytes.force_encoding("ASCII-8BIT")
   end
 
 end

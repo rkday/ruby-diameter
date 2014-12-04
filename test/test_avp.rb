@@ -98,7 +98,7 @@ describe "AVP", "A simple example" do
 
     avp.int32 = -117
     
-    avp.int32.must_equal -117
+    avp.int32.must_equal(-117)
     avp.octet_string.length.must_equal 4
   end
 
@@ -107,7 +107,7 @@ describe "AVP", "A simple example" do
 
     avp.int64 = -117
     
-    avp.int64.must_equal -117
+    avp.int64.must_equal(-117)
     avp.octet_string.length.must_equal 8
   end
 
