@@ -13,6 +13,7 @@ describe "Message parsing", "Parsing a CER" do
     msg.command_code.must_equal 257
     msg.request.must_equal true
     msg.avp_by_name("Firmware-Revision").uint32.must_equal 10200
+    msg.all_avps_by_name("Host-IP-Address").length.must_equal 2
   end
 
   it "can generate a response" do
