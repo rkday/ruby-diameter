@@ -1,15 +1,20 @@
 require "minitest_helper"
 require "diameter/message"
 
+def parse(filename)
+  path = "#{File.dirname(__FILE__)}/test_messages/#{filename}"
+  header = IO.binread(path, 4)
+  # read the header
+  length = DiameterMessage.length_from_header(header)
+  bytes = IO.binread(path, length)
+  [bytes, DiameterMessage.from_bytes(bytes)]
+end
+
 describe "Message parsing", "Parsing a CER" do
 
   it "can be parsed" do
-    header = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin', 20)
-    # read the header
-    msg = DiameterMessage.from_header(header)
-    avps = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin', msg.length-20, 20)
-    msg.parse_avps(avps)
-
+    _bytes, msg = parse('cer.bin')
+    
     msg.command_code.must_equal 257
     msg.request.must_equal true
     msg.avp_by_name("Firmware-Revision").uint32.must_equal 10200
@@ -17,11 +22,7 @@ describe "Message parsing", "Parsing a CER" do
   end
 
   it "can generate a response" do
-    header = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin', 20)
-    # read the header
-    msg = DiameterMessage.from_header(header)
-    avps = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin', msg.length-20, 20)
-    msg.parse_avps(avps)
+    _bytes, msg = parse('cer.bin')
 
     cea = msg.response
 
@@ -30,23 +31,13 @@ describe "Message parsing", "Parsing a CER" do
   end
 
   it "serialises back to its original form" do
-    bytes = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin')
-    header = bytes[0..20]
-    # read the header
-    msg = DiameterMessage.from_header(header)
-    avps = bytes[20..-1]
-    msg.parse_avps(avps)
+    bytes, msg = parse('cer.bin')
 
     msg.to_wire.force_encoding("ASCII-8BIT").must_equal bytes.force_encoding("ASCII-8BIT")
   end
 
   it "should have a string representation showing its Command-Code and AVPs" do
-    bytes = IO.binread(File.dirname(__FILE__)+'/test_messages/cer.bin')
-    header = bytes[0..20]
-    # read the header
-    msg = DiameterMessage.from_header(header)
-    avps = bytes[20..-1]
-    msg.parse_avps(avps)
+    _bytes, msg = parse('cer.bin')
 
     msg.to_s.must_include "257"
     msg.to_s.must_include "172.24.68.104" # Host-IP-Address
@@ -57,11 +48,7 @@ end
 describe "Message parsing", "Parsing a MAR" do
 
   it "can be parsed" do
-    header = IO.binread(File.dirname(__FILE__)+'/test_messages/mar.bin', 20)
-    # read the header
-    msg = DiameterMessage.from_header(header)
-    avps = IO.binread(File.dirname(__FILE__)+'/test_messages/mar.bin', msg.length-20, 20)
-    msg.parse_avps(avps)
+    _bytes, msg = parse('mar.bin')
 
     msg.command_code.must_equal 303
     msg.request.must_equal true
@@ -69,12 +56,7 @@ describe "Message parsing", "Parsing a MAR" do
   end
 
   it "serialises back to its original form" do
-    bytes = IO.binread(File.dirname(__FILE__)+'/test_messages/mar.bin')
-    header = bytes[0..20]
-    # read the header
-    msg = DiameterMessage.from_header(header)
-    avps = bytes[20..-1]
-    msg.parse_avps(avps)
+    bytes, msg = parse('mar.bin')
 
     msg.to_wire.length.must_equal bytes.length
     msg.to_wire.force_encoding("ASCII-8BIT").must_equal bytes.force_encoding("ASCII-8BIT")

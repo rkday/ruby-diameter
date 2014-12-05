@@ -1,15 +1,27 @@
 require "diameter/u24"
 
+# Parser mixin, sharing functionality common to:
+#  * parsing all the AVPs in a message
+#  * parsing the AVPs inside a Grouped AVP
 module AVPParser
-  def vendor_id_bit(flags)
+
+  # Is the vendor-specific bit (the top bit) set?
+  #
+  # @param flags [String] A string of eight bits, e.g. "00000000"
+  # @return [true, false]
+  def self.vendor_id_bit(flags)
     flags[0] == '1'
   end
 
-  def mandatory_bit(flags)
+  # Is the mandatory bit (the second bit) set?
+  #
+  # @param flags [String] A string of eight bits, e.g. "00000000"
+  # @return [true, false]
+  def self.mandatory_bit(flags)
     flags[1] == '1'
   end
-
-  def parse_avps_int(bytes)
+  
+  def self.parse_avps_int(bytes)
     avps = []
     position = 0
     while position < bytes.length
@@ -20,7 +32,7 @@ module AVPParser
       # Parse them
       code, avp_flags, alength_8, alength_16 = first_avp_header.unpack('NB8Cn')
 
-      length = u8_and_u16_to_u24(alength_8, alength_16)
+      length = UInt24.from_u8_and_u16(alength_8, alength_16)
 
       # Default values in the case where this isn't vendor-specific
       avp_consumed = 8

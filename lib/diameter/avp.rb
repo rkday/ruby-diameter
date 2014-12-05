@@ -71,7 +71,12 @@ end
 # rubocop:disable Metrics/ClassLength
 
 # Represents a Diameter AVP. Use this for non-vendor-specific AVPs,
-# and its subclass VendorSpecificAVP for ones defined for a particular vendor.
+# and its subclass VendorSpecificAVP for ones defined for a particular
+# vendor.
+# @!attribute [r] code
+#   @return [Fixnum] The AVP Code
+# @!attribute [r] mandatory 
+#   @return [true, false] Whether this AVP is mandatory (i.e. its M flag is set)
 class AVP
   include AVPType
   attr_reader :code, :mandatory
@@ -113,7 +118,7 @@ class AVP
   #
   # @return [String] The bytes representing this AVP
   def to_wire
-    length_8, length_16 = u24_to_u8_and_u16(@content.length + 8)
+    length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 8)
     avp_flags = @mandatory ? '01000000' : '00000000'
     header = [@code, avp_flags, length_8, length_16].pack('NB8Cn')
     header + self.padded_content
@@ -160,18 +165,19 @@ class AVP
   # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/MethodLength, Metrics/PerceivedComplexity
 
-  # Is this AVP vendor-specific or not?
-  #
-  # @return [true, false]
+  # @!attribute [r] vendor_specific? 
+  #   @return [true, false] Whether this AVP is mandatory (i.e. its M flag is set)
   def vendor_specific?
     false
   end
 
+  # @!group Data getters/setters for different AVP types
+  
   # Returns this AVP's byte data, interpreted as a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
   #
   # @return [Array<AVP>] The contained AVPs.
   def grouped_value
-    parse_avps_int(@content)
+    AVPParser::parse_avps_int(@content)
   end
 
   # Sets this AVP's byte data to a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
@@ -347,6 +353,8 @@ class AVP
     @content = bytes
   end
 
+  # @!endgroup
+  
   private
   
   def self.set_content(avp, type, val)
@@ -399,7 +407,7 @@ class VendorSpecificAVP < AVP
 
   # {AVP#to_wire}
   def to_wire
-    length_8, length_16 = u24_to_u8_and_u16(@content.length + 12)
+    length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 12)
     avp_flags = @mandatory ? '11000000' : '10000000'
     header = [@code, avp_flags, length_8, length_16, @vendor_id].pack('NB8CnN')
     header + self.padded_content
