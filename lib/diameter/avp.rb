@@ -2,25 +2,34 @@ require 'diameter/avp_parser'
 require 'diameter/u24'
 require 'ipaddr'
 
-TGPP = 10_415
-
-# Represents the type of data a particular AVP should be interpreted
-# as. Valid values are:
-# * GROUPED
-# * U32
-# * OCTETSTRING
-# * IPADDR
-class AVPType
+# Contains Vendor-ID constants
+module Vendor
+  # The 3GPP/IMS Vendor-ID
+  TGPP = 10_415
 end
 
-GROUPED = AVPType.new
-U32 = AVPType.new
-OCTETSTRING = AVPType.new
-IPADDR = AVPType.new
+# Represents the type of data a particular AVP should be interpreted
+# as.
+module AVPType
+  # Represents an AVP of Grouped type
+  GROUPED = :Grouped
+
+  # Represents an AVP of Unsigned32 type
+  U32 = :Unsigned32
+
+  # Represents an AVP of OctetString type
+  OCTETSTRING = :OctetString
+
+  # Represents an AVP of IPAddress type
+  IPADDR = :Address
+end
 
 # Maps AVP names to their on-the-wire values and data definitions.
 class AVPNames
-  @names = {
+  include AVPType
+
+  # The AVPs that can be looked up by name.
+  AVAILABLE_AVPS = {
     'Vendor-Specific-Application-Id' => [260, GROUPED],
     'Vendor-Id' => [266, U32],
     'Auth-Application-Id' => [258, U32],
@@ -35,21 +44,21 @@ class AVPNames
     'Destination-Realm' => [283, OCTETSTRING],
     'User-Name' => [1, OCTETSTRING],
     'Host-IP-Address' => [257, IPADDR],
-    'Public-Identity' => [601, OCTETSTRING, TGPP],
-    'Server-Name' => [602, OCTETSTRING, TGPP],
-    'SIP-Number-Auth-Items' => [607, U32, TGPP],
-    'SIP-Auth-Data-Item' => [612, GROUPED, TGPP],
-    'SIP-Item-Number' => [613, U32, TGPP],
-    'SIP-Authentication-Scheme' => [608, OCTETSTRING, TGPP] }
+    'Public-Identity' => [601, OCTETSTRING, Vendor::TGPP],
+    'Server-Name' => [602, OCTETSTRING, Vendor::TGPP],
+    'SIP-Number-Auth-Items' => [607, U32, Vendor::TGPP],
+    'SIP-Auth-Data-Item' => [612, GROUPED, Vendor::TGPP],
+    'SIP-Item-Number' => [613, U32, Vendor::TGPP],
+    'SIP-Authentication-Scheme' => [608, OCTETSTRING, Vendor::TGPP] }
 
   # Converts an AVP name into its code number, data type, and (if
   # applicable) vendor ID.
   #
   # @param [String] name The AVP name
   # @return [Array(Fixnum, AVPType)] if this is not vendor-specific
-  # @return [Array(Fixnum, AVPType, Fixnum)] if this is vendor-specific
+  # @return [Array(Fixnum, AVPType, Vendor)] if this is vendor-specific
   def self.get(name)
-    code, type, vendor = @names[name]
+    code, type, vendor = AVAILABLE_AVPS[name]
     vendor ||= 0
     [code, type, vendor]
   end
@@ -64,6 +73,7 @@ end
 # Represents a Diameter AVP. Use this for non-vendor-specific AVPs,
 # and its subclass VendorSpecificAVP for ones defined for a particular vendor.
 class AVP
+  include AVPType
   attr_reader :code, :mandatory
 
   include AVPParser
@@ -91,13 +101,15 @@ class AVP
             AVP.new(code, options)
           end
 
-    avp.set_content(type, val)
+    set_content(avp, type, val)
 
     avp
   end
 
   # Returns this AVP encoded properly as bytes in network byte order,
-  # suitable for sending over a TCP or SCTP connection.
+  # suitable for sending over a TCP or SCTP connection. See
+  # {http://tools.ietf.org/html/rfc6733#section-4.1} for the
+  # format.
   #
   # @return [String] The bytes representing this AVP
   def to_wire
@@ -105,18 +117,6 @@ class AVP
     avp_flags = @mandatory ? '01000000' : '00000000'
     header = [@code, avp_flags, length_8, length_16].pack('NB8Cn')
     header + self.padded_content
-  end
-
-  def padded_content
-    wire_content = @content
-    while ((wire_content.length % 4) != 0)
-      wire_content += "\x00"
-    end
-    wire_content
-  end
-  
-  def to_s_first_line
-    "AVP #{@code}, mandatory: #{@mandatory}"
   end
 
   # Guessing the type of an AVP and displaying it sensibly is complex,
@@ -167,14 +167,14 @@ class AVP
     false
   end
 
-  # Returns this AVP's byte data, interpreted as a Grouped AVP.
+  # Returns this AVP's byte data, interpreted as a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
   #
   # @return [Array<AVP>] The contained AVPs.
   def grouped_value
     parse_avps_int(@content)
   end
 
-  # Sets this AVP's byte data to a Grouped AVP.
+  # Sets this AVP's byte data to a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
   #
   # @param [Array<AVP>] avps The AVPs that should be contained within
   #   this AVP.
@@ -185,6 +185,12 @@ class AVP
     @content = new_content
   end
 
+  # For a grouped AVP, returns the first AVP with this name it
+  # contains.
+  #
+  # @param [String] name The AVP name
+  # @return [AVP] if this AVP is found inside the Grouped AVP
+  # @return [nil] if this AVP is not found inside the Grouped AVP
   def inner_avp(name)
     avps = inner_avps(name)
 
@@ -195,6 +201,10 @@ class AVP
     end
   end
 
+  # For a grouped AVP, returns all AVPs it contains with this name.
+  #
+  # @param [String] name The AVP name
+  # @return [Array<AVP>]
   def inner_avps(name)
     code, _type, _vendor = AVPNames.get(name)
 
@@ -215,8 +225,12 @@ class AVP
     @content
   end
 
-  def octet_string=(val)
-    @content = val
+  # Sets this AVP's byte data to an OctetString.
+  #
+  # @param [String] value The octets to use as the value.
+  # @return [void]
+  def octet_string=(value)
+    @content = value
   end
 
   # rubocop:enable Style/TrivialAccessors
@@ -228,8 +242,12 @@ class AVP
     @content.unpack('l>')[0]
   end
 
-  def int32=(val)
-    @content = [val].pack('l>')
+  # Sets this AVP's byte data to an Integer32.
+  #
+  # @param [Fixnum] value
+  # @return [void]
+  def int32=(value)
+    @content = [value].pack('l>')
   end
 
   # Returns this AVP's byte data, interpreted as an Integer64.
@@ -239,8 +257,12 @@ class AVP
     @content.unpack('q>')[0]
   end
 
-  def int64=(val)
-    @content = [val].pack('q>')
+  # Sets this AVP's byte data to an Integer64.
+  #
+  # @param [Fixnum] value
+  # @return [void]
+  def int64=(value)
+    @content = [value].pack('q>')
   end
 
   # Returns this AVP's byte data, interpreted as an Unsigned32.
@@ -250,86 +272,132 @@ class AVP
     @content.unpack('N')[0]
   end
 
-  def uint32=(val)
-    @content = [val].pack('N')
+  # Sets this AVP's byte data to an Unsigned32.
+  #
+  # @param [Fixnum] value
+  # @return [void]
+  def uint32=(value)
+    @content = [value].pack('N')
   end
 
+  # Returns this AVP's byte data, interpreted as an Unsigned64.
+  #
+  # @return [Fixnum] The contained Unsigned64.
   def uint64
     @content.unpack('Q>')[0]
   end
 
-  def uint64=(val)
-    @content = [val].pack('Q>')
+  # Sets this AVP's byte data to an Unsigned64.
+  #
+  # @param [Fixnum] value
+  # @return [void]
+  def uint64=(value)
+    @content = [value].pack('Q>')
   end
 
+  # Returns this AVP's byte data, interpreted as a Float32.
+  #
+  # @return [Float] The contained Float32.
   def float32
     @content.unpack('g')[0]
   end
 
-  def float32=(val)
-    @content = [val].pack('g')
+  # Sets this AVP's byte data to a Float32.
+  #
+  # @param [Float] value
+  # @return [void]
+  def float32=(value)
+    @content = [value].pack('g')
   end
 
+  # Returns this AVP's byte data, interpreted as a Float64.
+  #
+  # @return [Float] The contained Float64.
   def float64
     @content.unpack('G')[0]
   end
 
-  def float64=(val)
-    @content = [val].pack('G')
+  # Sets this AVP's byte data to a Float64.
+  #
+  # @param [Float] value
+  # @return [void]
+  def float64=(value)
+    @content = [value].pack('G')
   end
 
+  # Returns this AVP's byte data, interpreted as an {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
+  #
+  # @return [IPAddr] The contained {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
   def ip_address
     IPAddr.new_ntoh(@content[2..-1])
   end
 
-  def ip_address=(val)
-    bytes = if val.ipv4?
+  # Sets this AVP's byte data to an Address.
+  #
+  # @param [IPAddr] value
+  # @return [void]
+  def ip_address=(value)
+    bytes = if value.ipv4?
               [1].pack('n')
             else
               [2].pack('n')
             end
 
-    bytes += val.hton
+    bytes += value.hton
     @content = bytes
   end
 
-#  protected
+  private
   
-  def set_content(type, val)
+  def self.set_content(avp, type, val)
     case type
     when GROUPED
-      self.grouped_value = val
+      avp.grouped_value = val
     when U32
-      self.uint32 = val
+      avp.uint32 = val
     when OCTETSTRING
-      self.octet_string = val
+      avp.octet_string = val
     when IPADDR
-      self.ip_address = val
+      avp.ip_address = val
     end
   end
 
+  def to_s_first_line
+    "AVP #{@code}, mandatory: #{@mandatory}"
+  end
+
+  protected
+  def padded_content
+    wire_content = @content
+    while ((wire_content.length % 4) != 0)
+      wire_content += "\x00"
+    end
+    wire_content
+  end 
 end
 
 
 
 # rubocop:enable Metrics/ClassLength
 
+# A vendor-specific AVP.
 class VendorSpecificAVP < AVP
   attr_reader :vendor_id
 
-  # @param code
-  # @param vendor_id
-  # @see AVP#initialize
+  # @param code The AVP Code of this AVP
+  # @param vendor_id  The Vendor-ID of this AVP
+  # {AVP#initialize}
   def initialize(code, vendor_id, options = {})
     @vendor_id = vendor_id
     super(code, options)
   end
 
-  # @see AVP#vendor_specific?
+  # {AVP#vendor_specific?}
   def vendor_specific?
     true
   end
 
+  # {AVP#to_wire}
   def to_wire
     length_8, length_16 = u24_to_u8_and_u16(@content.length + 12)
     avp_flags = @mandatory ? '11000000' : '10000000'
@@ -337,6 +405,7 @@ class VendorSpecificAVP < AVP
     header + self.padded_content
   end
 
+  private
   def to_s_first_line
     "AVP #{@code}, Vendor-ID #{@vendor_id}, mandatory: #{@mandatory}"
   end
