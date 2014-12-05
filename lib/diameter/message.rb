@@ -124,13 +124,13 @@ class DiameterMessage
     DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: request, proxyable: proxyable, retransmitted: false, error: false, avps: avps)
   end
 
-  # Generates a response to this request, filling in appropriate
-  # fields per {http://xyz}.
+  # Generates an answer to this request, filling in appropriate
+  # fields per {http://tools.ietf.org/html/rfc6733#section-6.2}.
   #
   # @param origin_host [String] The Origin-Host to fill in on the
   #   response.
   # @return [DiameterMessage] The response created.
-  def response(origin_host=nil)
+  def answer(origin_host=nil)
     # Is this a request?
 
     # Copy the Session-Id and Proxy-Info
