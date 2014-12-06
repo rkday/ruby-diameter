@@ -25,7 +25,7 @@ class StackHelper
   end
   
   def main_loop
-    puts "main loop running"
+    #puts "main loop running"
 
     begin
       rs, _ws, es = IO.select(@all_connections, [], @all_connections)
@@ -33,17 +33,17 @@ class StackHelper
       return
     end
     
-    puts "select returned: #{rs}, #{es}"
+    #puts "select returned: #{rs}, #{es}"
 
     if es
       for e in es
-        puts e
+        puts "Got error: #{e}"
       end
     end
 
     if rs
       for r in rs
-        puts r
+        #puts r
 
         existing_data = @data[r]
         if existing_data.length < 4
@@ -60,12 +60,12 @@ class StackHelper
 
         expected_len = -1
         if existing_data.length >= 4
-          puts existing_data[0..4].inspect
+          #puts existing_data[0..4].inspect
           expected_len = DiameterMessage.length_from_header(existing_data[0..4])
-          puts expected_len
+          #puts expected_len
           msg, src = r.recvfrom_nonblock(expected_len-existing_data.length)
           existing_data += msg
-          puts existing_data.inspect
+          #puts existing_data.inspect
           if msg == ""
             # Connection closed
             r.close
@@ -105,7 +105,7 @@ class TCPStackHelper < StackHelper
   def accept_loop
     rs, _ws, es = IO.select(@listen_connections, [], @listen_connections)
     for e in es
-      puts e
+      #puts e
     end
 
     for r in rs

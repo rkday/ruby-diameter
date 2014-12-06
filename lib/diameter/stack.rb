@@ -2,6 +2,7 @@ require 'uri'
 require 'socket'
 require 'diameter/message'
 require 'diameter/stack_transport_helpers'
+require 'concurrent'
 
 class Peer
   attr_accessor :identity, :static, :cxn, :realm, :expiry_time, :last_message_seen
@@ -106,19 +107,19 @@ class Stack
   end
 
   def send_message(req, timeout=5)
+    q = Queue.new
     if req.request
       req.avps += [AVP.create("Origin-Host", @local_host),
                    AVP.create("Origin-Realm", @local_realm)]
-      q = Queue.new
       @pending_ete[req.ete] = q
       peer_name = req.avp_by_name("Destination-Host").octet_string
       peer = @peer_table[peer_name]
       if peer.state == :UP
-        puts "Sending over wire"
+        #puts "Sending over wire"
         @tcp_helper.send(req.to_wire, peer.cxn)
       end
 
-      q.pop
+      Concurrent::Promise.execute { q.pop }
     end
   end
 
@@ -168,10 +169,10 @@ class Stack
 
   def handle_cea(cea)
     peer = cea.avp_by_name("Origin-Host").octet_string
-    puts peer
+    #puts peer
     @peer_table[peer].state = :UP
     @peer_table[peer].reset_timer
-    puts cea
+    #puts cea
   end
 
   def handle_dpr
