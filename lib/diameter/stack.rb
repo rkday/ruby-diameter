@@ -2,13 +2,16 @@ require 'uri'
 require 'socket'
 require 'diameter/message'
 require 'diameter/stack_transport_helpers'
+require 'diameter/diameter_logger'
 require 'concurrent'
 
 class Peer
   attr_accessor :identity, :static, :cxn, :realm, :expiry_time, :last_message_seen
   attr_reader :state
 
-  def initialize
+  def initialize(identity)
+    @identity = identity
+    @state = :CLOSED
     @state_change_q = Queue.new
   end
   
@@ -20,6 +23,7 @@ class Peer
   end
   
   def state=(new_state)
+    Diameter::logger.log(Logger::DEBUG, "State of peer #{identity} changed from #{@state} to #{new_state}")    
     @state = new_state
     @state_change_q.push new_state
   end
@@ -48,6 +52,7 @@ class Stack
     
     @tcp_helper = TCPStackHelper.new(self)
     @peer_table = {}
+    Diameter::logger.log(Logger::INFO, "Stack initialized")
   end
 
   def new_request(code, options={})
@@ -78,7 +83,7 @@ class Stack
     avps += @auth_apps.collect { | code| AVP.create("Auth-Application-Id", code)}
     cer_bytes = DiameterMessage.new(version: 1, command_code: 257, app_id: 0, hbh: 1, ete: 1, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
     @tcp_helper.send(cer_bytes, cxn)
-    @peer_table[peer_host] = Peer.new
+    @peer_table[peer_host] = Peer.new(peer_host)
     @peer_table[peer_host].state = :WAITING
     @peer_table[peer_host].cxn = cxn
     @peer_table[peer_host]
@@ -106,9 +111,9 @@ class Stack
   def add_handler_for_app
   end
 
-  def send_message(req, timeout=5)
-    q = Queue.new
+  def send_message(req)
     if req.request
+      q = Queue.new
       req.avps += [AVP.create("Origin-Host", @local_host),
                    AVP.create("Origin-Realm", @local_realm)]
       @pending_ete[req.ete] = q
@@ -117,9 +122,12 @@ class Stack
       if peer.state == :UP
         #puts "Sending over wire"
         @tcp_helper.send(req.to_wire, peer.cxn)
+        return Concurrent::Promise.execute { q.pop }
+      else
+        Diameter::logger.log(Logger::WARN, "Peer #{peer_name} is in state #{peer.state} - cannot route")
       end
-
-      Concurrent::Promise.execute { q.pop }
+    else
+        Diameter::logger.log(Logger::ERROR, "Routing answers is currently unimplemented")
     end
   end
 
@@ -128,7 +136,6 @@ class Stack
   end
 
   def handle_message(msg_bytes, cxn)
-
     # Common processing - ensure that this message has come in on this
     # peer's expected connection, and update the last time we saw
     # activity on this peer
@@ -136,7 +143,9 @@ class Stack
     peer = msg.avp_by_name("Origin-Host").octet_string
     if @peer_table[peer]
       @peer_table[peer].reset_timer
-      fail "Connection hijacking" unless @peer_table[peer].cxn == cxn
+      unless @peer_table[peer].cxn == cxn
+        Diameter::logger.log(Logger::WARN, "Ignoring message - claims to be from #{peer_name} but comes from #{cxn} not #{@peer_table[peer].cxn}")
+      end
     end
     
     if msg.command_code == 257 and msg.answer
@@ -160,7 +169,7 @@ class Stack
     peer = cer.avp_by_name("Origin-Host").octet_string
     cea = answer_for(cer)
     @tcp_helper.send(cea.to_wire, cxn)
-    @peer_table[peer] = Peer.new
+    @peer_table[peer] = Peer.new(peer)
     @peer_table[peer].state = :UP
     @peer_table[peer].reset_timer
     @peer_table[peer].cxn = cxn
