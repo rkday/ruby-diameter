@@ -24,7 +24,7 @@ describe "Message parsing", "Parsing a CER" do
   it "can generate a response" do
     _bytes, msg = parse('cer.bin')
 
-    cea = msg.answer
+    cea = msg.create_answer
 
     cea.command_code.must_equal msg.command_code
     cea.request.must_equal false

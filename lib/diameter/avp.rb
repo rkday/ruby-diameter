@@ -34,6 +34,7 @@ class AVPNames
     'Vendor-Id' => [266, U32],
     'Auth-Application-Id' => [258, U32],
     'Session-Id' => [263, OCTETSTRING],
+    'Product-Name' => [269, OCTETSTRING],
     'Auth-Session-State' => [277, U32],
     'Inband-Security-Id' => [299, U32],
     'Origin-Host' => [264, OCTETSTRING],
@@ -60,6 +61,7 @@ class AVPNames
   def self.get(name)
     code, type, vendor = AVAILABLE_AVPS[name]
     vendor ||= 0
+    fail "AVP name #{name} not recognised" if not code
     [code, type, vendor]
   end
 end
@@ -158,7 +160,7 @@ class AVP
     s += ", content as int32: #{uint32}" if could_be_32bit_num
     s += ", content as int64: #{uint64}" if could_be_64bit_num
     s += ", content as ip: #{ip_address}" if could_be_ip
-    s += ', grouped AVP' if maybe_grouped
+    s += ", grouped AVP, #{grouped_value.collect(&:to_s)}" if maybe_grouped
 
     s
   end

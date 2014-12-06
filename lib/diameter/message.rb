@@ -20,6 +20,10 @@ class DiameterMessage
     @error = false
   end
 
+  def answer
+    !@request
+  end
+  
   # Represents this message (and all its AVPs) in human-readable
   # string form.
   #
@@ -103,7 +107,7 @@ class DiameterMessage
   # @return [Fixnum] The message length field from the header
   def self.length_from_header(header)
     _version, length_8, length_16 = header.unpack('CCn')
-    length = UInt24.from_u8_and_u16(length_8, length_16)
+    UInt24.from_u8_and_u16(length_8, length_16)
   end
   
   # Parses a byte representation (a 20-byte header plus AVPs) into a
@@ -130,7 +134,7 @@ class DiameterMessage
   # @param origin_host [String] The Origin-Host to fill in on the
   #   response.
   # @return [DiameterMessage] The response created.
-  def answer(origin_host=nil)
+  def create_answer(origin_host=nil)
     # Is this a request?
 
     # Copy the Session-Id and Proxy-Info
