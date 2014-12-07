@@ -122,16 +122,14 @@ describe "AVP", "A simple example" do
     avp.octet_string.length.must_equal 4
   end
 
-    it "can get/set a Float64 AVP" do
-    avp = AVP.create("Inband-Security-Id", 0)
+  it 'can get/set a Float64 AVP' do
+    avp = AVP.create('Inband-Security-Id', 0)
 
     avp.float64 = 39.0625
     # 10000/256 - IEEE floating point won't
     # mangle this
-    
+
     avp.float64.must_equal 39.0625
     avp.octet_string.length.must_equal 8
-  end
-
-  
+  end  
 end
