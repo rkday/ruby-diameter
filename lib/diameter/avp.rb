@@ -61,7 +61,7 @@ class AVPNames
   def self.get(name)
     code, type, vendor = AVAILABLE_AVPS[name]
     vendor ||= 0
-    fail "AVP name #{name} not recognised" if not code
+    fail "AVP name #{name} not recognised" unless code
     [code, type, vendor]
   end
 end
@@ -77,7 +77,7 @@ end
 # vendor.
 # @!attribute [r] code
 #   @return [Fixnum] The AVP Code
-# @!attribute [r] mandatory 
+# @!attribute [r] mandatory
 #   @return [true, false] Whether this AVP is mandatory (i.e. its M flag is set)
 class AVP
   include AVPType
@@ -100,7 +100,7 @@ class AVP
   #   String for an AVP defined as OctetString, or an IPAddr for an AVP
   #   defined as IPAddress.
   # @return [AVP] The AVP that was created.
-  def self.create(name, val, options={})
+  def self.create(name, val, options = {})
     code, type, vendor = AVPNames.get(name)
     avp = if (vendor != 0)
             VendorSpecificAVP.new(code, vendor, options)
@@ -123,7 +123,7 @@ class AVP
     length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 8)
     avp_flags = @mandatory ? '01000000' : '00000000'
     header = [@code, avp_flags, length_8, length_16].pack('NB8Cn')
-    header + self.padded_content
+    header + padded_content
   end
 
   # Guessing the type of an AVP and displaying it sensibly is complex,
@@ -167,22 +167,25 @@ class AVP
   # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/MethodLength, Metrics/PerceivedComplexity
 
-  # @!attribute [r] vendor_specific? 
-  #   @return [true, false] Whether this AVP is mandatory (i.e. its M flag is set)
+  # @!attribute [r] vendor_specific?
+  #   @return [true, false] Whether this AVP is mandatory
+  #   (i.e. its M flag is set)
   def vendor_specific?
     false
   end
 
   # @!group Data getters/setters for different AVP types
-  
-  # Returns this AVP's byte data, interpreted as a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
+
+  # Returns this AVP's byte data, interpreted as a
+  # {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
   #
   # @return [Array<AVP>] The contained AVPs.
   def grouped_value
-    AVPParser::parse_avps_int(@content)
+    AVPParser.parse_avps_int(@content)
   end
 
-  # Sets this AVP's byte data to a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
+  # Sets this AVP's byte data to a
+  # {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
   #
   # @param [Array<AVP>] avps The AVPs that should be contained within
   #   this AVP.
@@ -216,7 +219,7 @@ class AVP
   def inner_avps(name)
     code, _type, _vendor = AVPNames.get(name)
 
-    self.grouped_value.select { |a| a.code == code}
+    grouped_value.select { |a| a.code == code }
   end
 
   # Even though it is just "the raw bytes in the content",
@@ -333,9 +336,11 @@ class AVP
     @content = [value].pack('G')
   end
 
-  # Returns this AVP's byte data, interpreted as an {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
+  # Returns this AVP's byte data, interpreted as an
+  # {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
   #
-  # @return [IPAddr] The contained {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
+  # @return [IPAddr] The contained
+  #   {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
   def ip_address
     IPAddr.new_ntoh(@content[2..-1])
   end
@@ -356,9 +361,9 @@ class AVP
   end
 
   # @!endgroup
-  
+
   private
-  
+
   def self.set_content(avp, type, val)
     case type
     when GROUPED
@@ -377,16 +382,13 @@ class AVP
   end
 
   protected
+
   def padded_content
     wire_content = @content
-    while ((wire_content.length % 4) != 0)
-      wire_content += "\x00"
-    end
+    wire_content += "\x00" while ((wire_content.length % 4) != 0)
     wire_content
-  end 
+  end
 end
-
-
 
 # rubocop:enable Metrics/ClassLength
 
@@ -412,10 +414,11 @@ class VendorSpecificAVP < AVP
     length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 12)
     avp_flags = @mandatory ? '11000000' : '10000000'
     header = [@code, avp_flags, length_8, length_16, @vendor_id].pack('NB8CnN')
-    header + self.padded_content
+    header + padded_content
   end
 
   private
+
   def to_s_first_line
     "AVP #{@code}, Vendor-ID #{@vendor_id}, mandatory: #{@mandatory}"
   end

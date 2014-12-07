@@ -1,10 +1,9 @@
-require "diameter/u24"
+require 'diameter/u24'
 
 # Parser mixin, sharing functionality common to:
 #  * parsing all the AVPs in a message
 #  * parsing the AVPs inside a Grouped AVP
 module AVPParser
-
   # Is the vendor-specific bit (the top bit) set?
   #
   # @param flags [String] A string of eight bits, e.g. "00000000"
@@ -21,6 +20,28 @@ module AVPParser
     flags[1] == '1'
   end
 
+  # @return [Array(Fixnum, Fixnum, Bool, Fixnum, Fixnum)] The bytes consumed
+  # (8 or 12), AVP code,
+  # mandatory bit, length and vendor-ID (or 0 in the case of a
+  # non-vendor-specific AVP).
+  def self.parse_avp_header(bytes)
+    first_avp_header = bytes[0..8]
+    # Parse them
+    code, avp_flags, alength_8, alength_16 =
+      first_avp_header.unpack('NB8Cn')
+                              
+    mandatory = mandatory_bit(avp_flags)
+    length = UInt24.from_u8_and_u16(alength_8, alength_16)
+
+    if vendor_id_bit(avp_flags)
+      avp_vendor_header = bytes[8..12]
+      avp_vendor, = avp_vendor_header.unpack('N')
+      [12, code, mandatory, length, avp_vendor]
+    else
+      [8, code, mandatory, length, 0]
+    end
+  end
+  
   # @api private
   #
   # @param bytes [String] A sequence of bytes representing a set of AVPs.
@@ -30,25 +51,8 @@ module AVPParser
     position = 0
     while position < bytes.length
       # Consume the first 8 octets
-      first_avp_header = bytes[position..position + 8]
-      position += 8
-
-      # Parse them
-      code, avp_flags, alength_8, alength_16 = first_avp_header.unpack('NB8Cn')
-
-      length = UInt24.from_u8_and_u16(alength_8, alength_16)
-
-      # Default values in the case where this isn't vendor-specific
-      avp_consumed = 8
-      avp_vendor = 0
-
-      # If this is vendor-specific, read the vendor ID
-      if vendor_id_bit(avp_flags)
-        avp_vendor_header = bytes[position..position + 4]
-        position += 4
-        avp_vendor, = avp_vendor_header.unpack('N')
-        avp_consumed = 12
-      end
+      avp_consumed, code, mandatory, length, avp_vendor = parse_avp_header(bytes[position..-1])
+      position += avp_consumed
 
       # Read the content, ensuring it aligns to a 32-byte boundary
       avp_content_length = length - avp_consumed
@@ -61,16 +65,17 @@ module AVPParser
 
       # Construct an AVP object from the parsed data
       parsed_avp =
-        if vendor_id_bit(avp_flags)
+        if avp_vendor != 0
           VendorSpecificAVP.new(code,
                                 avp_vendor,
-                                mandatory: mandatory_bit(avp_flags),
+                                mandatory: mandatory,
                                 content: avp_content)
         else
           AVP.new(code,
-                  mandatory: mandatory_bit(avp_flags),
+                  mandatory: mandatory,
                   content: avp_content)
         end
+
       avps.push parsed_avp
     end
     avps

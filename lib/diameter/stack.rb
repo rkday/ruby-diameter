@@ -49,7 +49,7 @@ class Peer
   # new_state is valid according to the RFC 6733 state machine. Maybe
   # use the micromachine gem?
   def state=(new_state)
-    Diameter::logger.log(Logger::DEBUG, "State of peer #{identity} changed from #{@state} to #{new_state}")    
+    Diameter.logger.log(Logger::DEBUG, "State of peer #{identity} changed from #{@state} to #{new_state}")
     @state = new_state
     @state_change_q.push new_state
   end
@@ -59,16 +59,15 @@ class Peer
   def reset_timer
     self.last_message_seen = Time.now
   end
-  
 end
 
 class Stack
   def initialize
-    @local_host = "rkd"
-    @local_realm = "rkd-realm"
+    @local_host = 'rkd'
+    @local_realm = 'rkd-realm'
     @local_port = nil
 
-    @auth_apps = [16777216]
+    @auth_apps = [16_777_216]
     @acct_apps = []
     @vendor_auth_apps = []
     @vendor_acct_apps = []
@@ -77,14 +76,14 @@ class Stack
 
     @ete = 1
     @hbh = 1
-    
+
     @tcp_helper = TCPStackHelper.new(self)
     @peer_table = {}
-    Diameter::logger.log(Logger::INFO, "Stack initialized")
+    Diameter.logger.log(Logger::INFO, 'Stack initialized')
   end
 
-  def new_request(code, options={})
-    DiameterMessage.new({version: 1, command_code: code, hbh: next_hbh, ete: next_ete, request: true}.merge(options))
+  def new_request(code, options = {})
+    DiameterMessage.new({ version: 1, command_code: code, hbh: next_hbh, ete: next_ete, request: true }.merge(options))
   end
 
   # @return [Fixnum] An End-to-End identifier number that has never
@@ -101,7 +100,7 @@ class Stack
 
   def start
     @tcp_helper.start_main_loop
-  end    
+  end
 
   # Creates a Peer connection to a Diameter agent at the specific
   # network location indicated by peer_uri.
@@ -112,16 +111,16 @@ class Stack
   # @param peer_host [String] The DiameterIdentity of this peer, which
   #   will uniquely identify it in the peer table.
   # @param realm [String] The Diameter realm of this peer.
-  def connect_to_peer(peer_uri, peer_host, realm)
+  def connect_to_peer(peer_uri, peer_host, _realm)
     uri = URI(peer_uri)
     cxn = @tcp_helper.setup_new_connection(uri.host, uri.port)
-    avps = [AVP.create("Origin-Host", @local_host),
-            AVP.create("Origin-Realm", @local_realm),
-            AVP.create("Host-IP-Address", IPAddr.new("127.0.0.1")),
-            AVP.create("Vendor-Id", 100),
-            AVP.create("Product-Name", "ruby-diameter"),
+    avps = [AVP.create('Origin-Host', @local_host),
+            AVP.create('Origin-Realm', @local_realm),
+            AVP.create('Host-IP-Address', IPAddr.new('127.0.0.1')),
+            AVP.create('Vendor-Id', 100),
+            AVP.create('Product-Name', 'ruby-diameter')
            ]
-    avps += @auth_apps.collect { | code| AVP.create("Auth-Application-Id", code)}
+    avps += @auth_apps.collect { | code| AVP.create('Auth-Application-Id', code) }
     cer_bytes = DiameterMessage.new(version: 1, command_code: 257, app_id: 0, hbh: 1, ete: 1, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
     @tcp_helper.send(cer_bytes, cxn)
     @peer_table[peer_host] = Peer.new(peer_host)
@@ -131,21 +130,20 @@ class Stack
     # Will move to :UP when the CEA is received
   end
 
-  def disconnect_from_peer(peer_host)
+  def disconnect_from_peer(_peer_host)
   end
 
   def timer_loop
-
   end
-  
+
   def peer_state(id)
-    if not @peer_table.has_key? id
+    if !@peer_table.key? id
       :CLOSED
     else
       @peer_table[id].state
     end
   end
-  
+
   def shutdown_cleanly
   end
 
@@ -155,20 +153,20 @@ class Stack
   def send_message(req)
     if req.request
       q = Queue.new
-      req.avps += [AVP.create("Origin-Host", @local_host),
-                   AVP.create("Origin-Realm", @local_realm)]
+      req.avps += [AVP.create('Origin-Host', @local_host),
+                   AVP.create('Origin-Realm', @local_realm)]
       @pending_ete[req.ete] = q
-      peer_name = req.avp_by_name("Destination-Host").octet_string
+      peer_name = req.avp_by_name('Destination-Host').octet_string
       peer = @peer_table[peer_name]
       if peer.state == :UP
-        #puts "Sending over wire"
+        # puts "Sending over wire"
         @tcp_helper.send(req.to_wire, peer.cxn)
         return Concurrent::Promise.execute { q.pop }
       else
-        Diameter::logger.log(Logger::WARN, "Peer #{peer_name} is in state #{peer.state} - cannot route")
+        Diameter.logger.log(Logger::WARN, "Peer #{peer_name} is in state #{peer.state} - cannot route")
       end
     else
-        Diameter::logger.log(Logger::ERROR, "Routing answers is currently unimplemented")
+      Diameter.logger.log(Logger::ERROR, 'Routing answers is currently unimplemented')
     end
   end
 
@@ -181,21 +179,21 @@ class Stack
     # peer's expected connection, and update the last time we saw
     # activity on this peer
     msg = DiameterMessage.from_bytes(msg_bytes)
-    peer = msg.avp_by_name("Origin-Host").octet_string
+    peer = msg.avp_by_name('Origin-Host').octet_string
     if @peer_table[peer]
       @peer_table[peer].reset_timer
       unless @peer_table[peer].cxn == cxn
-        Diameter::logger.log(Logger::WARN, "Ignoring message - claims to be from #{peer_name} but comes from #{cxn} not #{@peer_table[peer].cxn}")
+        Diameter.logger.log(Logger::WARN, "Ignoring message - claims to be from #{peer_name} but comes from #{cxn} not #{@peer_table[peer].cxn}")
       end
     end
-    
-    if msg.command_code == 257 and msg.answer
+
+    if msg.command_code == 257 && msg.answer
       handle_cea(msg)
-    elsif msg.command_code == 257 and msg.request
+    elsif msg.command_code == 257 && msg.request
       handle_cer(msg, cxn)
-    elsif msg.command_code == 280 and msg.request      
+    elsif msg.command_code == 280 && msg.request
       handle_dwr(msg, cxn)
-    elsif msg.command_code == 280 and msg.answer
+    elsif msg.command_code == 280 && msg.answer
       # No-op - we've already updated our timestamp
     elsif msg.answer
       handle_other_answer(msg, cxn)
@@ -205,9 +203,9 @@ class Stack
   end
 
   private
-  
+
   def handle_cer(cer, cxn)
-    peer = cer.avp_by_name("Origin-Host").octet_string
+    peer = cer.avp_by_name('Origin-Host').octet_string
     cea = answer_for(cer)
     @tcp_helper.send(cea.to_wire, cxn)
     @peer_table[peer] = Peer.new(peer)
@@ -218,11 +216,11 @@ class Stack
   end
 
   def handle_cea(cea)
-    peer = cea.avp_by_name("Origin-Host").octet_string
-    #puts peer
+    peer = cea.avp_by_name('Origin-Host').octet_string
+    # puts peer
     @peer_table[peer].state = :UP
     @peer_table[peer].reset_timer
-    #puts cea
+    # puts cea
   end
 
   def handle_dpr
@@ -233,9 +231,9 @@ class Stack
 
   def handle_dwr(dwr, cxn)
     dwa = answer_for(dwr)
-    dwa.avps = [AVP.create("Origin-Host", "rkd"),
-                AVP.create("Origin-Realm", "rkd-realm"),
-                AVP.create("Result-Code", 2001)]
+    dwa.avps = [AVP.create('Origin-Host', 'rkd'),
+                AVP.create('Origin-Realm', 'rkd-realm'),
+                AVP.create('Result-Code', 2001)]
 
     @tcp_helper.send(dwa.to_wire, cxn)
     # send DWA
@@ -246,8 +244,8 @@ class Stack
 
   def handle_other_request
   end
-  
-  def handle_other_answer(msg, cxn)
+
+  def handle_other_answer(msg, _cxn)
     q = @pending_ete[msg.ete]
     q.push msg
     @pending_ete.delete msg.ete

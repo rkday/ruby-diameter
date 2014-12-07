@@ -8,8 +8,8 @@ require 'diameter/u24'
 class DiameterMessage
   attr_reader :version, :command_code, :app_id, :hbh, :ete, :request
   attr_accessor :avps
-  
-  def initialize(options={})
+
+  def initialize(options = {})
     @version = options[:version] || 1
     @command_code = options[:command_code]
     @avps = options[:avps] || []
@@ -32,14 +32,14 @@ class DiameterMessage
   def answer
     !@request
   end
-  
+
   # Represents this message (and all its AVPs) in human-readable
   # string form.
   #
   # @see AVP::to_s for how the AVPs are represented.
   # @return [String]
   def to_s
-    "#{@command_code}: #{@avps.collect{|a| a.to_s }}"
+    "#{@command_code}: #{@avps.collect(&:to_s)}"
   end
 
   # Serializes a Diameter message (header plus AVPs) into the series
@@ -47,14 +47,14 @@ class DiameterMessage
   #
   # @return [String] The byte-encoded form.
   def to_wire
-    content = ""
-    @avps.each {|a| content += a.to_wire}
+    content = ''
+    @avps.each { |a| content += a.to_wire }
     length_8, length_16 = UInt24.to_u8_and_u16(content.length + 20)
     code_8, code_16 = UInt24.to_u8_and_u16(@command_code)
-    request_flag = @request ? "1" : "0"
-    proxy_flag = @proxyable? "1" : "0"
+    request_flag = @request ? '1' : '0'
+    proxy_flag = @proxyable ? '1' : '0'
     flags_str = "#{request_flag}#{proxy_flag}000000"
-    
+
     header = [@version, length_8, length_16, flags_str, code_8, code_16, @app_id, @hbh, @ete].pack('CCnB8CnNNN')
     header + content
   end
@@ -83,7 +83,7 @@ class DiameterMessage
   #
   # @return [AVP] if there is an AVP with that code/vendor
   # @return [nil] if there is not an AVP with that code/vendor
-  def avp_by_code(code, vendor=0)
+  def avp_by_code(code, vendor = 0)
     avps = all_avps_by_code(code, vendor)
     if avps.empty?
       nil
@@ -96,7 +96,7 @@ class DiameterMessage
   # AVPs - it won't look inside Grouped AVPs.
   #
   # @return [Array<AVP>]
-  def all_avps_by_code(code, vendor=0)
+  def all_avps_by_code(code, vendor = 0)
     avps.select do |a|
       vendor_match =
         if a.vendor_specific?
@@ -104,7 +104,7 @@ class DiameterMessage
         else
           vendor == 0
         end
-      (a.code == code) and vendor_match
+      (a.code == code) && vendor_match
     end
   end
 
@@ -118,7 +118,7 @@ class DiameterMessage
     _version, length_8, length_16 = header.unpack('CCn')
     UInt24.from_u8_and_u16(length_8, length_16)
   end
-  
+
   # Parses a byte representation (a 20-byte header plus AVPs) into a
   # DiameterMessage object.
   #
@@ -130,10 +130,10 @@ class DiameterMessage
     version, _length_8, _length_16, flags_str, code_8, code_16, app_id, hbh, ete = header.unpack('CCnB8CnNNN')
     command_code = UInt24.from_u8_and_u16(code_8, code_16)
 
-    request = (flags_str[0] == "1")
-    proxyable = (flags_str[1] == "1")
+    request = (flags_str[0] == '1')
+    proxyable = (flags_str[1] == '1')
 
-    avps = AVPParser::parse_avps_int(bytes[20..-1])
+    avps = AVPParser.parse_avps_int(bytes[20..-1])
     DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: request, proxyable: proxyable, retransmitted: false, error: false, avps: avps)
   end
 
@@ -143,7 +143,7 @@ class DiameterMessage
   # @param origin_host [String] The Origin-Host to fill in on the
   #   response.
   # @return [DiameterMessage] The response created.
-  def create_answer(origin_host=nil)
+  def create_answer(_origin_host = nil)
     # Is this a request?
 
     # Copy the Session-Id and Proxy-Info
