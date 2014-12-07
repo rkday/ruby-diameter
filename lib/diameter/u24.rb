@@ -1,6 +1,6 @@
 # @api private
 # Methods for handling 24-bit unsigned integers, used for length and
-# Command-Codes but not representable by {String#pack} or {Array#unpack}.
+# Command-Codes but not representable by String#unpack or Array#pack.
 module UInt24
 
   # @api private

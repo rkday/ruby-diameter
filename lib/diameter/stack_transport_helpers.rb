@@ -3,6 +3,7 @@ require 'socket'
 require 'diameter/message'
 require 'diameter/avp'
 
+# @private
 class StackHelper
   def initialize(stack)
     @all_connections = []
@@ -79,6 +80,7 @@ class StackHelper
   end
 end
 
+# @private
 class TCPStackHelper < StackHelper
   def setup_new_connection(host, port)
     sd = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
@@ -104,6 +106,7 @@ class TCPStackHelper < StackHelper
   end
 end
 
+# @private
 class SCTPStackHelper
   def setup_new_connection(host, port)
     sd = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)

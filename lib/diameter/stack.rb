@@ -5,6 +5,26 @@ require 'diameter/stack_transport_helpers'
 require 'diameter/diameter_logger'
 require 'concurrent'
 
+# A Diameter peer entry in the peer table.
+#
+# @!attribute [rw] identity
+#   [String] The DiameterIdentity of this peer
+# @!attribute [rw] realm
+#   [String] The Diameter realm of this peer
+# @!attribute [rw] static
+#   [true, false] Whether this peer was dynamically discovered (and so
+#   might expire) or statically configured.
+# @!attribute [rw] expiry_time
+#   [Time] For a dynamically discovered peer, the time when it stops
+#   being valid and dynamic discovery must happen again.
+# @!attribute [rw] last_message_seen
+#   [Time] The last time traffic was received from this peer. Used for
+#   determining when to send watchdog messages, or for triggering failover.
+# @!attribute [rw] cxn
+#   [Socket] The underlying network connection to this peer.
+# @!attribute [rw] state
+#   [Keyword] The current state of this peer - :UP, :WATING or :CLOSED.
+
 class Peer
   attr_accessor :identity, :static, :cxn, :realm, :expiry_time, :last_message_seen
   attr_reader :state
@@ -14,20 +34,28 @@ class Peer
     @state = :CLOSED
     @state_change_q = Queue.new
   end
-  
+
+  # Blocks until the state of this peer changes to the desired value.
+  #
+  # @param state [Keyword] The state to change to.
   def wait_for_state_change(state)
     cur_state = @state
     while (cur_state != state)
       cur_state = @state_change_q.pop
     end
   end
-  
+
+  # @todo Add further checking, making sure that the transition to
+  # new_state is valid according to the RFC 6733 state machine. Maybe
+  # use the micromachine gem?
   def state=(new_state)
     Diameter::logger.log(Logger::DEBUG, "State of peer #{identity} changed from #{@state} to #{new_state}")    
     @state = new_state
     @state_change_q.push new_state
   end
-  
+
+  # Resets the last message seen time. Should be called when a message
+  # is received from this peer.
   def reset_timer
     self.last_message_seen = Time.now
   end
@@ -58,11 +86,15 @@ class Stack
   def new_request(code, options={})
     DiameterMessage.new({version: 1, command_code: code, hbh: next_hbh, ete: next_ete, request: true}.merge(options))
   end
-  
+
+  # @return [Fixnum] An End-to-End identifier number that has never
+  # been issued before by this stack.
   def next_ete
     @ete += 1
   end
 
+  # @return [Fixnum] A Hop-by-Hop identifier number that has never
+  # been issued before by this stack.
   def next_hbh
     @hbh += 1
   end
@@ -70,7 +102,16 @@ class Stack
   def start
     @tcp_helper.start_main_loop
   end    
-  
+
+  # Creates a Peer connection to a Diameter agent at the specific
+  # network location indicated by peer_uri.
+  #
+  # @param peer_uri [URI] The aaa:// URI identifying the peer. Should
+  #   contain a hostname/IP; may contain a port (default 3868) and a
+  #   transport param indicating TCP or SCTP (default TCP).
+  # @param peer_host [String] The DiameterIdentity of this peer, which
+  #   will uniquely identify it in the peer table.
+  # @param realm [String] The Diameter realm of this peer.
   def connect_to_peer(peer_uri, peer_host, realm)
     uri = URI(peer_uri)
     cxn = @tcp_helper.setup_new_connection(uri.host, uri.port)

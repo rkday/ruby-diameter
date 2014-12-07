@@ -20,7 +20,11 @@ module AVPParser
   def self.mandatory_bit(flags)
     flags[1] == '1'
   end
-  
+
+  # @api private
+  #
+  # @param bytes [String] A sequence of bytes representing a set of AVPs.
+  # @return [Array<AVP>] The AVPs parsed out of the bytes.
   def self.parse_avps_int(bytes)
     avps = []
     position = 0

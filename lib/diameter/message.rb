@@ -2,6 +2,9 @@ require 'diameter/avp_parser'
 require 'diameter/u24'
 
 # A Diameter message.
+#
+# @!attribute [r] version
+#   The Diameter protocol version (currenmtly always 1)
 class DiameterMessage
   attr_reader :version, :command_code, :app_id, :hbh, :ete, :request
   attr_accessor :avps
@@ -20,6 +23,12 @@ class DiameterMessage
     @error = false
   end
 
+  # Returns true if this message represents a Diameter answer (i.e.
+  # has the 'Request' bit in the header cleared).
+  #
+  # Always the opposite of {DiameterMessage#request}.
+  #
+  # @return [true, false]
   def answer
     !@request
   end
