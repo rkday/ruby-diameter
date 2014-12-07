@@ -82,18 +82,28 @@ describe 'Stack 2', "A client DiameterStack with an established connection to 'b
     avps = [AVP.create('Destination-Host', 'bob')]
     mar = @s.new_request(303, app_id: 0, proxyable: false, retransmitted: false, error: false, avps: avps)
 
-    # Stub out TCPStackHelper,send to immediately re-inject a MAA
-    TCPStackHelper.any_instance.expects(:send).with do |x, c|
-      if c == @bob_socket_id && x == mar.to_wire
-        maa = DiameterMessage.from_bytes(x).create_answer
-        maa.avps = [AVP.create('Origin-Host', 'bob')]
-        @s.handle_message(maa.to_wire, c)
-        true
-      else
-        false
-      end
-    end.returns(nil)
+    TCPStackHelper.any_instance.expects(:send)
+      .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
+      .returns(nil)
     @s.send_message(mar)
+  end
+
+  it 'fulfils the promise when an answer is delivered' do
+    avps = [AVP.create('Destination-Host', 'bob')]
+    mar = @s.new_request(303, app_id: 0, proxyable: false, retransmitted: false, error: false, avps: avps)
+
+    TCPStackHelper.any_instance.expects(:send)
+      .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
+      .returns(nil)
+    promised_maa = @s.send_message(mar)
+    promised_maa.state.must_equal :pending
+
+    maa = mar.create_answer
+    maa.avps = [AVP.create('Origin-Host', 'bob')]
+    @s.handle_message(maa.to_wire, @bob_socket_id)
+
+    promised_maa.wait
+    promised_maa.state.must_equal :fulfilled
   end
 end
 

@@ -9,6 +9,8 @@ end
 
 require 'minitest/autorun'
 require 'diameter/diameter_logger'
+require 'concurrent'
+
 
 stdout_logger = Logger.new(STDOUT, 10, (1024 ^ 3))
 
@@ -19,3 +21,9 @@ if ENV['DEBUG_LOGS']
 else
   Diameter.logger.level = Logger::UNKNOWN
 end
+
+# Compatability with minitest/autorun
+Concurrent.configuration.auto_terminate = false
+
+Concurrent.configuration.logger = Proc.new { |level, progname, message = nil, &block| Diameter.logger.debug(message) }
+

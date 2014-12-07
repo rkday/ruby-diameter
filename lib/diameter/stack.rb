@@ -159,9 +159,14 @@ class Stack
       peer_name = req.avp_by_name('Destination-Host').octet_string
       peer = @peer_table[peer_name]
       if peer.state == :UP
-        # puts "Sending over wire"
         @tcp_helper.send(req.to_wire, peer.cxn)
-        return Concurrent::Promise.execute { q.pop }
+        p = Concurrent::Promise.execute {
+          Diameter.logger.debug("Waiting for answer to message with EtE #{req.ete}")
+          val = q.pop
+          Diameter.logger.debug("Promise fulfilled for message with EtE #{req.ete}")
+          val
+        }
+        return p
       else
         Diameter.logger.log(Logger::WARN, "Peer #{peer_name} is in state #{peer.state} - cannot route")
       end
@@ -179,6 +184,7 @@ class Stack
     # peer's expected connection, and update the last time we saw
     # activity on this peer
     msg = DiameterMessage.from_bytes(msg_bytes)
+    Diameter.logger.debug("Handling message #{msg}")
     peer = msg.avp_by_name('Origin-Host').octet_string
     if @peer_table[peer]
       @peer_table[peer].reset_timer
@@ -246,8 +252,10 @@ class Stack
   end
 
   def handle_other_answer(msg, _cxn)
+    Diameter.logger.debug("Handling answer with End-to-End identifier #{msg.ete}")
     q = @pending_ete[msg.ete]
     q.push msg
+    Diameter.logger.debug("Passed answer to fulfil sender's Promise object'")
     @pending_ete.delete msg.ete
   end
 end
