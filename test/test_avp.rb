@@ -34,7 +34,10 @@ describe 'AVP', 'A simple example' do
     avp.ip_address.must_equal IPAddr.new('172.24.67.24')
 
     # Wire representation taken from Wireshark
-    avp.to_wire.must_equal "\x00\x00\x01\x01\x40\x00\x00\x0e\x00\x01\xac\x18\x43\x18\x00\x00".force_encoding('ASCII-8BIT')
+    avp.to_wire
+      .must_equal "\x00\x00\x01\x01\x40\x00"\
+    "\x00\x0e\x00\x01\xac\x18\x43\x18\x00\x00"
+      .force_encoding('ASCII-8BIT')
 
     # Check that the string form includes the IP address
     avp.to_s.must_include '172.24.67.24'
@@ -59,7 +62,11 @@ describe 'AVP', 'A simple example' do
     avp.inner_avp('Vendor-Id').uint32.must_equal 10_415
 
     # Wire representation taken from Wireshark
-    avp.to_wire.must_equal "\x00\x00\x01\x04\x40\x00\x00\x20\x00\x00\x01\x02\x40\x00\x00\x0c\x01\x00\x00\x00\x00\x00\x01\x0a\x40\x00\x00\x0c\x00\x00\x28\xaf".force_encoding('ASCII-8BIT')
+    avp.to_wire
+      .must_equal "\x00\x00\x01\x04\x40\x00\x00"\
+    "\x20\x00\x00\x01\x02\x40\x00\x00\x0c\x01\x00"\
+    "\x00\x00\x00\x00\x01\x0a\x40\x00\x00\x0c\x00"\
+    "\x00\x28\xaf".force_encoding('ASCII-8BIT')
   end
 
   it 'can create a vendor-specific AVP' do
@@ -72,7 +79,8 @@ describe 'AVP', 'A simple example' do
     avp.to_s.must_include '10415'
 
     # Wire representation taken from Wireshark
-    avp.to_wire.must_equal "\x00\x00\x02\x5f\xc0\x00\x00\x10\x00\x00\x28\xaf\x00\x00\x00\x01".force_encoding('ASCII-8BIT')
+    avp.to_wire.must_equal "\x00\x00\x02\x5f\xc0\x00\x00"\
+    "\x10\x00\x00\x28\xaf\x00\x00\x00\x01".force_encoding('ASCII-8BIT')
   end
 
   it 'can create a non-mandatory AVP' do
@@ -81,7 +89,8 @@ describe 'AVP', 'A simple example' do
     avp.uint32.must_equal 10_200
 
     # Wire representation taken from Wireshark
-    avp.to_wire.must_equal "\x00\x00\x01\x0b\x00\x00\x00\x0c\x00\x00\x27\xd8".force_encoding('ASCII-8BIT')
+    avp.to_wire.must_equal "\x00\x00\x01\x0b\x00\x00\x00"\
+    "\x0c\x00\x00\x27\xd8".force_encoding('ASCII-8BIT')
   end
 
   it 'can get/set an Unsigned64 AVP' do

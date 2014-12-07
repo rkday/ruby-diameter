@@ -112,7 +112,16 @@ describe 'Stack', 'A server DiameterStack' do
     @s.peer_state('bob').must_equal :CLOSED
 
     avps = [AVP.create('Origin-Host', 'bob')]
-    cer = DiameterMessage.new(version: 1, command_code: 257, hbh: 1, ete: 1, request: true, app_id: 0, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
+    cer = DiameterMessage.new(version: 1,
+                              command_code: 257,
+                              hbh: 1,
+                              ete: 1,
+                              request: true,
+                              app_id: 0,
+                              proxyable: false,
+                              retransmitted: false,
+                              error: false,
+                              avps: avps).to_wire
     @s.handle_message(cer, nil)
 
     @s.peer_state('bob').must_equal :UP
