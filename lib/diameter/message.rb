@@ -143,7 +143,7 @@ class DiameterMessage
   # @param origin_host [String] The Origin-Host to fill in on the
   #   response.
   # @return [DiameterMessage] The response created.
-  def create_answer(_origin_host = nil)
+  def create_answer
     # Is this a request?
 
     # Copy the Session-Id and Proxy-Info

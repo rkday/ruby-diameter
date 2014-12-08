@@ -2,6 +2,7 @@ require 'diameter/stack'
 require 'diameter/avp'
 
 server_stack = Stack.new("rkd2.local", "my-realm", vendor_auth_apps: [[10415, 16777216]], port: 3869)
+server_stack.add_handler(16777216) { |req, cxn| server_stack.send_answer(req.create_answer, cxn) }
 server_stack.listen_for_tcp
 server_stack.start
 

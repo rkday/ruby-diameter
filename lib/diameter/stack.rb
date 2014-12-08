@@ -79,6 +79,7 @@ class Stack
 
     @tcp_helper = TCPStackHelper.new(self)
     @peer_table = {}
+    @handlers = {}
     Diameter.logger.log(Logger::INFO, 'Stack initialized')
   end
 
@@ -155,34 +156,41 @@ class Stack
   end
 
   def send_message(req)
-    if req.request
-      q = Queue.new
-      req.avps += [AVP.create('Origin-Host', @local_host),
-                   AVP.create('Origin-Realm', @local_realm)]
-      @pending_ete[req.ete] = q
-      peer_name = req.avp_by_name('Destination-Host').octet_string
-      peer = @peer_table[peer_name]
-      if peer.state == :UP
-        @tcp_helper.send(req.to_wire, peer.cxn)
-        p = Concurrent::Promise.execute {
-          Diameter.logger.debug("Waiting for answer to message with EtE #{req.ete}")
-          val = q.pop
-          Diameter.logger.debug("Promise fulfilled for message with EtE #{req.ete}")
-          val
-        }
-        return p
-      else
-        Diameter.logger.log(Logger::WARN, "Peer #{peer_name} is in state #{peer.state} - cannot route")
-      end
+    req.avps += [AVP.create('Origin-Host', @local_host),
+                 AVP.create('Origin-Realm', @local_realm)]
+    fail "Must pass a request" unless req.request
+    q = Queue.new
+    @pending_ete[req.ete] = q
+    peer_name = req.avp_by_name('Destination-Host').octet_string
+    peer = @peer_table[peer_name]
+    if peer.state == :UP
+      @tcp_helper.send(req.to_wire, peer.cxn)
+      p = Concurrent::Promise.execute {
+        Diameter.logger.debug("Waiting for answer to message with EtE #{req.ete}")
+        val = q.pop
+        Diameter.logger.debug("Promise fulfilled for message with EtE #{req.ete}")
+        val
+      }
+      return p
     else
-      Diameter.logger.log(Logger::ERROR, 'Routing answers is currently unimplemented')
+      Diameter.logger.log(Logger::WARN, "Peer #{peer_name} is in state #{peer.state} - cannot route")
     end
   end
 
+  def send_answer(ans, original_cxn)
+    ans.avps += [AVP.create('Origin-Host', @local_host),
+                 AVP.create('Origin-Realm', @local_realm)]
+    @tcp_helper.send(ans.to_wire, original_cxn)
+  end
+  
   def answer_for(req)
-    req.create_answer(@local_host)
+    req.create_answer
   end
 
+  def add_handler(app_id, &blk)
+    @handlers[app_id] = blk
+  end
+  
   def handle_message(msg_bytes, cxn)
     # Common processing - ensure that this message has come in on this
     # peer's expected connection, and update the last time we saw
@@ -207,6 +215,8 @@ class Stack
       # No-op - we've already updated our timestamp
     elsif msg.answer
       handle_other_answer(msg, cxn)
+    elsif @handlers.has_key? msg.app_id
+      @handlers[msg.app_id].call(msg, cxn)
     else
       fail "Received unknown message of type #{msg.command_code}"
     end
@@ -215,8 +225,8 @@ class Stack
   private
 
   def handle_cer(cer, cxn)
-    cer_auth_ids = cer.all_avps_by_name("Auth-Application-Id").collect &:uint32
-    cer_acct_ids = cer.all_avps_by_name("Acct-Application-Id").collect &:uint32
+    cer_auth_ids = cer.all_avps_by_name("Auth-Application-Id").collect(&:uint32)
+    cer_acct_ids = cer.all_avps_by_name("Acct-Application-Id").collect(&:uint32)
 
     cer.all_avps_by_name("Vendor-Specific-Application-Id").each do |avp|
       if avp.inner_avp("Auth-Application-Id")
