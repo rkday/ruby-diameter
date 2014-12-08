@@ -7,6 +7,7 @@ require 'diameter/avp'
 class StackHelper
   def initialize(stack)
     @all_connections = []
+    @listen_connections = []
     @data = {}
     @stack = stack
     @loop_thread = nil
@@ -95,7 +96,17 @@ class TCPStackHelper < StackHelper
     @data.delete r
   end
   
-  def setup_new_listen_connection(_host, _port)
+  def setup_new_listen_connection(host, port)
+    sd = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
+    sd.bind(Socket.pack_sockaddr_in(port, host))
+    sd.listen(100)
+    @listen_connections.push sd
+    @accept_loop_thread = Thread.new do
+      loop do
+        accept_loop
+      end
+    end
+    @accept_loop_thread.abort_on_exception = true
   end
 
   def accept_loop
@@ -105,7 +116,11 @@ class TCPStackHelper < StackHelper
     end
 
     rs.each do |r|
-      @all_connections.push r.accept_nonblock
+      sock, addr = r.accept
+      Diameter.logger.debug("Accepting connection from #{addr}")
+      @data[sock] = ''
+      @all_connections.push sock 
+      wakeup
     end
   end
 end

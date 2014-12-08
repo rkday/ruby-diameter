@@ -1,20 +1,25 @@
 require 'diameter/stack'
 require 'diameter/avp'
 
-s = Stack.new("rkd.local", "my-realm", vendor_auth_apps: [10415, 16777216])
-s.start
-peer = s.connect_to_peer("aaa://127.0.0.1:3869", "hss.open-ims.test", "open-ims.test")
+server_stack = Stack.new("rkd2.local", "my-realm", vendor_auth_apps: [[10415, 16777216]], port: 3869)
+server_stack.listen_for_tcp
+server_stack.start
+
+
+client_stack = Stack.new("rkd.local", "my-realm", vendor_auth_apps: [10415, 16777216])
+client_stack.start
+peer = client_stack.connect_to_peer("aaa://127.0.0.1:3869", "rkd2.local", "my-realm")
 
 peer.wait_for_state_change :UP
 
-puts 'up'
+puts 'peer is up'
 
 avps = [AVP.create("Vendor-Specific-Application-Id",
                    [AVP.create("Vendor-Id", 10415),
                     AVP.create("Auth-Application-Id", 16777216)]),
         AVP.create("Session-Id", "one"),
-        AVP.create("Destination-Host", "hss.open-ims.test"),
-        AVP.create("Destination-Realm", "open-ims.test"),
+        AVP.create("Destination-Host", "rkd2.local"),
+        AVP.create("Destination-Realm", "my-realm"),
         AVP.create("Auth-Session-State", 0),
         AVP.create("User-Name", "alice@open-ims.test"),
         AVP.create("Public-Identity", "sip:alice@open-ims.test"),
@@ -24,6 +29,7 @@ avps = [AVP.create("Vendor-Specific-Application-Id",
                    [AVP.create("SIP-Authentication-Scheme", "Unknown")]),
        ]
 
-mar = s.new_request(303, app_id: 16777216, proxyable: false, retransmitted: false, error: false, avps: avps)
+mar = client_stack.new_request(303, app_id: 16777216, proxyable: false, retransmitted: false, error: false, avps: avps)
 
-puts s.send_message(mar)
+maa = client_stack.send_message(mar)
+puts maa.value

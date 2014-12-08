@@ -102,6 +102,10 @@ class Stack
     @tcp_helper.start_main_loop
   end
 
+  def listen_for_tcp
+    @tcp_helper.setup_new_listen_connection("0.0.0.0", @local_port)
+  end
+
   # Creates a Peer connection to a Diameter agent at the specific
   # network location indicated by peer_uri.
   #
@@ -237,11 +241,14 @@ class Stack
     end
     
     cea = answer_for(cer)
-    cea.avps = [AVP.create('Result-Code', rc)]
+    cea.avps = [AVP.create('Result-Code', rc),
+                AVP.create('Origin-Host', @local_host),
+                AVP.create('Origin-Realm', @local_realm)]
     @tcp_helper.send(cea.to_wire, cxn)
 
     if rc == 2001
       peer = cer.avp_by_name('Origin-Host').octet_string
+      Diameter.logger.debug("Creating peer table entry for peer #{peer}")
       @peer_table[peer] = Peer.new(peer)
       @peer_table[peer].state = :UP
       @peer_table[peer].reset_timer
@@ -254,9 +261,13 @@ class Stack
   def handle_cea(cea)
     peer = cea.avp_by_name('Origin-Host').octet_string
     # puts peer
-    @peer_table[peer].state = :UP
-    @peer_table[peer].reset_timer
-    # puts cea
+    if @peer_table.has_key? peer
+      @peer_table[peer].state = :UP
+      @peer_table[peer].reset_timer
+    else
+      Diameter.logger.warn("Ignoring CEA from unknown peer #{peer}")
+      Diameter.logger.debug("Known peers are #{@peer_table.keys}")
+    end
   end
 
   def handle_dpr
