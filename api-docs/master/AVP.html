@@ -1,0 +1,3847 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: AVP
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!AVP.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (A)</a> &raquo;
+    
+    
+    <span class="title">AVP</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: AVP
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">AVP</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+      <dt class="r2">Includes:</dt>
+      <dd class="r2"><span class='object_link'><a href="AVPParser.html" title="AVPParser (module)">AVPParser</a></span>, <span class='object_link'><a href="AVPType.html" title="AVPType (module)">AVPType</a></span></dd>
+      
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">lib/diameter/avp.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Represents a Diameter AVP. Use this for non-vendor-specific AVPs, and its
+subclass VendorSpecificAVP for ones defined for a particular vendor.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><div id="subclasses">
+  <h2>Direct Known Subclasses</h2>
+  <p class="children"><span class='object_link'><a href="VendorSpecificAVP.html" title="VendorSpecificAVP (class)">VendorSpecificAVP</a></span></p>
+</div>
+
+  <h2>Constant Summary</h2>
+  
+
+
+
+  <h2>Constant Summary</h2>
+  
+  <h3 class="inherited">Constants included
+     from <span class='object_link'><a href="AVPType.html" title="AVPType (module)">AVPType</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="AVPType.html#GROUPED-constant" title="AVPType::GROUPED (constant)">AVPType::GROUPED</a></span>, <span class='object_link'><a href="AVPType.html#IPADDR-constant" title="AVPType::IPADDR (constant)">AVPType::IPADDR</a></span>, <span class='object_link'><a href="AVPType.html#OCTETSTRING-constant" title="AVPType::OCTETSTRING (constant)">AVPType::OCTETSTRING</a></span>, <span class='object_link'><a href="AVPType.html#U32-constant" title="AVPType::U32 (constant)">AVPType::U32</a></span></p>
+
+
+  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#code-instance_method" title="#code (instance method)">- (Fixnum) <strong>code</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The AVP Code.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#mandatory-instance_method" title="#mandatory (instance method)">- (true, false) <strong>mandatory</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Whether this AVP is mandatory (i.e. its M flag is set).</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#vendor_specific%3F-instance_method" title="#vendor_specific? (instance method)">- (Boolean) <strong>vendor_specific?</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+
+  
+    <h2>
+      Data getters/setters for different AVP types
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#float32-instance_method" title="#float32 (instance method)">- (Float) <strong>float32</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as a Float32.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#float32%3D-instance_method" title="#float32= (instance method)">- (void) <strong>float32=</strong>(value) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to a Float32.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#float64-instance_method" title="#float64 (instance method)">- (Float) <strong>float64</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as a Float64.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#float64%3D-instance_method" title="#float64= (instance method)">- (void) <strong>float64=</strong>(value) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to a Float64.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#grouped_value-instance_method" title="#grouped_value (instance method)">- (Array&lt;AVP&gt;) <strong>grouped_value</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as a
+<a href="http://tools.ietf.org/html/rfc6733#section-4.4" target="_parent" title="Grouped AVP">Grouped AVP</a>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#grouped_value%3D-instance_method" title="#grouped_value= (instance method)">- (void) <strong>grouped_value=</strong>(avps) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to a
+<a href="http://tools.ietf.org/html/rfc6733#section-4.4" target="_parent" title="Grouped AVP">Grouped AVP</a>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#inner_avp-instance_method" title="#inner_avp (instance method)">- (AVP<sup>?</sup>) <strong>inner_avp</strong>(name) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>For a grouped AVP, returns the first AVP with this name it contains.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#inner_avps-instance_method" title="#inner_avps (instance method)">- (Array&lt;AVP&gt;) <strong>inner_avps</strong>(name) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>For a grouped AVP, returns all AVPs it contains with this name.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#int32-instance_method" title="#int32 (instance method)">- (Fixnum) <strong>int32</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as an Integer32.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#int32%3D-instance_method" title="#int32= (instance method)">- (void) <strong>int32=</strong>(value) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to an Integer32.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#int64-instance_method" title="#int64 (instance method)">- (Fixnum) <strong>int64</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as an Integer64.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#int64%3D-instance_method" title="#int64= (instance method)">- (void) <strong>int64=</strong>(value) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to an Integer64.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#ip_address-instance_method" title="#ip_address (instance method)">- (IPAddr) <strong>ip_address</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as an
+<a href="http://tools.ietf.org/html/rfc6733#section-4.3.1" target="_parent" title="Address">Address</a>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#ip_address%3D-instance_method" title="#ip_address= (instance method)">- (void) <strong>ip_address=</strong>(value) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to an Address.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#octet_string-instance_method" title="#octet_string (instance method)">- (String) <strong>octet_string</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as an OctetString.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#octet_string%3D-instance_method" title="#octet_string= (instance method)">- (void) <strong>octet_string=</strong>(value) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to an OctetString.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#uint32-instance_method" title="#uint32 (instance method)">- (Fixnum) <strong>uint32</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as an Unsigned32.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#uint32%3D-instance_method" title="#uint32= (instance method)">- (void) <strong>uint32=</strong>(value) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to an Unsigned32.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#uint64-instance_method" title="#uint64 (instance method)">- (Fixnum) <strong>uint64</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP&#39;s byte data, interpreted as an Unsigned64.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#uint64%3D-instance_method" title="#uint64= (instance method)">- (void) <strong>uint64=</strong>(value) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Sets this AVP&#39;s byte data to an Unsigned64.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Class Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#create-class_method" title="create (class method)">+ (AVP) <strong>create</strong>(name, val, options = {}) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Creates an AVP by name, and assigns it a value.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (AVP) <strong>initialize</strong>(code, options = {}) </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A new instance of AVP.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#to_s-instance_method" title="#to_s (instance method)">- (Object) <strong>to_s</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns a string representation of this AVP.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#to_wire-instance_method" title="#to_wire (instance method)">- (String) <strong>to_wire</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns this AVP encoded properly as bytes in network byte order, suitable
+for sending over a TCP or SCTP connection.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="AVPParser.html" title="AVPParser (module)">AVPParser</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="AVPParser.html#mandatory_bit-class_method" title="AVPParser.mandatory_bit (method)">mandatory_bit</a></span>, <span class='object_link'><a href="AVPParser.html#parse_avps_int-class_method" title="AVPParser.parse_avps_int (method)">parse_avps_int</a></span>, <span class='object_link'><a href="AVPParser.html#vendor_id_bit-class_method" title="AVPParser.vendor_id_bit (method)">vendor_id_bit</a></span></p>
+
+  
+  
+  
+  
+  
+  <div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="AVP (class)">AVP</a></span></tt>) <strong>initialize</strong>(code, options = {}) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns a new instance of AVP</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+88
+89
+90
+91
+92
+93</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 88</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='ivar'>@code</span> <span class='op'>=</span> <span class='id identifier rubyid_code'>code</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:content</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span>
+  <span class='ivar'>@mandatory</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:mandatory</span><span class='rbracket'>]</span>
+  <span class='ivar'>@mandatory</span> <span class='op'>=</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='ivar'>@mandatory</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="code-instance_method">
+  
+    - (<tt>Fixnum</tt>) <strong>code</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns The AVP Code</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The AVP Code</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 82</span>
+
+<span class='kw'>class</span> <span class='const'>AVP</span>
+  <span class='id identifier rubyid_include'>include</span> <span class='const'>AVPType</span>
+  <span class='id identifier rubyid_attr_reader'>attr_reader</span> <span class='symbol'>:code</span><span class='comma'>,</span> <span class='symbol'>:mandatory</span>
+
+  <span class='id identifier rubyid_include'>include</span> <span class='const'>AVPParser</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+    <span class='ivar'>@code</span> <span class='op'>=</span> <span class='id identifier rubyid_code'>code</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:content</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span>
+    <span class='ivar'>@mandatory</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:mandatory</span><span class='rbracket'>]</span>
+    <span class='ivar'>@mandatory</span> <span class='op'>=</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='ivar'>@mandatory</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Creates an AVP by name, and assigns it a value.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param name The name of the AVP, e.g. &quot;Origin-Host&quot;
+</span>  <span class='comment'># @param val The value of the AVP. Must be of the type defined for
+</span>  <span class='comment'>#   that AVP - e.g. a Fixnum for an AVP defined as Unsigned32, a
+</span>  <span class='comment'>#   String for an AVP defined as OctetString, or an IPAddr for an AVP
+</span>  <span class='comment'>#   defined as IPAddress.
+</span>  <span class='comment'># @return [AVP] The AVP that was created.
+</span>  <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_vendor'>vendor</span> <span class='op'>=</span> <span class='const'>AVPNames</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_avp'>avp</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_vendor'>vendor</span> <span class='op'>!=</span> <span class='int'>0</span><span class='rparen'>)</span>
+            <span class='const'>VendorSpecificAVP</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_vendor'>vendor</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+          <span class='kw'>else</span>
+            <span class='const'>AVP</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_set_content'>set_content</span><span class='lparen'>(</span><span class='id identifier rubyid_avp'>avp</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_avp'>avp</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP encoded properly as bytes in network byte order,
+</span>  <span class='comment'># suitable for sending over a TCP or SCTP connection. See
+</span>  <span class='comment'># {http://tools.ietf.org/html/rfc6733#section-4.1} for the
+</span>  <span class='comment'># format.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [String] The bytes representing this AVP
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_to_wire'>to_wire</span>
+    <span class='id identifier rubyid_length_8'>length_8</span><span class='comma'>,</span> <span class='id identifier rubyid_length_16'>length_16</span> <span class='op'>=</span> <span class='const'>UInt24</span><span class='period'>.</span><span class='id identifier rubyid_to_u8_and_u16'>to_u8_and_u16</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>+</span> <span class='int'>8</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_avp_flags'>avp_flags</span> <span class='op'>=</span> <span class='ivar'>@mandatory</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>01000000</span><span class='tstring_end'>&#39;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>00000000</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_header'>header</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='ivar'>@code</span><span class='comma'>,</span> <span class='id identifier rubyid_avp_flags'>avp_flags</span><span class='comma'>,</span> <span class='id identifier rubyid_length_8'>length_8</span><span class='comma'>,</span> <span class='id identifier rubyid_length_16'>length_16</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NB8Cn</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_header'>header</span> <span class='op'>+</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_padded_content'>padded_content</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Guessing the type of an AVP and displaying it sensibly is complex,
+</span>  <span class='comment'># so this is a complex method (but one that has a unity of purpose,
+</span>  <span class='comment'># so can&#39;t easily be broken down). Disable several Rubocop
+</span>  <span class='comment'># complexity metrics to reflect this.
+</span>
+  <span class='comment'># rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+</span>  <span class='comment'># rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity
+</span>
+  <span class='comment'># Returns a string representation of this AVP. Makes a best-effort
+</span>  <span class='comment'># attempt to guess the type of the content (even for unknown AVPs)
+</span>  <span class='comment'># and display it sensibly.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @example
+</span>  <span class='comment'>#   avp.to_s =&gt; &quot;AVP 267, mandatory: true, content as int32: 1&quot;
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
+    <span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span> <span class='op'>=</span>
+      <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='lparen'>(</span><span class='int'>32</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_c'>c</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c'>c</span> <span class='op'>&lt;</span> <span class='int'>126</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+    <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>4</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>8</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_could_be_ip'>could_be_ip</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>6</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\x00\x01</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span>
+                   <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>18</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\x00\x02</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_maybe_grouped'>maybe_grouped</span> <span class='op'>=</span> <span class='op'>!</span><span class='lparen'>(</span><span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span> <span class='op'>||</span>
+                      <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span>   <span class='op'>||</span>
+                      <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span>   <span class='op'>||</span>
+                      <span class='id identifier rubyid_could_be_ip'>could_be_ip</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>=</span> <span class='id identifier rubyid_to_s_first_line'>to_s_first_line</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as string: </span><span class='embexpr_beg'>#{</span><span class='ivar'>@content</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as int32: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_uint32'>uint32</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as int64: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_uint64'>uint64</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as ip: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ip_address'>ip_address</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_ip'>could_be_ip</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, grouped AVP, </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_grouped_value'>grouped_value</span><span class='period'>.</span><span class='id identifier rubyid_collect'>collect</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_s</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_maybe_grouped'>maybe_grouped</span>
+
+    <span class='id identifier rubyid_s'>s</span>
+  <span class='kw'>end</span>
+  <span class='comment'># rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity
+</span>  <span class='comment'># rubocop:enable Metrics/MethodLength, Metrics/PerceivedComplexity
+</span>
+  <span class='comment'># @!attribute [r] vendor_specific? 
+</span>  <span class='comment'>#   @return [true, false] Whether this AVP is mandatory (i.e. its M flag is set)
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_vendor_specific?'>vendor_specific?</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># @!group Data getters/setters for different AVP types
+</span>  
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Array&lt;AVP&gt;] The contained AVPs.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_grouped_value'>grouped_value</span>
+    <span class='const'>AVPParser</span><span class='op'>::</span><span class='id identifier rubyid_parse_avps_int'>parse_avps_int</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Array&lt;AVP&gt;] avps The AVPs that should be contained within
+</span>  <span class='comment'>#   this AVP.
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_grouped_value='>grouped_value=</span><span class='lparen'>(</span><span class='id identifier rubyid_avps'>avps</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_new_content'>new_content</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_avps'>avps</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_new_content'>new_content</span> <span class='op'>+=</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_to_wire'>to_wire</span> <span class='rbrace'>}</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_new_content'>new_content</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># For a grouped AVP, returns the first AVP with this name it
+</span>  <span class='comment'># contains.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [String] name The AVP name
+</span>  <span class='comment'># @return [AVP] if this AVP is found inside the Grouped AVP
+</span>  <span class='comment'># @return [nil] if this AVP is not found inside the Grouped AVP
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_inner_avp'>inner_avp</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_avps'>avps</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_avps'>inner_avps</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+
+    <span class='kw'>if</span> <span class='id identifier rubyid_avps'>avps</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='kw'>nil</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_avps'>avps</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># For a grouped AVP, returns all AVPs it contains with this name.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [String] name The AVP name
+</span>  <span class='comment'># @return [Array&lt;AVP&gt;]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_inner_avps'>inner_avps</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid__type'>_type</span><span class='comma'>,</span> <span class='id identifier rubyid__vendor'>_vendor</span> <span class='op'>=</span> <span class='const'>AVPNames</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+
+    <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_grouped_value'>grouped_value</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span> <span class='op'>==</span> <span class='id identifier rubyid_code'>code</span><span class='rbrace'>}</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Even though it is just &quot;the raw bytes in the content&quot;,
+</span>  <span class='comment'># octet_string is only one way of interpreting the AVP content and
+</span>  <span class='comment'># shouldn&#39;t be treated differently to the others, so disable the
+</span>  <span class='comment'># TrivialAccessors warning.
+</span>
+  <span class='comment'># rubocop:disable Style/TrivialAccessors
+</span>
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an OctetString.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [String] The contained OctetString.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_octet_string'>octet_string</span>
+    <span class='ivar'>@content</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an OctetString.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [String] value The octets to use as the value.
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_octet_string='>octet_string=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># rubocop:enable Style/TrivialAccessors
+</span>
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an Integer32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Fixnum] The contained Integer32.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_int32'>int32</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>l&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Integer32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Fixnum] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_int32='>int32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>l&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an Integer64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Fixnum] The contained Integer64.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_int64'>int64</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Integer64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Fixnum] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_int64='>int64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an Unsigned32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Fixnum] The contained Unsigned32.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_uint32'>uint32</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>N</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Unsigned32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Fixnum] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_uint32='>uint32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>N</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an Unsigned64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Fixnum] The contained Unsigned64.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_uint64'>uint64</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Unsigned64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Fixnum] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_uint64='>uint64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as a Float32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Float] The contained Float32.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_float32'>float32</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>g</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to a Float32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Float] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_float32='>float32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>g</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as a Float64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Float] The contained Float64.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_float64'>float64</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>G</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to a Float64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Float] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_float64='>float64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>G</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [IPAddr] The contained {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_ip_address'>ip_address</span>
+    <span class='const'>IPAddr</span><span class='period'>.</span><span class='id identifier rubyid_new_ntoh'>new_ntoh</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>2</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Address.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [IPAddr] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_ip_address='>ip_address=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_ipv4?'>ipv4?</span>
+              <span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>n</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+            <span class='kw'>else</span>
+              <span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>n</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+            <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>+=</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_hton'>hton</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_bytes'>bytes</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># @!endgroup
+</span>  
+  <span class='id identifier rubyid_private'>private</span>
+  
+  <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_content'>set_content</span><span class='lparen'>(</span><span class='id identifier rubyid_avp'>avp</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
+    <span class='kw'>case</span> <span class='id identifier rubyid_type'>type</span>
+    <span class='kw'>when</span> <span class='const'>GROUPED</span>
+      <span class='id identifier rubyid_avp'>avp</span><span class='period'>.</span><span class='id identifier rubyid_grouped_value'>grouped_value</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
+    <span class='kw'>when</span> <span class='const'>U32</span>
+      <span class='id identifier rubyid_avp'>avp</span><span class='period'>.</span><span class='id identifier rubyid_uint32'>uint32</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
+    <span class='kw'>when</span> <span class='const'>OCTETSTRING</span>
+      <span class='id identifier rubyid_avp'>avp</span><span class='period'>.</span><span class='id identifier rubyid_octet_string'>octet_string</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
+    <span class='kw'>when</span> <span class='const'>IPADDR</span>
+      <span class='id identifier rubyid_avp'>avp</span><span class='period'>.</span><span class='id identifier rubyid_ip_address'>ip_address</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_to_s_first_line'>to_s_first_line</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>AVP </span><span class='embexpr_beg'>#{</span><span class='ivar'>@code</span><span class='embexpr_end'>}</span><span class='tstring_content'>, mandatory: </span><span class='embexpr_beg'>#{</span><span class='ivar'>@mandatory</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_protected'>protected</span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_padded_content'>padded_content</span>
+    <span class='id identifier rubyid_wire_content'>wire_content</span> <span class='op'>=</span> <span class='ivar'>@content</span>
+    <span class='kw'>while</span> <span class='lparen'>(</span><span class='lparen'>(</span><span class='id identifier rubyid_wire_content'>wire_content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>%</span> <span class='int'>4</span><span class='rparen'>)</span> <span class='op'>!=</span> <span class='int'>0</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_wire_content'>wire_content</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\x00</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_wire_content'>wire_content</span>
+  <span class='kw'>end</span> 
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="mandatory-instance_method">
+  
+    - (<tt>true</tt>, <tt>false</tt>) <strong>mandatory</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns Whether this AVP is mandatory (i.e. its M flag is set)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>true</tt>, <tt>false</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Whether this AVP is mandatory (i.e. its M flag is set)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 82</span>
+
+<span class='kw'>class</span> <span class='const'>AVP</span>
+  <span class='id identifier rubyid_include'>include</span> <span class='const'>AVPType</span>
+  <span class='id identifier rubyid_attr_reader'>attr_reader</span> <span class='symbol'>:code</span><span class='comma'>,</span> <span class='symbol'>:mandatory</span>
+
+  <span class='id identifier rubyid_include'>include</span> <span class='const'>AVPParser</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+    <span class='ivar'>@code</span> <span class='op'>=</span> <span class='id identifier rubyid_code'>code</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:content</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span>
+    <span class='ivar'>@mandatory</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:mandatory</span><span class='rbracket'>]</span>
+    <span class='ivar'>@mandatory</span> <span class='op'>=</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='ivar'>@mandatory</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Creates an AVP by name, and assigns it a value.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param name The name of the AVP, e.g. &quot;Origin-Host&quot;
+</span>  <span class='comment'># @param val The value of the AVP. Must be of the type defined for
+</span>  <span class='comment'>#   that AVP - e.g. a Fixnum for an AVP defined as Unsigned32, a
+</span>  <span class='comment'>#   String for an AVP defined as OctetString, or an IPAddr for an AVP
+</span>  <span class='comment'>#   defined as IPAddress.
+</span>  <span class='comment'># @return [AVP] The AVP that was created.
+</span>  <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_vendor'>vendor</span> <span class='op'>=</span> <span class='const'>AVPNames</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_avp'>avp</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_vendor'>vendor</span> <span class='op'>!=</span> <span class='int'>0</span><span class='rparen'>)</span>
+            <span class='const'>VendorSpecificAVP</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_vendor'>vendor</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+          <span class='kw'>else</span>
+            <span class='const'>AVP</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_set_content'>set_content</span><span class='lparen'>(</span><span class='id identifier rubyid_avp'>avp</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_avp'>avp</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP encoded properly as bytes in network byte order,
+</span>  <span class='comment'># suitable for sending over a TCP or SCTP connection. See
+</span>  <span class='comment'># {http://tools.ietf.org/html/rfc6733#section-4.1} for the
+</span>  <span class='comment'># format.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [String] The bytes representing this AVP
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_to_wire'>to_wire</span>
+    <span class='id identifier rubyid_length_8'>length_8</span><span class='comma'>,</span> <span class='id identifier rubyid_length_16'>length_16</span> <span class='op'>=</span> <span class='const'>UInt24</span><span class='period'>.</span><span class='id identifier rubyid_to_u8_and_u16'>to_u8_and_u16</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>+</span> <span class='int'>8</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_avp_flags'>avp_flags</span> <span class='op'>=</span> <span class='ivar'>@mandatory</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>01000000</span><span class='tstring_end'>&#39;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>00000000</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_header'>header</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='ivar'>@code</span><span class='comma'>,</span> <span class='id identifier rubyid_avp_flags'>avp_flags</span><span class='comma'>,</span> <span class='id identifier rubyid_length_8'>length_8</span><span class='comma'>,</span> <span class='id identifier rubyid_length_16'>length_16</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NB8Cn</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_header'>header</span> <span class='op'>+</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_padded_content'>padded_content</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Guessing the type of an AVP and displaying it sensibly is complex,
+</span>  <span class='comment'># so this is a complex method (but one that has a unity of purpose,
+</span>  <span class='comment'># so can&#39;t easily be broken down). Disable several Rubocop
+</span>  <span class='comment'># complexity metrics to reflect this.
+</span>
+  <span class='comment'># rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+</span>  <span class='comment'># rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity
+</span>
+  <span class='comment'># Returns a string representation of this AVP. Makes a best-effort
+</span>  <span class='comment'># attempt to guess the type of the content (even for unknown AVPs)
+</span>  <span class='comment'># and display it sensibly.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @example
+</span>  <span class='comment'>#   avp.to_s =&gt; &quot;AVP 267, mandatory: true, content as int32: 1&quot;
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
+    <span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span> <span class='op'>=</span>
+      <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='lparen'>(</span><span class='int'>32</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_c'>c</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c'>c</span> <span class='op'>&lt;</span> <span class='int'>126</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+    <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>4</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>8</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_could_be_ip'>could_be_ip</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>6</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\x00\x01</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span>
+                   <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>18</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\x00\x02</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_maybe_grouped'>maybe_grouped</span> <span class='op'>=</span> <span class='op'>!</span><span class='lparen'>(</span><span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span> <span class='op'>||</span>
+                      <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span>   <span class='op'>||</span>
+                      <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span>   <span class='op'>||</span>
+                      <span class='id identifier rubyid_could_be_ip'>could_be_ip</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>=</span> <span class='id identifier rubyid_to_s_first_line'>to_s_first_line</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as string: </span><span class='embexpr_beg'>#{</span><span class='ivar'>@content</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as int32: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_uint32'>uint32</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as int64: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_uint64'>uint64</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as ip: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ip_address'>ip_address</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_ip'>could_be_ip</span>
+    <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, grouped AVP, </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_grouped_value'>grouped_value</span><span class='period'>.</span><span class='id identifier rubyid_collect'>collect</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_s</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_maybe_grouped'>maybe_grouped</span>
+
+    <span class='id identifier rubyid_s'>s</span>
+  <span class='kw'>end</span>
+  <span class='comment'># rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity
+</span>  <span class='comment'># rubocop:enable Metrics/MethodLength, Metrics/PerceivedComplexity
+</span>
+  <span class='comment'># @!attribute [r] vendor_specific? 
+</span>  <span class='comment'>#   @return [true, false] Whether this AVP is mandatory (i.e. its M flag is set)
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_vendor_specific?'>vendor_specific?</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># @!group Data getters/setters for different AVP types
+</span>  
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Array&lt;AVP&gt;] The contained AVPs.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_grouped_value'>grouped_value</span>
+    <span class='const'>AVPParser</span><span class='op'>::</span><span class='id identifier rubyid_parse_avps_int'>parse_avps_int</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to a {http://tools.ietf.org/html/rfc6733#section-4.4 Grouped AVP}.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Array&lt;AVP&gt;] avps The AVPs that should be contained within
+</span>  <span class='comment'>#   this AVP.
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_grouped_value='>grouped_value=</span><span class='lparen'>(</span><span class='id identifier rubyid_avps'>avps</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_new_content'>new_content</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_avps'>avps</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_new_content'>new_content</span> <span class='op'>+=</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_to_wire'>to_wire</span> <span class='rbrace'>}</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_new_content'>new_content</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># For a grouped AVP, returns the first AVP with this name it
+</span>  <span class='comment'># contains.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [String] name The AVP name
+</span>  <span class='comment'># @return [AVP] if this AVP is found inside the Grouped AVP
+</span>  <span class='comment'># @return [nil] if this AVP is not found inside the Grouped AVP
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_inner_avp'>inner_avp</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_avps'>avps</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_avps'>inner_avps</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+
+    <span class='kw'>if</span> <span class='id identifier rubyid_avps'>avps</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='kw'>nil</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_avps'>avps</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># For a grouped AVP, returns all AVPs it contains with this name.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [String] name The AVP name
+</span>  <span class='comment'># @return [Array&lt;AVP&gt;]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_inner_avps'>inner_avps</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid__type'>_type</span><span class='comma'>,</span> <span class='id identifier rubyid__vendor'>_vendor</span> <span class='op'>=</span> <span class='const'>AVPNames</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+
+    <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_grouped_value'>grouped_value</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span> <span class='op'>==</span> <span class='id identifier rubyid_code'>code</span><span class='rbrace'>}</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Even though it is just &quot;the raw bytes in the content&quot;,
+</span>  <span class='comment'># octet_string is only one way of interpreting the AVP content and
+</span>  <span class='comment'># shouldn&#39;t be treated differently to the others, so disable the
+</span>  <span class='comment'># TrivialAccessors warning.
+</span>
+  <span class='comment'># rubocop:disable Style/TrivialAccessors
+</span>
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an OctetString.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [String] The contained OctetString.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_octet_string'>octet_string</span>
+    <span class='ivar'>@content</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an OctetString.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [String] value The octets to use as the value.
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_octet_string='>octet_string=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># rubocop:enable Style/TrivialAccessors
+</span>
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an Integer32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Fixnum] The contained Integer32.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_int32'>int32</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>l&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Integer32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Fixnum] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_int32='>int32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>l&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an Integer64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Fixnum] The contained Integer64.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_int64'>int64</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Integer64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Fixnum] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_int64='>int64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an Unsigned32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Fixnum] The contained Unsigned32.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_uint32'>uint32</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>N</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Unsigned32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Fixnum] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_uint32='>uint32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>N</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an Unsigned64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Fixnum] The contained Unsigned64.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_uint64'>uint64</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Unsigned64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Fixnum] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_uint64='>uint64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as a Float32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Float] The contained Float32.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_float32'>float32</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>g</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to a Float32.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Float] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_float32='>float32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>g</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as a Float64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [Float] The contained Float64.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_float64'>float64</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>G</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to a Float64.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [Float] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_float64='>float64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>G</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Returns this AVP&#39;s byte data, interpreted as an {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @return [IPAddr] The contained {http://tools.ietf.org/html/rfc6733#section-4.3.1 Address}.
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_ip_address'>ip_address</span>
+    <span class='const'>IPAddr</span><span class='period'>.</span><span class='id identifier rubyid_new_ntoh'>new_ntoh</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>2</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sets this AVP&#39;s byte data to an Address.
+</span>  <span class='comment'>#
+</span>  <span class='comment'># @param [IPAddr] value
+</span>  <span class='comment'># @return [void]
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_ip_address='>ip_address=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_ipv4?'>ipv4?</span>
+              <span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>n</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+            <span class='kw'>else</span>
+              <span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>n</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+            <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>+=</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_hton'>hton</span>
+    <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_bytes'>bytes</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># @!endgroup
+</span>  
+  <span class='id identifier rubyid_private'>private</span>
+  
+  <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_set_content'>set_content</span><span class='lparen'>(</span><span class='id identifier rubyid_avp'>avp</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
+    <span class='kw'>case</span> <span class='id identifier rubyid_type'>type</span>
+    <span class='kw'>when</span> <span class='const'>GROUPED</span>
+      <span class='id identifier rubyid_avp'>avp</span><span class='period'>.</span><span class='id identifier rubyid_grouped_value'>grouped_value</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
+    <span class='kw'>when</span> <span class='const'>U32</span>
+      <span class='id identifier rubyid_avp'>avp</span><span class='period'>.</span><span class='id identifier rubyid_uint32'>uint32</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
+    <span class='kw'>when</span> <span class='const'>OCTETSTRING</span>
+      <span class='id identifier rubyid_avp'>avp</span><span class='period'>.</span><span class='id identifier rubyid_octet_string'>octet_string</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
+    <span class='kw'>when</span> <span class='const'>IPADDR</span>
+      <span class='id identifier rubyid_avp'>avp</span><span class='period'>.</span><span class='id identifier rubyid_ip_address'>ip_address</span> <span class='op'>=</span> <span class='id identifier rubyid_val'>val</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_to_s_first_line'>to_s_first_line</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>AVP </span><span class='embexpr_beg'>#{</span><span class='ivar'>@code</span><span class='embexpr_end'>}</span><span class='tstring_content'>, mandatory: </span><span class='embexpr_beg'>#{</span><span class='ivar'>@mandatory</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_protected'>protected</span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_padded_content'>padded_content</span>
+    <span class='id identifier rubyid_wire_content'>wire_content</span> <span class='op'>=</span> <span class='ivar'>@content</span>
+    <span class='kw'>while</span> <span class='lparen'>(</span><span class='lparen'>(</span><span class='id identifier rubyid_wire_content'>wire_content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>%</span> <span class='int'>4</span><span class='rparen'>)</span> <span class='op'>!=</span> <span class='int'>0</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_wire_content'>wire_content</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\x00</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_wire_content'>wire_content</span>
+  <span class='kw'>end</span> 
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="vendor_specific?-instance_method">
+  
+    - (<tt>Boolean</tt>) <strong>vendor_specific?</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+172
+173
+174</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 172</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_vendor_specific?'>vendor_specific?</span>
+  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="create-class_method">
+  
+    + (<tt><span class='object_link'><a href="" title="AVP (class)">AVP</a></span></tt>) <strong>create</strong>(name, val, options = {}) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Creates an AVP by name, and assigns it a value.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The name of the AVP, e.g. “Origin-Host”</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>val</span>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The value of the AVP. Must be of the type defined for that AVP - e.g. a
+Fixnum for an AVP defined as Unsigned32, a String for an AVP defined as
+OctetString, or an IPAddr for an AVP defined as IPAddress.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="AVP (class)">AVP</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The AVP that was created.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 103</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_vendor'>vendor</span> <span class='op'>=</span> <span class='const'>AVPNames</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_avp'>avp</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_vendor'>vendor</span> <span class='op'>!=</span> <span class='int'>0</span><span class='rparen'>)</span>
+          <span class='const'>VendorSpecificAVP</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_vendor'>vendor</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+        <span class='kw'>else</span>
+          <span class='const'>AVP</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+        <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_set_content'>set_content</span><span class='lparen'>(</span><span class='id identifier rubyid_avp'>avp</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_avp'>avp</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="float32-instance_method">
+  
+    - (<tt>Float</tt>) <strong>float32</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as a Float32.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Float</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained Float32.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+309
+310
+311</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 309</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_float32'>float32</span>
+  <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>g</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="float32=-instance_method">
+  
+    - (<tt>void</tt>) <strong>float32=</strong>(value) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to a Float32.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>Float</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+317
+318
+319</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 317</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_float32='>float32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>g</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="float64-instance_method">
+  
+    - (<tt>Float</tt>) <strong>float64</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as a Float64.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Float</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained Float64.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+324
+325
+326</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 324</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_float64'>float64</span>
+  <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>G</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="float64=-instance_method">
+  
+    - (<tt>void</tt>) <strong>float64=</strong>(value) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to a Float64.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>Float</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+332
+333
+334</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 332</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_float64='>float64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>G</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="grouped_value-instance_method">
+  
+    - (<tt>Array&lt;<span class='object_link'><a href="" title="AVP (class)">AVP</a></span>&gt;</tt>) <strong>grouped_value</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as a
+<a href="http://tools.ietf.org/html/rfc6733#section-4.4" target="_parent" title="Grouped AVP">Grouped AVP</a>.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="" title="AVP (class)">AVP</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained AVPs.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+181
+182
+183</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 181</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_grouped_value'>grouped_value</span>
+  <span class='const'>AVPParser</span><span class='op'>::</span><span class='id identifier rubyid_parse_avps_int'>parse_avps_int</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="grouped_value=-instance_method">
+  
+    - (<tt>void</tt>) <strong>grouped_value=</strong>(avps) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to a
+<a href="http://tools.ietf.org/html/rfc6733#section-4.4" target="_parent" title="Grouped AVP">Grouped AVP</a>.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>avps</span>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="" title="AVP (class)">AVP</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The AVPs that should be contained within this AVP.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+190
+191
+192
+193
+194</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 190</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_grouped_value='>grouped_value=</span><span class='lparen'>(</span><span class='id identifier rubyid_avps'>avps</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_new_content'>new_content</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span>
+  <span class='id identifier rubyid_avps'>avps</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_new_content'>new_content</span> <span class='op'>+=</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_to_wire'>to_wire</span> <span class='rbrace'>}</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_new_content'>new_content</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="inner_avp-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="AVP (class)">AVP</a></span></tt><sup>?</sup>) <strong>inner_avp</strong>(name) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>For a grouped AVP, returns the first AVP with this name it contains.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The AVP name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="AVP (class)">AVP</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if this AVP is found inside the Grouped AVP</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if this AVP is not found inside the Grouped AVP</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+202
+203
+204
+205
+206
+207
+208
+209
+210</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 202</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_inner_avp'>inner_avp</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_avps'>avps</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_avps'>inner_avps</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_avps'>avps</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='kw'>nil</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_avps'>avps</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="inner_avps-instance_method">
+  
+    - (<tt>Array&lt;<span class='object_link'><a href="" title="AVP (class)">AVP</a></span>&gt;</tt>) <strong>inner_avps</strong>(name) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>For a grouped AVP, returns all AVPs it contains with this name.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The AVP name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="" title="AVP (class)">AVP</a></span>&gt;</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+216
+217
+218
+219
+220</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 216</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_inner_avps'>inner_avps</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid__type'>_type</span><span class='comma'>,</span> <span class='id identifier rubyid__vendor'>_vendor</span> <span class='op'>=</span> <span class='const'>AVPNames</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_grouped_value'>grouped_value</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span> <span class='op'>==</span> <span class='id identifier rubyid_code'>code</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="int32-instance_method">
+  
+    - (<tt>Fixnum</tt>) <strong>int32</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as an Integer32.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained Integer32.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+249
+250
+251</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 249</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_int32'>int32</span>
+  <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>l&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="int32=-instance_method">
+  
+    - (<tt>void</tt>) <strong>int32=</strong>(value) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to an Integer32.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+257
+258
+259</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 257</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_int32='>int32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>l&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="int64-instance_method">
+  
+    - (<tt>Fixnum</tt>) <strong>int64</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as an Integer64.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained Integer64.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+264
+265
+266</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 264</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_int64'>int64</span>
+  <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="int64=-instance_method">
+  
+    - (<tt>void</tt>) <strong>int64=</strong>(value) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to an Integer64.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+272
+273
+274</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 272</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_int64='>int64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="ip_address-instance_method">
+  
+    - (<tt>IPAddr</tt>) <strong>ip_address</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as an
+<a href="http://tools.ietf.org/html/rfc6733#section-4.3.1" target="_parent" title="Address">Address</a>.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>IPAddr</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained <a href="http://tools.ietf.org/html/rfc6733#section-4.3.1" target="_parent" title="Address">Address</a>.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+339
+340
+341</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 339</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_ip_address'>ip_address</span>
+  <span class='const'>IPAddr</span><span class='period'>.</span><span class='id identifier rubyid_new_ntoh'>new_ntoh</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>2</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="ip_address=-instance_method">
+  
+    - (<tt>void</tt>) <strong>ip_address=</strong>(value) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to an Address.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>IPAddr</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 347</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_ip_address='>ip_address=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_ipv4?'>ipv4?</span>
+            <span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>n</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+          <span class='kw'>else</span>
+            <span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>n</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>+=</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_hton'>hton</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_bytes'>bytes</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="octet_string-instance_method">
+  
+    - (<tt>String</tt>) <strong>octet_string</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as an OctetString.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained OctetString.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+232
+233
+234</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 232</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_octet_string'>octet_string</span>
+  <span class='ivar'>@content</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="octet_string=-instance_method">
+  
+    - (<tt>void</tt>) <strong>octet_string=</strong>(value) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to an OctetString.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The octets to use as the value.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+240
+241
+242</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 240</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_octet_string='>octet_string=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="to_s-instance_method">
+  
+    - (<tt>Object</tt>) <strong>to_s</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns a string representation of this AVP. Makes a best-effort attempt to
+guess the type of the content (even for unknown AVPs) and display it
+sensibly.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+      <pre class="example code"><code>avp.to_s =&gt; &quot;AVP 267, mandatory: true, content as int32: 1&quot;</code></pre>
+    
+  </div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 143</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span> <span class='op'>=</span>
+    <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='lparen'>(</span><span class='int'>32</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_c'>c</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c'>c</span> <span class='op'>&lt;</span> <span class='int'>126</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+  <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>4</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>8</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_could_be_ip'>could_be_ip</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>6</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\x00\x01</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span>
+                 <span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='int'>18</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@content</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\x00\x02</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_maybe_grouped'>maybe_grouped</span> <span class='op'>=</span> <span class='op'>!</span><span class='lparen'>(</span><span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span> <span class='op'>||</span>
+                    <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span>   <span class='op'>||</span>
+                    <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span>   <span class='op'>||</span>
+                    <span class='id identifier rubyid_could_be_ip'>could_be_ip</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_s'>s</span> <span class='op'>=</span> <span class='id identifier rubyid_to_s_first_line'>to_s_first_line</span>
+  <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as string: </span><span class='embexpr_beg'>#{</span><span class='ivar'>@content</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_has_all_ascii_values'>has_all_ascii_values</span>
+  <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as int32: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_uint32'>uint32</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_32bit_num'>could_be_32bit_num</span>
+  <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as int64: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_uint64'>uint64</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_64bit_num'>could_be_64bit_num</span>
+  <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, content as ip: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ip_address'>ip_address</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_could_be_ip'>could_be_ip</span>
+  <span class='id identifier rubyid_s'>s</span> <span class='op'>+=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, grouped AVP, </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_grouped_value'>grouped_value</span><span class='period'>.</span><span class='id identifier rubyid_collect'>collect</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_s</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_maybe_grouped'>maybe_grouped</span>
+
+  <span class='id identifier rubyid_s'>s</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="to_wire-instance_method">
+  
+    - (<tt>String</tt>) <strong>to_wire</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP encoded properly as bytes in network byte order, suitable
+for sending over a TCP or SCTP connection. See
+<a href="http://tools.ietf.org/html/rfc6733#section-4.1" target="_parent" title="http://tools.ietf.org/html/rfc6733#section-4.1">http://tools.ietf.org/html/rfc6733#section-4.1</a> for the format.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The bytes representing this AVP</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+122
+123
+124
+125
+126
+127</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 122</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_to_wire'>to_wire</span>
+  <span class='id identifier rubyid_length_8'>length_8</span><span class='comma'>,</span> <span class='id identifier rubyid_length_16'>length_16</span> <span class='op'>=</span> <span class='const'>UInt24</span><span class='period'>.</span><span class='id identifier rubyid_to_u8_and_u16'>to_u8_and_u16</span><span class='lparen'>(</span><span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>+</span> <span class='int'>8</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_avp_flags'>avp_flags</span> <span class='op'>=</span> <span class='ivar'>@mandatory</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>01000000</span><span class='tstring_end'>&#39;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>00000000</span><span class='tstring_end'>&#39;</span></span>
+  <span class='id identifier rubyid_header'>header</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='ivar'>@code</span><span class='comma'>,</span> <span class='id identifier rubyid_avp_flags'>avp_flags</span><span class='comma'>,</span> <span class='id identifier rubyid_length_8'>length_8</span><span class='comma'>,</span> <span class='id identifier rubyid_length_16'>length_16</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NB8Cn</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_header'>header</span> <span class='op'>+</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_padded_content'>padded_content</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="uint32-instance_method">
+  
+    - (<tt>Fixnum</tt>) <strong>uint32</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as an Unsigned32.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained Unsigned32.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+279
+280
+281</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 279</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_uint32'>uint32</span>
+  <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>N</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="uint32=-instance_method">
+  
+    - (<tt>void</tt>) <strong>uint32=</strong>(value) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to an Unsigned32.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+287
+288
+289</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 287</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_uint32='>uint32=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>N</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="uint64-instance_method">
+  
+    - (<tt>Fixnum</tt>) <strong>uint64</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns this AVP&#39;s byte data, interpreted as an Unsigned64.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The contained Unsigned64.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+294
+295
+296</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 294</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_uint64'>uint64</span>
+  <span class='ivar'>@content</span><span class='period'>.</span><span class='id identifier rubyid_unpack'>unpack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="uint64=-instance_method">
+  
+    - (<tt>void</tt>) <strong>uint64=</strong>(value) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>Sets this AVP&#39;s byte data to an Unsigned64.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>value</span>
+      
+      
+        <span class='type'>(<tt>Fixnum</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+302
+303
+304</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 302</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_uint64='>uint64=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='ivar'>@content</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_value'>value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Q&gt;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Sun Dec  7 13:48:34 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>

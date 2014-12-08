@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!file.README.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div id='filecontents'><p>This repository contains a simple Diameter parser/message creation library in Ruby. In the future, it will also contain a Diameter stack in Ruby.</p>
+
+<h2>Getting started</h2>
+
+<p><code>diameter-server.rb</code> is some example code which can:</p>
+
+<ul>
+<li>Read Diameter messages off a TCP connection</li>
+<li>Parse them and read individual AVPs</li>
+<li>Create a response to Diameter messages</li>
+<li>Add AVPs (including string, integer and grouped AVPs)</li>
+<li>Send the response over the TCP connection</li>
+</ul>
+
+
+<h2>Current state</h2>
+
+<p>The message parsing and sending code has been verified (using Wireshark to check that the parsed values are correct and that the sent message is valid).</p>
+
+<p>There's no full stack - you'll need to handle CERs and CEAs manually. For short scripted tests there should be no need to handle watchdog or disconnect requests.</p>
+
+<p>Only a small handful of AVPs are implemented - more can be added just by editing the dictionary in the AVPNames class in <code>avp.rb</code>.</p>
+
+<h2>TODOs</h2>
+
+<h3>Infrastructure</h3>
+
+<ul>
+<li>Package as a gem</li>
+<li>Set up appropriate YARD API documentation</li>
+<li>Set up handwritten documentation</li>
+</ul>
+
+
+<h3>Completeness</h3>
+
+<ul>
+<li>Implement more AVPs</li>
+<li>Make it possible to add AVPs without code edits (loading CSV files?)</li>
+<li>Implement the remaining Derived AVP Data Formats (Time, UTF8String, DiameterURI, DiameterIdentity)</li>
+</ul>
+
+
+<h3>Stack</h3>
+
+<ul>
+<li>Add a stack that can:
+
+<ul>
+<li>handle TCP/SCTP connections to peers behind the scenes</li>
+<li>handle CER/CEA, DWR/DWA and DPR/DPA messages automatically</li>
+<li>handle failover/failback</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>APIs</h3>
+
+<ul>
+<li>Test the APIs in a variety of use-cases (e.g. server and client, test tools, maybe a real app?)</li>
+</ul>
+
+
+<h3>Style</h3>
+
+<ul>
+<li>Ensure conformance to <a href="https://github.com/bbatsov/ruby-style-guide">https://github.com/bbatsov/ruby-style-guide</a></li>
+</ul>
+
+
+<h3>Tests</h3>
+
+<ul>
+<li>Have more testcases</li>
+<li>Set up an infrastructure for reading and parsing .pcap files, so parsed messages can be manually checked against Wireshark</li>
+</ul>
+
+</div></div>
+
+    <div id="footer">
+  Generated on Sun Dec  7 13:48:33 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>

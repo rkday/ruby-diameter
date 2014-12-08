@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: AVPNames
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!AVPNames.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (A)</a> &raquo;
+    
+    
+    <span class="title">AVPNames</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: AVPNames
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">AVPNames</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+      <dt class="r2">Includes:</dt>
+      <dd class="r2"><span class='object_link'><a href="AVPType.html" title="AVPType (module)">AVPType</a></span></dd>
+      
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">lib/diameter/avp.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>Maps AVP names to their on-the-wire values and data definitions.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="AVAILABLE_AVPS-constant" class="">AVAILABLE_AVPS =
+          <div class="docstring">
+  <div class="discussion">
+    
+<p>The AVPs that can be looked up by name.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbrace'>{</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Vendor-Specific-Application-Id</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>260</span><span class='comma'>,</span> <span class='const'>GROUPED</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Vendor-Id</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>266</span><span class='comma'>,</span> <span class='const'>U32</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Auth-Application-Id</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>258</span><span class='comma'>,</span> <span class='const'>U32</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Session-Id</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>263</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Product-Name</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>269</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Auth-Session-State</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>277</span><span class='comma'>,</span> <span class='const'>U32</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Inband-Security-Id</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>299</span><span class='comma'>,</span> <span class='const'>U32</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Origin-Host</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>264</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Firmware-Revision</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>267</span><span class='comma'>,</span> <span class='const'>U32</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Result-Code</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>268</span><span class='comma'>,</span> <span class='const'>U32</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Origin-Realm</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>296</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Destination-Host</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>293</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Destination-Realm</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>283</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>User-Name</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>1</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Host-IP-Address</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>257</span><span class='comma'>,</span> <span class='const'>IPADDR</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Public-Identity</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>601</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='comma'>,</span> <span class='const'>Vendor</span><span class='op'>::</span><span class='const'>TGPP</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Server-Name</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>602</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='comma'>,</span> <span class='const'>Vendor</span><span class='op'>::</span><span class='const'>TGPP</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SIP-Number-Auth-Items</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>607</span><span class='comma'>,</span> <span class='const'>U32</span><span class='comma'>,</span> <span class='const'>Vendor</span><span class='op'>::</span><span class='const'>TGPP</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SIP-Auth-Data-Item</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>612</span><span class='comma'>,</span> <span class='const'>GROUPED</span><span class='comma'>,</span> <span class='const'>Vendor</span><span class='op'>::</span><span class='const'>TGPP</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SIP-Item-Number</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>613</span><span class='comma'>,</span> <span class='const'>U32</span><span class='comma'>,</span> <span class='const'>Vendor</span><span class='op'>::</span><span class='const'>TGPP</span><span class='rbracket'>]</span><span class='comma'>,</span>
+<span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>SIP-Authentication-Scheme</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='int'>608</span><span class='comma'>,</span> <span class='const'>OCTETSTRING</span><span class='comma'>,</span> <span class='const'>Vendor</span><span class='op'>::</span><span class='const'>TGPP</span><span class='rbracket'>]</span> <span class='rbrace'>}</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+  
+  
+  <h3 class="inherited">Constants included
+     from <span class='object_link'><a href="AVPType.html" title="AVPType (module)">AVPType</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="AVPType.html#GROUPED-constant" title="AVPType::GROUPED (constant)">AVPType::GROUPED</a></span>, <span class='object_link'><a href="AVPType.html#IPADDR-constant" title="AVPType::IPADDR (constant)">AVPType::IPADDR</a></span>, <span class='object_link'><a href="AVPType.html#OCTETSTRING-constant" title="AVPType::OCTETSTRING (constant)">AVPType::OCTETSTRING</a></span>, <span class='object_link'><a href="AVPType.html#U32-constant" title="AVPType::U32 (constant)">AVPType::U32</a></span></p>
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#get-class_method" title="get (class method)">+ (Array(Fixnum, AVPType), Array(Fixnum, AVPType, Vendor)) <strong>get</strong>(name) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Converts an AVP name into its code number, data type, and (if applicable)
+vendor ID.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="get-class_method">
+  
+    + (<tt>Array(Fixnum, <span class='object_link'><a href="AVPType.html" title="AVPType (module)">AVPType</a></span>)</tt>, <tt>Array(Fixnum, <span class='object_link'><a href="AVPType.html" title="AVPType (module)">AVPType</a></span>, <span class='object_link'><a href="Vendor.html" title="Vendor (module)">Vendor</a></span>)</tt>) <strong>get</strong>(name) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Converts an AVP name into its code number, data type, and (if applicable)
+vendor ID.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The AVP name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array(Fixnum, <span class='object_link'><a href="AVPType.html" title="AVPType (module)">AVPType</a></span>)</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if this is not vendor-specific</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array(Fixnum, <span class='object_link'><a href="AVPType.html" title="AVPType (module)">AVPType</a></span>, <span class='object_link'><a href="Vendor.html" title="Vendor (module)">Vendor</a></span>)</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if this is vendor-specific</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+61
+62
+63
+64
+65
+66</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/diameter/avp.rb', line 61</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_vendor'>vendor</span> <span class='op'>=</span> <span class='const'>AVAILABLE_AVPS</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_vendor'>vendor</span> <span class='op'>||=</span> <span class='int'>0</span>
+  <span class='id identifier rubyid_fail'>fail</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>AVP name </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> not recognised</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='kw'>not</span> <span class='id identifier rubyid_code'>code</span>
+  <span class='lbracket'>[</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='id identifier rubyid_vendor'>vendor</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Sun Dec  7 13:48:34 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>
