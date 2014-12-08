@@ -33,6 +33,7 @@ class AVPNames
     'Vendor-Specific-Application-Id' => [260, GROUPED],
     'Vendor-Id' => [266, U32],
     'Auth-Application-Id' => [258, U32],
+    'Acct-Application-Id' => [259, U32],
     'Session-Id' => [263, OCTETSTRING],
     'Product-Name' => [269, OCTETSTRING],
     'Auth-Session-State' => [277, U32],

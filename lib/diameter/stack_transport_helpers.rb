@@ -60,9 +60,7 @@ class StackHelper
         if msg == ''
           # Connection closed
           Diameter.logger.warn('Received 0 bytes on read, closing connection')
-          r.close
-          @all_connections.delete r
-          @data.delete r
+          close(r)
         end
       end
 
@@ -91,6 +89,12 @@ class TCPStackHelper < StackHelper
     sd
   end
 
+  def close(connection)
+    r.close
+    @all_connections.delete r
+    @data.delete r
+  end
+  
   def setup_new_listen_connection(_host, _port)
   end
 

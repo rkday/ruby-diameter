@@ -211,14 +211,44 @@ class Stack
   private
 
   def handle_cer(cer, cxn)
-    peer = cer.avp_by_name('Origin-Host').octet_string
+    cer_auth_ids = cer.all_avps_by_name("Auth-Application-Id").collect &:uint32
+    cer_acct_ids = cer.all_avps_by_name("Acct-Application-Id").collect &:uint32
+
+    cer.all_avps_by_name("Vendor-Specific-Application-Id").each do |avp|
+      if avp.inner_avp("Auth-Application-Id")
+        cer_auth_ids << avp.inner_avp("Auth-Application-Id").uint32
+      end
+
+      if avp.inner_avp("Acct-Application-Id")
+        cer_acct_ids << avp.inner_avp("Acct-Application-Id").uint32
+      end
+    end
+
+    Diameter.logger.debug("Received auth app IDs #{cer_auth_ids} from peer")
+    Diameter.logger.debug("Received acct app IDs #{cer_acct_ids} from peer")
+    
+    shared_auth_ids = cer_auth_ids.to_set & @auth_apps
+    shared_acct_ids = cer_acct_ids.to_set & @auth_apps
+
+    if shared_auth_ids.empty? and shared_acct_ids.empty?
+      rc = 5010
+    else
+      rc = 2001
+    end
+    
     cea = answer_for(cer)
+    cea.avps = [AVP.create('Result-Code', rc)]
     @tcp_helper.send(cea.to_wire, cxn)
-    @peer_table[peer] = Peer.new(peer)
-    @peer_table[peer].state = :UP
-    @peer_table[peer].reset_timer
-    @peer_table[peer].cxn = cxn
-    # send cea
+
+    if rc == 2001
+      peer = cer.avp_by_name('Origin-Host').octet_string
+      @peer_table[peer] = Peer.new(peer)
+      @peer_table[peer].state = :UP
+      @peer_table[peer].reset_timer
+      @peer_table[peer].cxn = cxn
+    else
+      @tcp_helper.close(cxn)
+    end
   end
 
   def handle_cea(cea)

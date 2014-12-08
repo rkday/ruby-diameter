@@ -114,14 +114,19 @@ describe 'Stack', 'A server DiameterStack' do
     TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
     TCPStackHelper.any_instance.stubs(:start_main_loop).returns(nil)
 
+    @bob_socket_id = 1005
+    
     @s = Stack.new("testhost", "testrealm")
     @s.start
   end
 
-  it 'moves from CLOSED into UP when a CER is received' do
+  it 'moves the peer from CLOSED into UP when a CER is received' do
     @s.peer_state('bob').must_equal :CLOSED
 
-    avps = [AVP.create('Origin-Host', 'bob')]
+    avps = [AVP.create('Origin-Host', 'bob'),
+            AVP.create("Vendor-Specific-Application-Id",
+                       [AVP.create("Vendor-Id", 10415),
+                        AVP.create("Auth-Application-Id", 16777216)]),]
     cer = DiameterMessage.new(version: 1,
                               command_code: 257,
                               hbh: 1,
@@ -135,5 +140,66 @@ describe 'Stack', 'A server DiameterStack' do
     @s.handle_message(cer, nil)
 
     @s.peer_state('bob').must_equal :UP
+  end
+
+  it 'responds with a CEA when a CER is received' do
+    @s.peer_state('bob').must_equal :CLOSED
+
+    avps = [AVP.create('Origin-Host', 'bob'),
+            AVP.create("Vendor-Specific-Application-Id",
+                       [AVP.create("Vendor-Id", 10415),
+                        AVP.create("Auth-Application-Id", 16777216)])]
+
+    cer = DiameterMessage.new(version: 1,
+                              command_code: 257,
+                              hbh: 1,
+                              ete: 1,
+                              request: true,
+                              app_id: 0,
+                              proxyable: false,
+                              retransmitted: false,
+                              error: false,
+                              avps: avps).to_wire
+
+    TCPStackHelper.any_instance.expects(:send)
+      .with do |cea_bytes, cxn|
+      cea = DiameterMessage.from_bytes cea_bytes
+      cea.command_code.must_equal 257
+      cea.avp_by_name("Result-Code").uint32.must_equal 2001
+      end
+      .returns(nil)
+
+    @s.handle_message(cer, nil)
+
+    @s.peer_state('bob').must_equal :UP
+  end
+
+  it 'responds with an error CEA if there are no common applications' do
+    @s.peer_state('bob').must_equal :CLOSED
+
+    avps = [AVP.create('Origin-Host', 'bob')]
+    cer = DiameterMessage.new(version: 1,
+                              command_code: 257,
+                              hbh: 1,
+                              ete: 1,
+                              request: true,
+                              app_id: 0,
+                              proxyable: false,
+                              retransmitted: false,
+                              error: false,
+                              avps: avps).to_wire
+
+    TCPStackHelper.any_instance.expects(:send)
+      .with do |cea_bytes, cxn|
+      cea = DiameterMessage.from_bytes cea_bytes
+      cea.command_code.must_equal 257
+      cea.avp_by_name("Result-Code").uint32.must_equal 5010
+      end
+      .returns(nil)
+    TCPStackHelper.any_instance.expects(:close).with(@bob_socket_id)
+
+    @s.handle_message(cer, @bob_socket_id)
+
+    @s.peer_state('bob').must_equal :CLOSED
   end
 end
