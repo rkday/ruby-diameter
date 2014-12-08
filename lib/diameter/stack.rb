@@ -62,10 +62,10 @@ class Peer
 end
 
 class Stack
-  def initialize
-    @local_host = 'rkd'
-    @local_realm = 'rkd-realm'
-    @local_port = nil
+  def initialize(host, realm, opts={})
+    @local_host = host
+    @local_realm = realm
+    @local_port = opts[:port] || 3868
 
     @auth_apps = [16_777_216]
     @acct_apps = []

@@ -6,7 +6,7 @@ describe 'Stack', 'A client DiameterStack' do
 
   before do
     # Mock out the interactions with the real world
-    @s = Stack.new
+    @s = Stack.new("testhost", "testrealm")
   end
 
   it 'moves into WAITING on initial connection' do
@@ -63,7 +63,7 @@ end
 describe 'Stack 2', "A client DiameterStack with an established connection to 'bob'" do
 
   before do
-    @s = Stack.new
+    @s = Stack.new("testhost", "testrealm")
     @bob_socket_id = 1004
 
     TCPStackHelper.any_instance.stubs(:setup_new_connection).returns(@bob_socket_id)
@@ -114,7 +114,7 @@ describe 'Stack', 'A server DiameterStack' do
     TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
     TCPStackHelper.any_instance.stubs(:start_main_loop).returns(nil)
 
-    @s = Stack.new
+    @s = Stack.new("testhost", "testrealm")
     @s.start
   end
 

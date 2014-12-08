@@ -1,9 +1,9 @@
 require 'diameter/stack'
 require 'diameter/avp'
 
-s = Stack.new
+s = Stack.new("rkd.local", "my-realm", vendor_auth_apps: [10415, 16777216])
 s.start
-peer = s.connect_to_peer("aaa://54.154.3.120:3868", "hss.open-ims.test", "open-ims.test")
+peer = s.connect_to_peer("aaa://127.0.0.1:3869", "hss.open-ims.test", "open-ims.test")
 
 peer.wait_for_state_change :UP
 
