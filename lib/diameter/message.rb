@@ -17,8 +17,8 @@ class DiameterMessage
     @hbh = options[:hbh]
     @ete = options[:ete]
 
-    @request = options[:request] || false
-    @proxyable = options[:proxyable] || false
+    @request = options.fetch(:request, true)
+    @proxyable = options.fetch(:proxyable, false)
     @retransmitted = false
     @error = false
   end

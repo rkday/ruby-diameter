@@ -8,6 +8,7 @@ SimpleCov.start do
 end
 
 require 'minitest/autorun'
+require 'minitest-spec-context'
 require 'diameter/diameter_logger'
 require 'concurrent'
 
