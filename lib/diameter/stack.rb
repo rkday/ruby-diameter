@@ -67,10 +67,8 @@ class Stack
     @local_realm = realm
     @local_port = opts[:port] || 3868
 
-    @auth_apps = [16_777_216]
+    @auth_apps = []
     @acct_apps = []
-    @vendor_auth_apps = []
-    @vendor_acct_apps = []
 
     @pending_ete = []
 
@@ -125,7 +123,7 @@ class Stack
             AVP.create('Vendor-Id', 100),
             AVP.create('Product-Name', 'ruby-diameter')
            ]
-    avps += @auth_apps.collect { | code| AVP.create('Auth-Application-Id', code) }
+    avps += app_avps
     cer_bytes = DiameterMessage.new(version: 1, command_code: 257, app_id: 0, hbh: 1, ete: 1, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
     @tcp_helper.send(cer_bytes, cxn)
     @peer_table[peer_host] = Peer.new(peer_host)
@@ -150,9 +148,6 @@ class Stack
   end
 
   def shutdown_cleanly
-  end
-
-  def add_handler_for_app
   end
 
   def send_message(req)
@@ -188,10 +183,19 @@ class Stack
     req.create_answer
   end
 
-  def add_handler(app_id, &blk)
+  def add_handler(app_id, opts={}, &blk)
+    vendor = opts.fetch(:vendor, 0)
+    auth = opts.fetch(:auth, false)
+    acct = opts.fetch(:acct, false)
+
+    raise ArgumentError("Must specify at least one of auth or acct") unless auth or acct
+    
+    @acct_apps << [app_id, vendor] if acct
+    @auth_apps << [app_id, vendor] if auth
+    
     @handlers[app_id] = blk
   end
-  
+
   def handle_message(msg_bytes, cxn)
     # Common processing - ensure that this message has come in on this
     # peer's expected connection, and update the last time we saw
@@ -225,27 +229,53 @@ class Stack
 
   private
 
-  def handle_cer(cer, cxn)
-    cer_auth_ids = cer.all_avps_by_name("Auth-Application-Id").collect(&:uint32)
-    cer_acct_ids = cer.all_avps_by_name("Acct-Application-Id").collect(&:uint32)
+  def app_avps
+    avps = []
+    
+    @auth_apps.each do |app_id, vendor|
+      avps << if vendor == 0
+                AVP.create("Auth-Application-Id", app_id)
+              else
+                AVP.create("Vendor-Specific-Application-Id",
+                           [AVP.create("Auth-Application-Id", app_id),
+                            AVP.create("Vendor-Id", vendor)])
+              end
+    end
 
-    cer.all_avps_by_name("Vendor-Specific-Application-Id").each do |avp|
+    @acct_apps.each do |app_id, vendor|
+      avps << if vendor == 0
+                AVP.create("Acct-Application-Id", app_id)
+              else
+                AVP.create("Vendor-Specific-Application-Id",
+                           [AVP.create("Acct-Application-Id", app_id),
+                            AVP.create("Vendor-Id", vendor)])
+              end
+    end
+    
+    avps
+  end
+
+  def shared_apps(capabilities_msg)
+    peer_apps = capabilities_msg.all_avps_by_name("Auth-Application-Id").collect(&:uint32)
+    peer_apps += capabilities_msg.all_avps_by_name("Acct-Application-Id").collect(&:uint32)
+
+    capabilities_msg.all_avps_by_name("Vendor-Specific-Application-Id").each do |avp|
       if avp.inner_avp("Auth-Application-Id")
-        cer_auth_ids << avp.inner_avp("Auth-Application-Id").uint32
+        peer_apps << avp.inner_avp("Auth-Application-Id").uint32
       end
 
       if avp.inner_avp("Acct-Application-Id")
-        cer_acct_ids << avp.inner_avp("Acct-Application-Id").uint32
+        peer_apps << avp.inner_avp("Acct-Application-Id").uint32
       end
     end
 
-    Diameter.logger.debug("Received auth app IDs #{cer_auth_ids} from peer")
-    Diameter.logger.debug("Received acct app IDs #{cer_acct_ids} from peer")
+    Diameter.logger.debug("Received app IDs #{peer_apps} from peer, have apps #{@handlers.keys}")
     
-    shared_auth_ids = cer_auth_ids.to_set & @auth_apps
-    shared_acct_ids = cer_acct_ids.to_set & @auth_apps
-
-    if shared_auth_ids.empty? and shared_acct_ids.empty?
+    shared_apps = @handlers.keys.to_set & peer_apps.to_set
+  end    
+  
+  def handle_cer(cer, cxn)
+    if shared_apps(cer).empty?
       rc = 5010
     else
       rc = 2001
@@ -254,7 +284,8 @@ class Stack
     cea = answer_for(cer)
     cea.avps = [AVP.create('Result-Code', rc),
                 AVP.create('Origin-Host', @local_host),
-                AVP.create('Origin-Realm', @local_realm)]
+                AVP.create('Origin-Realm', @local_realm)] + app_avps
+
     @tcp_helper.send(cea.to_wire, cxn)
 
     if rc == 2001

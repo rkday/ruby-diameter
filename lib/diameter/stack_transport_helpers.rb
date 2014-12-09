@@ -91,9 +91,9 @@ class TCPStackHelper < StackHelper
   end
 
   def close(connection)
-    r.close
-    @all_connections.delete r
-    @data.delete r
+    connection.close
+    @all_connections.delete connection
+    @data.delete connection
   end
   
   def setup_new_listen_connection(host, port)
