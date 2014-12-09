@@ -162,8 +162,9 @@ class Stack
     q = Queue.new
     @pending_ete[req.ete] = q
     peer_name = req.avp_by_name('Destination-Host').octet_string
-    peer = @peer_table[peer_name]
-    if peer.state == :UP
+    state = peer_state(peer_name)
+    if state == :UP
+      peer = @peer_table[peer_name]
       @tcp_helper.send(req.to_wire, peer.cxn)
       p = Concurrent::Promise.execute {
         Diameter.logger.debug("Waiting for answer to message with EtE #{req.ete}")
@@ -173,7 +174,7 @@ class Stack
       }
       return p
     else
-      Diameter.logger.log(Logger::WARN, "Peer #{peer_name} is in state #{peer.state} - cannot route")
+      Diameter.logger.log(Logger::WARN, "Peer #{peer_name} is in state #{state} - cannot route")
     end
   end
 
@@ -201,7 +202,7 @@ class Stack
     if @peer_table[peer]
       @peer_table[peer].reset_timer
       unless @peer_table[peer].cxn == cxn
-        Diameter.logger.log(Logger::WARN, "Ignoring message - claims to be from #{peer_name} but comes from #{cxn} not #{@peer_table[peer].cxn}")
+        Diameter.logger.log(Logger::WARN, "Ignoring message - claims to be from #{peer} but comes from #{cxn} not #{@peer_table[peer].cxn}")
       end
     end
 

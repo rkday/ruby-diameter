@@ -35,6 +35,22 @@ describe 'Stack', 'A client DiameterStack' do
     @s.peer_state('bob').must_equal :UP
   end
 
+  it "doesn't move into UP when a CEA from an unknown host is received" do
+    socket_id = 1004
+
+    TCPStackHelper.any_instance.stubs(:setup_new_connection).returns(socket_id)
+    TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
+
+    @s.connect_to_peer('aaa://localhost', 'bob', 'bob-realm')
+
+    avps = [AVP.create('Origin-Host', 'eve')]
+    cea = DiameterMessage.new(version: 1, command_code: 257, app_id: 0, hbh: 1, ete: 1, request: false, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
+
+    @s.handle_message(cea, socket_id)
+
+    @s.peer_state('bob').must_equal :WAITING
+  end
+
   it 'wait_for_state_change triggers when a successful CEA is received' do
     socket_id = 1004
 
@@ -52,6 +68,8 @@ describe 'Stack', 'A client DiameterStack' do
       peer.wait_for_state_change :UP
       state_has_changed_q.push 1
     end
+
+    @s.peer_state('bob').must_equal :WAITING
 
     @s.handle_message(cea, socket_id)
 
@@ -88,6 +106,24 @@ describe 'Stack 2', "A client DiameterStack with an established connection to 'b
     @s.send_message(mar)
   end
 
+  it "can't send to a peer it isn't connected to" do
+    avps = [AVP.create('Destination-Host', 'eve')]
+    mar = @s.new_request(303, app_id: 0, proxyable: false, retransmitted: false, error: false, avps: avps)
+
+    TCPStackHelper.any_instance.expects(:send).never
+    @s.send_message(mar)
+  end
+
+  it "can't send to a peer that's not fully up" do
+    avps = [AVP.create('Destination-Host', 'eve')]
+    mar = @s.new_request(303, app_id: 0, proxyable: false, retransmitted: false, error: false, avps: avps)
+
+    @s.connect_to_peer('aaa://localhost', 'eve', 'eve-realm')
+    @s.peer_state('eve').must_equal :WAITING
+    TCPStackHelper.any_instance.expects(:send).never
+    @s.send_message(mar)
+  end
+
   it 'fulfils the promise when an answer is delivered' do
     avps = [AVP.create('Destination-Host', 'bob')]
     mar = @s.new_request(303, app_id: 0, proxyable: false, retransmitted: false, error: false, avps: avps)
@@ -104,6 +140,33 @@ describe 'Stack 2', "A client DiameterStack with an established connection to 'b
 
     promised_maa.wait
     promised_maa.state.must_equal :fulfilled
+  end
+
+  it 'responds with a DWA when a DWR is received' do
+    avps = [AVP.create('Origin-Host', 'bob')]
+
+    dwr = DiameterMessage.new(version: 1,
+                              command_code: 280,
+                              hbh: 1,
+                              ete: 1,
+                              request: true,
+                              app_id: 0,
+                              proxyable: false,
+                              retransmitted: false,
+                              error: false,
+                              avps: avps).to_wire
+
+    TCPStackHelper.any_instance.expects(:send)
+      .with do |dwa_bytes, cxn|
+      dwa = DiameterMessage.from_bytes dwa_bytes
+      dwa.command_code.must_equal 280
+      dwa.avp_by_name("Result-Code").uint32.must_equal 2001
+      end
+      .returns(nil)
+
+    @s.handle_message(dwr, nil)
+
+    @s.peer_state('bob').must_equal :UP
   end
 end
 
