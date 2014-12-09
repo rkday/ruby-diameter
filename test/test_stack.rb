@@ -265,4 +265,56 @@ describe 'Stack', 'A server DiameterStack' do
 
     @s.peer_state('bob').must_equal :CLOSED
   end
+
+  it 'invokes handlers on receipt of a message' do
+    handler_invoked = false
+    
+    avps = [AVP.create('Origin-Host', 'bob'),
+            AVP.create("Vendor-Specific-Application-Id",
+                       [AVP.create("Vendor-Id", 10415),
+                        AVP.create("Auth-Application-Id", 16777216)])]
+
+    cer = DiameterMessage.new(version: 1,
+                              command_code: 257,
+                              hbh: 1,
+                              ete: 1,
+                              request: true,
+                              app_id: 0,
+                              proxyable: false,
+                              retransmitted: false,
+                              error: false,
+                              avps: avps).to_wire
+
+    TCPStackHelper.any_instance.expects(:send)
+      .returns(nil)
+
+    @s.handle_message(cer, nil)
+
+    @s.peer_state('bob').must_equal :UP
+
+    avps = [AVP.create("Vendor-Specific-Application-Id",
+                   [AVP.create("Vendor-Id", 10415),
+                    AVP.create("Auth-Application-Id", 16777216)]),
+            AVP.create('Origin-Host', 'bob'),
+            AVP.create("Destination-Host", "rkd2.local"),
+            AVP.create("Destination-Realm", "my-realm"),
+           ]
+
+    mar = DiameterMessage.new(version: 1,
+                              command_code: 1000,
+                              hbh: 1,
+                              ete: 1,
+                              request: true,
+                              app_id: 16777216,
+                              proxyable: false,
+                              retransmitted: false,
+                              error: false,
+                              avps: avps).to_wire
+
+    @s.add_handler(16777216) { handler_invoked = true }
+    @s.handle_message(mar, nil)
+
+    handler_invoked.must_equal true
+  end
+
 end
