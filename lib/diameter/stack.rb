@@ -188,7 +188,7 @@ class Stack
     auth = opts.fetch(:auth, false)
     acct = opts.fetch(:acct, false)
 
-    raise ArgumentError("Must specify at least one of auth or acct") unless auth or acct
+    raise ArgumentError.new("Must specify at least one of auth or acct") unless auth or acct
     
     @acct_apps << [app_id, vendor] if acct
     @auth_apps << [app_id, vendor] if auth
