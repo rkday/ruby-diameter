@@ -143,16 +143,24 @@ class DiameterMessage
   # @param origin_host [String] The Origin-Host to fill in on the
   #   response.
   # @return [DiameterMessage] The response created.
-  def create_answer
+  def create_answer(response_code, opts={})
+    avps = []
+    avps << if opts[:experimental_result_vendor]
+              fail
+            else
+              AVP.create("Result-Code", response_code)
+            end
+    
+    avps += opts.fetch(:copying_avps, []).collect do |name|
+      src_avp = avp_by_name(name)
+
+      fail if src_avp.nil?
+  
+      src_avp.dup
+    end
+
     # Is this a request?
 
-    # Copy the Session-Id and Proxy-Info
-
-    # Insert Origin-Host (should the stack do this?)
-
-    # Don't require or insert a Result-Code - we might want
-    # Experimental-Result-Code instead
-
-    DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: false, proxyable: @proxyable, retransmitted: false, error: false)
+    DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: false, proxyable: @proxyable, retransmitted: false, error: false, avps: avps)
   end
 end
