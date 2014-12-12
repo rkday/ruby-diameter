@@ -24,10 +24,11 @@ describe 'Message parsing', 'Parsing a CER' do
   it 'can generate a response' do
     _bytes, msg = parse('cer.bin')
 
-    cea = msg.create_answer
+    cea = msg.create_answer(2001)
 
     cea.command_code.must_equal msg.command_code
     cea.request.must_equal false
+    cea.avp("Result-Code").uint32.must_equal 2001
   end
 
   it 'serialises back to its original form' do

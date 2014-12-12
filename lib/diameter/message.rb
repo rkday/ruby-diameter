@@ -4,7 +4,20 @@ require 'diameter/u24'
 # A Diameter message.
 #
 # @!attribute [r] version
-#   The Diameter protocol version (currenmtly always 1)
+#   The Diameter protocol version (currently always 1)
+# @!attribute [r] command_code
+#   The Diameter Command-Code of this messsage.
+# @!attribute [r] app_id
+#   The Diameter application ID of this message, or 0 for base
+#   protocol messages.
+# @!attribute [r] hbh
+#   The hop-by-hop identifier of this message.
+# @!attribute [r] ete
+#   The end-to-end identifier of this message.
+# @!attribute [r] request
+#   Whether this message is a request.
+# @!attribute [r] answer
+#   Whether this message is an answer.
 class DiameterMessage
   attr_reader :version, :command_code, :app_id, :hbh, :ete, :request
   attr_accessor :avps
@@ -23,12 +36,6 @@ class DiameterMessage
     @error = false
   end
 
-  # Returns true if this message represents a Diameter answer (i.e.
-  # has the 'Request' bit in the header cleared).
-  #
-  # Always the opposite of {DiameterMessage#request}.
-  #
-  # @return [true, false]
   def answer
     !@request
   end
@@ -59,6 +66,8 @@ class DiameterMessage
     header + content
   end
 
+  # @!group AVP retrieval
+
   # Returns the first AVP with the given name. Only covers "top-level"
   # AVPs - it won't look inside Grouped AVPs.
   #
@@ -78,6 +87,12 @@ class DiameterMessage
     all_avps_by_code(code, vendor)
   end
 
+  alias_method :avp, :avp_by_name
+
+  def [](name)
+    return all_avps_by_name(name)
+  end
+  
   # Returns the first AVP with the given code and vendor. Only covers "top-level"
   # AVPs - it won't look inside Grouped AVPs.
   #
@@ -108,6 +123,10 @@ class DiameterMessage
     end
   end
 
+  # @!endgroup
+
+  # @!group Parsing
+  
   # Parses the first four bytes of the Diameter header to learn the
   # length. Callers should use this to work out how many more bytes
   # they need to read off a TCP connection to pass to self.from_bytes.
@@ -136,14 +155,16 @@ class DiameterMessage
     avps = AVPParser.parse_avps_int(bytes[20..-1])
     DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: request, proxyable: proxyable, retransmitted: false, error: false, avps: avps)
   end
+  # @!endgroup
 
   # Generates an answer to this request, filling in appropriate
   # fields per {http://tools.ietf.org/html/rfc6733#section-6.2}.
   #
-  # @param origin_host [String] The Origin-Host to fill in on the
-  #   response.
+  # @param response_code [Fixnum] The value for the Result-Code AVP
   # @return [DiameterMessage] The response created.
   def create_answer(response_code, opts={})
+    fail "Cannot answer an answer" if answer
+    
     avps = []
     avps << if opts[:experimental_result_vendor]
               fail
@@ -158,8 +179,6 @@ class DiameterMessage
   
       src_avp.dup
     end
-
-    # Is this a request?
 
     DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: false, proxyable: @proxyable, retransmitted: false, error: false, avps: avps)
   end

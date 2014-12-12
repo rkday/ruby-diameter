@@ -179,10 +179,6 @@ class Stack
     @tcp_helper.send(ans.to_wire, original_cxn)
   end
   
-  def answer_for(req, response_code)
-    req.create_answer(response_code)
-  end
-
   def add_handler(app_id, opts={}, &blk)
     vendor = opts.fetch(:vendor, 0)
     auth = opts.fetch(:auth, false)
@@ -281,9 +277,9 @@ class Stack
       rc = 2001
     end
     
-    cea = answer_for(cer, rc)
-    cea.avps = [AVP.create('Origin-Host', @local_host),
-                AVP.create('Origin-Realm', @local_realm)] + app_avps
+    cea = cer.create_answer(rc)
+    cea.avps += [AVP.create('Origin-Host', @local_host),
+                 AVP.create('Origin-Realm', @local_realm)] + app_avps
 
     @tcp_helper.send(cea.to_wire, cxn)
 
@@ -318,8 +314,8 @@ class Stack
   end
 
   def handle_dwr(dwr, cxn)
-    dwa = answer_for(dwr, 2001)
-    dwa.avps = [AVP.create('Origin-Host', @local_host),
+    dwa = dwr.create_answer(2001)
+    dwa.avps += [AVP.create('Origin-Host', @local_host),
                 AVP.create('Origin-Realm', @local_realm)]
 
     @tcp_helper.send(dwa.to_wire, cxn)

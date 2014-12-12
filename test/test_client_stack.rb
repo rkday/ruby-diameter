@@ -150,7 +150,7 @@ describe "A client DiameterStack with an established connection to 'bob'" do
     promised_maa = @s.send_message(mar)
     promised_maa.state.must_equal :pending
 
-    maa = mar.create_answer
+    maa = mar.create_answer(2001)
     maa.avps = [AVP.create('Origin-Host', 'bob')]
     @s.handle_message(maa.to_wire, @bob_socket_id)
 

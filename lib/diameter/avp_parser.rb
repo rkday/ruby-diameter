@@ -1,5 +1,6 @@
 require 'diameter/u24'
 
+# @private
 # Parser mixin, sharing functionality common to:
 #  * parsing all the AVPs in a message
 #  * parsing the AVPs inside a Grouped AVP
