@@ -113,41 +113,41 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
   it 'routes subsequent messages on Destination-Host' do
     avps = [AVP.create('Destination-Host', 'bob')]
-    mar = @s.new_request(303, app_id: 0, proxyable: false, retransmitted: false, error: false, avps: avps)
+    mar = DiameterMessage.new(command_code: 303, app_id: 0, avps: avps)
 
     TCPStackHelper.any_instance.expects(:send)
       .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
       .returns(nil)
-    @s.send_message(mar)
+    @s.send_request(mar)
   end
 
   it "can't send to a peer it isn't connected to" do
     avps = [AVP.create('Destination-Host', 'eve')]
-    mar = @s.new_request(303, app_id: 0, avps: avps)
+    mar = DiameterMessage.new(command_code: 303, app_id: 0, avps: avps)
 
     TCPStackHelper.any_instance.expects(:send).never
-    @s.send_message(mar)
+    @s.send_request(mar)
   end
 
   it "can't send to a peer that's not fully up" do
     avps = [AVP.create('Destination-Host', 'eve')]
-    mar = @s.new_request(303, app_id: 0, avps: avps)
+    mar = DiameterMessage.new(command_code: 303, app_id: 0, avps: avps)
 
     @s.connect_to_peer('aaa://localhost', 'eve', 'eve-realm')
     @s.peer_state('eve').must_equal :WAITING
     TCPStackHelper.any_instance.expects(:send).never
-    @s.send_message(mar)
+    @s.send_request(mar)
   end
 
   it 'fulfils the promise when an answer is delivered' do
     avps = [AVP.create('Destination-Host', 'bob')]
-    mar = @s.new_request(303, app_id: 0, avps: avps)
+    mar = DiameterMessage.new(command_code: 303, app_id: 0, avps: avps)
 
     TCPStackHelper.any_instance.expects(:send)
       .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
       .returns(nil)
 
-    promised_maa = @s.send_message(mar)
+    promised_maa = @s.send_request(mar)
     promised_maa.state.must_equal :pending
 
     maa = mar.create_answer(2001, avps: [AVP.create('Origin-Host', 'bob')])

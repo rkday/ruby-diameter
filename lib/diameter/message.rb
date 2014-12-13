@@ -16,27 +16,45 @@ require 'diameter/u24'
 #   The end-to-end identifier of this message.
 # @!attribute [r] request
 #   Whether this message is a request.
-# @!attribute [r] answer
-#   Whether this message is an answer.
 class DiameterMessage
   attr_reader :version, :command_code, :app_id, :hbh, :ete, :request
 
+  # @!attribute [r] answer
+  #   Whether this message is an answer.
+  def answer
+    !@request
+  end
+
+  # @option opts [Fixnum] command_code
+  #   The Diameter Command-Code of this messsage.
+  # @option opts [Fixnum] app_id
+  #   The Diameter application ID of this message, or 0 for base
+  #   protocol messages.
+  # @option opts [Fixnum] hbh
+  #   The hop-by-hop identifier of this message.
+  # @option opts [Fixnum] ete
+  #   The end-to-end identifier of this message.
+  # @option opts [true, false] request
+  #   Whether this message is a request. Defaults to true.
+  # @option opts [true, false] proxyable
+  #   Whether this message can be forwarded on. Defaults to true.
+  # @option opts [true, false] error
+  #   Whether this message is a Diameter protocol error. Defaults to false.
+  # @option opts [Array<AVP>] avps
+  #   The list of AVPs to include on this message.
   def initialize(options = {})
-    @version = options[:version] || 1
+    @version = 1
     @command_code = options[:command_code]
-    @avps = options[:avps] || []
     @app_id = options[:app_id]
-    @hbh = options[:hbh]
-    @ete = options[:ete]
+    @hbh = options[:hbh] || DiameterMessage.next_hbh
+    @ete = options[:ete] || DiameterMessage.next_ete
 
     @request = options.fetch(:request, true)
     @proxyable = options.fetch(:proxyable, false)
     @retransmitted = false
     @error = false
-  end
 
-  def answer
-    !@request
+    @avps = options[:avps] || []
   end
 
   # Represents this message (and all its AVPs) in human-readable
@@ -70,6 +88,9 @@ class DiameterMessage
   # Returns the first AVP with the given name. Only covers "top-level"
   # AVPs - it won't look inside Grouped AVPs.
   #
+  # @param name [String] The AVP name, either one predefined in
+  #   {AVPNames::AVAILABLE_AVPS} or user-defined with {AVP.define}
+  #
   # @return [AVP] if there is an AVP with that name
   # @return [nil] if there is not an AVP with that name
   def avp_by_name(name)
@@ -79,6 +100,9 @@ class DiameterMessage
 
   # Returns all AVPs with the given name. Only covers "top-level"
   # AVPs - it won't look inside Grouped AVPs.
+  #
+  # @param name [String] The AVP name, either one predefined in
+  #   {AVPNames::AVAILABLE_AVPS} or user-defined with {AVP.define}
   #
   # @return [Array<AVP>]
   def all_avps_by_name(name)
@@ -92,6 +116,9 @@ class DiameterMessage
   # Returns the first AVP with the given code and vendor. Only covers "top-level"
   # AVPs - it won't look inside Grouped AVPs.
   #
+  # @param code [Fixnum] The AVP Code
+  # @param vendor [Fixnum] Optional vendor ID for a vendor-specific
+  #   AVP.
   # @return [AVP] if there is an AVP with that code/vendor
   # @return [nil] if there is not an AVP with that code/vendor
   def avp_by_code(code, vendor = 0)
@@ -106,6 +133,9 @@ class DiameterMessage
   # Returns all AVPs with the given code and vendor. Only covers "top-level"
   # AVPs - it won't look inside Grouped AVPs.
   #
+  # @param code [Fixnum] The AVP Code
+  # @param vendor [Fixnum] Optional vendor ID for a vendor-specific
+  #   AVP.
   # @return [Array<AVP>]
   def all_avps_by_code(code, vendor = 0)
     @avps.select do |a|
@@ -119,10 +149,25 @@ class DiameterMessage
     end
   end
 
+  # Does this message contain a (top-level) AVP with this name?
+  # @param name [String] The AVP name, either one predefined in
+  #   {AVPNames::AVAILABLE_AVPS} or user-defined with {AVP.define}
+  #
+  # @return [true, false]  
   def has_avp?(name)
     !!avp(name)
   end
 
+  # @api private
+  #
+  # Adds an AVP to this message. Not recommended for normal use -
+  # all AVPs should be given to the constructor. Used to allow the
+  # stack to add appropriate Origin-Host/Origin-Realm AVPs to outbound
+  # messages.
+  # @param name [String] The AVP name, either one predefined in
+  #   {AVPNames::AVAILABLE_AVPS} or user-defined with {AVP.define}
+  # @param value [Object] The AVP value, with type dependent on the
+  #   AVP itself.
   def add_avp(name, value)
     @avps << AVP.create(name, value)
   end
@@ -193,4 +238,18 @@ class DiameterMessage
 
     DiameterMessage.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: false, proxyable: @proxyable, retransmitted: false, error: false, avps: avps)
   end
+
+  private
+  def self.next_hbh
+    @hbh ||= rand(10000)
+    @hbh += 1
+    @hbh
+  end
+
+  def self.next_ete
+    @ete ||= (Time.now.to_i & 0x00000fff) + (rand(2**32) & 0xfffff000)
+    @ete += 1
+    @ete
+  end
+
 end

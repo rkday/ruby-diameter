@@ -18,6 +18,7 @@ describe 'Stack interactions' do
     @client_stack.start
     @peer = @client_stack.connect_to_peer("aaa://127.0.0.1:3869", "rkd2.local", "my-realm")
 
+    puts :waiting
     @peer.wait_for_state_change :UP
   end
 
@@ -42,9 +43,9 @@ describe 'Stack interactions' do
                        [AVP.create("SIP-Authentication-Scheme", "Unknown")]),
            ]
 
-    mar = @client_stack.new_request(303, app_id: 16777216, proxyable: false, retransmitted: false, error: false, avps: avps)
+    mar = DiameterMessage.new(command_code: 303, app_id: 16777216, avps: avps)
 
-    maa = @client_stack.send_message(mar)
+    maa = @client_stack.send_request(mar)
     maa.value['User-Name'][0].octet_string.must_equal 'shibboleth'
   end
 
@@ -68,10 +69,10 @@ describe 'Stack interactions' do
                        [AVP.create("SIP-Authentication-Scheme", "Unknown")]),
            ]
 
-    mar = @client_stack.new_request(303, app_id: 16777216, proxyable: false, retransmitted: false, error: false, avps: avps)
+    mar = DiameterMessage.new(command_code: 303, app_id: 16777216, avps: avps)
 
-    maa = @client_stack.send_message(mar)
+    maa = @client_stack.send_request(mar)
     sleep 0.1
-    proc do maa = @client_stack.send_message(mar) end.must_raise IOError
+    proc do maa = @client_stack.send_request(mar) end.must_raise IOError
   end
 end

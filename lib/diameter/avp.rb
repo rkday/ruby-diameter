@@ -53,6 +53,8 @@ class AVPNames
     'SIP-Item-Number' => [613, U32, Vendor::TGPP],
     'SIP-Authentication-Scheme' => [608, OCTETSTRING, Vendor::TGPP] }
 
+  @custom_avps = {}
+  
   # Converts an AVP name into its code number, data type, and (if
   # applicable) vendor ID.
   #
@@ -60,11 +62,17 @@ class AVPNames
   # @return [Array(Fixnum, AVPType)] if this is not vendor-specific
   # @return [Array(Fixnum, AVPType, Vendor)] if this is vendor-specific
   def self.get(name)
-    code, type, vendor = AVAILABLE_AVPS[name]
+    code, type, vendor = @custom_avps.merge(AVAILABLE_AVPS)[name]
     vendor ||= 0
     fail "AVP name #{name} not recognised" unless code
     [code, type, vendor]
   end
+
+  # @see {AVP.define}
+  def self.add(name, code, type, vendor=nil)
+    @custom_avps[name] = vendor.nil? ? [code, type] : [code, type, vendor]
+  end
+
 end
 
 # The AVP class is a sensible, coherent whole - it's just big,
@@ -112,6 +120,19 @@ class AVP
     set_content(avp, type, val)
 
     avp
+  end
+
+  # Defines a new AVP that can subsequently be created/retrieved by
+  # name.
+  #
+  # @param name [String] The AVP name
+  # @param code [Fixnum] The AVP Code
+  # @param type [AVPType] The type of this AVP's value
+  # @param vendor [Fixnum] Optional vendor ID for a vendor-specific
+  #   AVP.
+  # @return [void]
+  def self.define(name, code, type, vendor=nil)
+    AVPNames.add(name, code, type, vendor)
   end
 
   # Returns this AVP encoded properly as bytes in network byte order,

@@ -1,65 +1,10 @@
 require 'uri'
 require 'socket'
+require 'diameter/peer'
 require 'diameter/message'
 require 'diameter/stack_transport_helpers'
 require 'diameter/diameter_logger'
 require 'concurrent'
-
-# A Diameter peer entry in the peer table.
-#
-# @!attribute [rw] identity
-#   [String] The DiameterIdentity of this peer
-# @!attribute [rw] realm
-#   [String] The Diameter realm of this peer
-# @!attribute [rw] static
-#   [true, false] Whether this peer was dynamically discovered (and so
-#   might expire) or statically configured.
-# @!attribute [rw] expiry_time
-#   [Time] For a dynamically discovered peer, the time when it stops
-#   being valid and dynamic discovery must happen again.
-# @!attribute [rw] last_message_seen
-#   [Time] The last time traffic was received from this peer. Used for
-#   determining when to send watchdog messages, or for triggering failover.
-# @!attribute [rw] cxn
-#   [Socket] The underlying network connection to this peer.
-# @!attribute [rw] state
-#   [Keyword] The current state of this peer - :UP, :WATING or :CLOSED.
-
-class Peer
-  attr_accessor :identity, :static, :cxn, :realm, :expiry_time, :last_message_seen
-  attr_reader :state
-
-  def initialize(identity)
-    @identity = identity
-    @state = :CLOSED
-    @state_change_q = Queue.new
-  end
-
-  # Blocks until the state of this peer changes to the desired value.
-  #
-  # @param state [Keyword] The state to change to.
-  def wait_for_state_change(state)
-    cur_state = @state
-    while (cur_state != state)
-      cur_state = @state_change_q.pop
-    end
-  end
-
-  # @todo Add further checking, making sure that the transition to
-  # new_state is valid according to the RFC 6733 state machine. Maybe
-  # use the micromachine gem?
-  def state=(new_state)
-    Diameter.logger.log(Logger::DEBUG, "State of peer #{identity} changed from #{@state} to #{new_state}")
-    @state = new_state
-    @state_change_q.push new_state
-  end
-
-  # Resets the last message seen time. Should be called when a message
-  # is received from this peer.
-  def reset_timer
-    self.last_message_seen = Time.now
-  end
-end
 
 class Stack
   def initialize(host, realm, opts={})
@@ -70,10 +15,7 @@ class Stack
     @auth_apps = []
     @acct_apps = []
 
-    @pending_ete = []
-
-    @ete = 1
-    @hbh = 1
+    @pending_ete = {}
 
     @tcp_helper = TCPStackHelper.new(self)
     @peer_table = {}
@@ -81,22 +23,7 @@ class Stack
     Diameter.logger.log(Logger::INFO, 'Stack initialized')
   end
 
-  def new_request(code, options = {})
-    DiameterMessage.new({ version: 1, command_code: code, hbh: next_hbh, ete: next_ete, request: true }.merge(options))
-  end
-
-  # @return [Fixnum] An End-to-End identifier number that has never
-  # been issued before by this stack.
-  def next_ete
-    @ete += 1
-  end
-
-  # @return [Fixnum] A Hop-by-Hop identifier number that has never
-  # been issued before by this stack.
-  def next_hbh
-    @hbh += 1
-  end
-
+  # @!group Setup methods
   def start
     @tcp_helper.start_main_loop
   end
@@ -105,6 +32,27 @@ class Stack
     @tcp_helper.setup_new_listen_connection("0.0.0.0", @local_port)
   end
 
+  def add_handler(app_id, opts={}, &blk)
+    vendor = opts.fetch(:vendor, 0)
+    auth = opts.fetch(:auth, false)
+    acct = opts.fetch(:acct, false)
+
+    raise ArgumentError.new("Must specify at least one of auth or acct") unless auth or acct
+    
+    @acct_apps << [app_id, vendor] if acct
+    @auth_apps << [app_id, vendor] if auth
+    
+    @handlers[app_id] = blk
+  end
+
+  # @!endgroup
+
+  def shutdown
+    @tcp_helper.shutdown
+  end
+
+  # @!group Peer connections and message sending
+  
   # Creates a Peer connection to a Diameter agent at the specific
   # network location indicated by peer_uri.
   #
@@ -124,7 +72,7 @@ class Stack
             AVP.create('Product-Name', 'ruby-diameter')
            ]
     avps += app_avps
-    cer_bytes = DiameterMessage.new(version: 1, command_code: 257, app_id: 0, hbh: 1, ete: 1, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
+    cer_bytes = DiameterMessage.new(version: 1, command_code: 257, app_id: 0, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
     @tcp_helper.send(cer_bytes, cxn)
     @peer_table[peer_host] = Peer.new(peer_host)
     @peer_table[peer_host].state = :WAITING
@@ -133,29 +81,7 @@ class Stack
     # Will move to :UP when the CEA is received
   end
 
-  def disconnect_from_peer(_peer_host)
-  end
-
-  def timer_loop
-  end
-
-  def peer_state(id)
-    if !@peer_table.key? id
-      :CLOSED
-    else
-      @peer_table[id].state
-    end
-  end
-
-  def shutdown
-    @tcp_helper.shutdown
-  end
-
-  def shutdown!
-    @tcp_helper.shutdown!
-  end
-
-  def send_message(req)
+  def send_request(req)
     fail "Must pass a request" unless req.request
     req.add_avp('Origin-Host', @local_host) unless req.has_avp? 'Origin-Host'
     req.add_avp('Origin-Realm', @local_realm) unless req.has_avp? 'Origin-Realm'
@@ -179,24 +105,23 @@ class Stack
   end
 
   def send_answer(ans, original_cxn)
+    fail "Must pass an answer" unless ans.answer
     ans.add_avp('Origin-Host', @local_host) unless ans.has_avp? 'Origin-Host'
     ans.add_avp('Origin-Realm', @local_realm) unless ans.has_avp? 'Origin-Realm'
     @tcp_helper.send(ans.to_wire, original_cxn)
   end
-  
-  def add_handler(app_id, opts={}, &blk)
-    vendor = opts.fetch(:vendor, 0)
-    auth = opts.fetch(:auth, false)
-    acct = opts.fetch(:acct, false)
 
-    raise ArgumentError.new("Must specify at least one of auth or acct") unless auth or acct
-    
-    @acct_apps << [app_id, vendor] if acct
-    @auth_apps << [app_id, vendor] if auth
-    
-    @handlers[app_id] = blk
+  def peer_state(id)
+    if !@peer_table.key? id
+      :CLOSED
+    else
+      @peer_table[id].state
+    end
   end
 
+  # @!endgroup
+  
+  # @private
   def handle_message(msg_bytes, cxn)
     # Common processing - ensure that this message has come in on this
     # peer's expected connection, and update the last time we saw
