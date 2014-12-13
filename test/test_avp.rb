@@ -145,7 +145,7 @@ describe 'AVP', 'A simple example' do
   end
 
   it 'can handle user-defined AVP' do
-    AVP.define('My-Own-Personal-AVP', 1004, AVPType::U32, 100)
+    AVP.define('My-Own-Personal-AVP', 1004, :Unsigned32, 100)
     avp = AVP.create('My-Own-Personal-AVP', 0)
 
     avp.octet_string.length.must_equal 4
