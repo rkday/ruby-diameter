@@ -151,9 +151,9 @@ class Stack
   end
 
   def send_message(req)
-    req.avps += [AVP.create('Origin-Host', @local_host),
-                 AVP.create('Origin-Realm', @local_realm)]
     fail "Must pass a request" unless req.request
+    req.add_avp('Origin-Host', @local_host) unless req.has_avp? 'Origin-Host'
+    req.add_avp('Origin-Realm', @local_realm) unless req.has_avp? 'Origin-Realm'
     q = Queue.new
     @pending_ete[req.ete] = q
     peer_name = req.avp_by_name('Destination-Host').octet_string
@@ -174,8 +174,8 @@ class Stack
   end
 
   def send_answer(ans, original_cxn)
-    ans.avps += [AVP.create('Origin-Host', @local_host),
-                 AVP.create('Origin-Realm', @local_realm)]
+    ans.add_avp('Origin-Host', @local_host) unless ans.has_avp? 'Origin-Host'
+    ans.add_avp('Origin-Realm', @local_realm) unless ans.has_avp? 'Origin-Realm'
     @tcp_helper.send(ans.to_wire, original_cxn)
   end
   
@@ -277,9 +277,9 @@ class Stack
       rc = 2001
     end
     
-    cea = cer.create_answer(rc)
-    cea.avps += [AVP.create('Origin-Host', @local_host),
-                 AVP.create('Origin-Realm', @local_realm)] + app_avps
+    cea = cer.create_answer(rc, avps:
+                            [AVP.create('Origin-Host', @local_host),
+                             AVP.create('Origin-Realm', @local_realm)] + app_avps)
 
     @tcp_helper.send(cea.to_wire, cxn)
 
@@ -314,9 +314,9 @@ class Stack
   end
 
   def handle_dwr(dwr, cxn)
-    dwa = dwr.create_answer(2001)
-    dwa.avps += [AVP.create('Origin-Host', @local_host),
-                AVP.create('Origin-Realm', @local_realm)]
+    dwa = dwr.create_answer(2001, avps:
+                            [AVP.create('Origin-Host', @local_host),
+                             AVP.create('Origin-Realm', @local_realm)])
 
     @tcp_helper.send(dwa.to_wire, cxn)
     # send DWA

@@ -20,7 +20,6 @@ require 'diameter/u24'
 #   Whether this message is an answer.
 class DiameterMessage
   attr_reader :version, :command_code, :app_id, :hbh, :ete, :request
-  attr_accessor :avps
 
   def initialize(options = {})
     @version = options[:version] || 1
@@ -88,10 +87,7 @@ class DiameterMessage
   end
 
   alias_method :avp, :avp_by_name
-
-  def [](name)
-    return all_avps_by_name(name)
-  end
+  alias_method :[], :all_avps_by_name
   
   # Returns the first AVP with the given code and vendor. Only covers "top-level"
   # AVPs - it won't look inside Grouped AVPs.
@@ -112,7 +108,7 @@ class DiameterMessage
   #
   # @return [Array<AVP>]
   def all_avps_by_code(code, vendor = 0)
-    avps.select do |a|
+    @avps.select do |a|
       vendor_match =
         if a.vendor_specific?
           a.vendor_id == vendor
@@ -123,6 +119,14 @@ class DiameterMessage
     end
   end
 
+  def has_avp?(name)
+    !!avp(name)
+  end
+
+  def add_avp(name, value)
+    @avps << AVP.create(name, value)
+  end
+  
   # @!endgroup
 
   # @!group Parsing
@@ -157,19 +161,26 @@ class DiameterMessage
   end
   # @!endgroup
 
-  # Generates an answer to this request, filling in appropriate
-  # fields per {http://tools.ietf.org/html/rfc6733#section-6.2}.
+  # Generates an answer to this request, filling in a Result-Code or
+  # Experimental-Result AVP.
   #
-  # @param response_code [Fixnum] The value for the Result-Code AVP
+  # @param result_code [Fixnum] The value for the Result-Code AVP
+  # @option opts [Fixnum] experimental_result_vendor
+  #   If given, creates an Experimental-Result AVP with this vendor
+  #   instead of the Result-Code AVP. 
+  # @option opts [Array<String>] copying_avps
+  #   A list of AVP names to copy from the request to the answer.
+  # @option opts [Array<AVP>] avps
+  #   A list of AVP objects to add on the answer.
   # @return [DiameterMessage] The response created.
-  def create_answer(response_code, opts={})
+  def create_answer(result_code, opts={})
     fail "Cannot answer an answer" if answer
     
-    avps = []
+    avps = opts.fetch(:avps, [])
     avps << if opts[:experimental_result_vendor]
               fail
             else
-              AVP.create("Result-Code", response_code)
+              AVP.create("Result-Code", result_code)
             end
     
     avps += opts.fetch(:copying_avps, []).collect do |name|
