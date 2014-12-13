@@ -11,6 +11,7 @@ class StackHelper
     @data = {}
     @stack = stack
     @loop_thread = nil
+    @accept_loop_thread = nil
   end
 
   def start_main_loop
@@ -43,9 +44,7 @@ class StackHelper
         msg, _src = r.recvfrom_nonblock(4 - existing_data.length)
         if msg == ''
           Diameter.logger.warn('Received 0 bytes on read, closing connection')
-          r.close
-          @all_connections.delete r
-          @data.delete r
+          close(r)
         else
           existing_data += msg
         end
@@ -90,14 +89,28 @@ class TCPStackHelper < StackHelper
     sd
   end
 
+  def shutdown
+    @all_connections.each { |c| close(c) }
+    @listen_connections.each { |c| close(c) }
+    @all_connections = []
+    @listen_connections = []
+    @accept_loop_thread.kill if  @accept_loop_thread
+    @loop_thread.kill if @loop_thread
+  end
+
   def close(connection)
     connection.close
     @all_connections.delete connection
+    @listen_connections.delete connection
     @data.delete connection
+  rescue IOError
+    # It's OK if this is already closed
   end
   
   def setup_new_listen_connection(host, port)
     sd = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
+    # reuse = [1,0].pack('ii')
+    sd.setsockopt(Socket::SOL_SOCKET, Socket::SO_REUSEADDR, true)
     sd.bind(Socket.pack_sockaddr_in(port, host))
     sd.listen(100)
     @listen_connections.push sd
@@ -125,6 +138,7 @@ class TCPStackHelper < StackHelper
   end
 end
 
+=begin
 # @private
 class SCTPStackHelper
   def setup_new_connection(host, port)
@@ -138,3 +152,4 @@ class SCTPStackHelper
   def send(_bytes, _connection)
   end
 end
+=end

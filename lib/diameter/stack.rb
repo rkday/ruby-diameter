@@ -147,7 +147,12 @@ class Stack
     end
   end
 
-  def shutdown_cleanly
+  def shutdown
+    @tcp_helper.shutdown
+  end
+
+  def shutdown!
+    @tcp_helper.shutdown!
   end
 
   def send_message(req)
