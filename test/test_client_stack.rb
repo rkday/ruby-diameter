@@ -2,10 +2,12 @@ require 'minitest_helper'
 require 'diameter/stack'
 require 'mocha/mini_test'
 
+include Diameter
+
 def make_cea(avps)
-  DiameterMessage.new(command_code: 257, hbh: 1, ete: 1,
-                            app_id: 0, proxyable: false,
-                            request: false, avps: avps).to_wire
+  Message.new(command_code: 257, hbh: 1, ete: 1,
+              app_id: 0, proxyable: false,
+              request: false, avps: avps).to_wire
 end
 
 describe 'A client DiameterStack' do
@@ -30,8 +32,8 @@ describe 'A client DiameterStack' do
 
     @socket_id = 1004
 
-    TCPStackHelper.any_instance.stubs(:setup_new_connection).returns(@socket_id)
-    TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
+    Internals::TCPStackHelper.any_instance.stubs(:setup_new_connection).returns(@socket_id)
+    Internals::TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
   end
 
   it 'moves into WAITING on initial connection' do
@@ -40,9 +42,9 @@ describe 'A client DiameterStack' do
   end
 
   it 'sends a CER with all its application ids on initial connection' do
-    TCPStackHelper.any_instance.stubs(:send).with do
+    Internals::TCPStackHelper.any_instance.stubs(:send).with do
       |cer_bytes, _c|
-      cer = DiameterMessage.from_bytes cer_bytes
+      cer = Message.from_bytes cer_bytes
       cer.avp_by_name("Auth-Application-Id").uint32.must_equal @auth_app_id
       cer.all_avps_by_name("Acct-Application-Id").collect(&:uint32).must_equal [@acct_app_id_1, @acct_app_id_2]
     end
@@ -55,7 +57,7 @@ describe 'A client DiameterStack' do
     @s.connect_to_peer('aaa://localhost', 'bob', 'bob-realm')
       
     avps = [AVP.create('Origin-Host', 'bob'),
-           AVP.create('Acct-Application-Id', @acct_app_id_1)]
+            AVP.create('Acct-Application-Id', @acct_app_id_1)]
 
     @s.handle_message(make_cea(avps), @socket_id)
       
@@ -100,8 +102,8 @@ describe "A client DiameterStack with an established connection to 'bob'" do
     @s = Stack.new("testhost", "testrealm")
     @bob_socket_id = 1004
 
-    TCPStackHelper.any_instance.stubs(:setup_new_connection).returns(@bob_socket_id)
-    TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
+    Internals::TCPStackHelper.any_instance.stubs(:setup_new_connection).returns(@bob_socket_id)
+    Internals::TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
 
     @s.connect_to_peer('aaa://localhost', 'bob', 'bob-realm')
 
@@ -113,9 +115,9 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
   it 'routes subsequent messages on Destination-Host' do
     avps = [AVP.create('Destination-Host', 'bob')]
-    mar = DiameterMessage.new(command_code: 303, app_id: 0, avps: avps)
+    mar = Message.new(command_code: 303, app_id: 0, avps: avps)
 
-    TCPStackHelper.any_instance.expects(:send)
+    Internals::TCPStackHelper.any_instance.expects(:send)
       .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
       .returns(nil)
     @s.send_request(mar)
@@ -123,27 +125,27 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
   it "can't send to a peer it isn't connected to" do
     avps = [AVP.create('Destination-Host', 'eve')]
-    mar = DiameterMessage.new(command_code: 303, app_id: 0, avps: avps)
+    mar = Message.new(command_code: 303, app_id: 0, avps: avps)
 
-    TCPStackHelper.any_instance.expects(:send).never
+    Internals::TCPStackHelper.any_instance.expects(:send).never
     @s.send_request(mar)
   end
 
   it "can't send to a peer that's not fully up" do
     avps = [AVP.create('Destination-Host', 'eve')]
-    mar = DiameterMessage.new(command_code: 303, app_id: 0, avps: avps)
+    mar = Message.new(command_code: 303, app_id: 0, avps: avps)
 
     @s.connect_to_peer('aaa://localhost', 'eve', 'eve-realm')
     @s.peer_state('eve').must_equal :WAITING
-    TCPStackHelper.any_instance.expects(:send).never
+    Internals::TCPStackHelper.any_instance.expects(:send).never
     @s.send_request(mar)
   end
 
   it 'fulfils the promise when an answer is delivered' do
     avps = [AVP.create('Destination-Host', 'bob')]
-    mar = DiameterMessage.new(command_code: 303, app_id: 0, avps: avps)
+    mar = Message.new(command_code: 303, app_id: 0, avps: avps)
 
-    TCPStackHelper.any_instance.expects(:send)
+    Internals::TCPStackHelper.any_instance.expects(:send)
       .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
       .returns(nil)
 
@@ -160,15 +162,15 @@ describe "A client DiameterStack with an established connection to 'bob'" do
   it 'responds with a DWA when a DWR is received' do
     avps = [AVP.create('Origin-Host', 'bob')]
 
-    dwr = DiameterMessage.new(command_code: 280,
-                              hbh: 1,
-                              ete: 1,
-                              app_id: 0,
-                              proxyable: false,
-                              avps: avps).to_wire
+    dwr = Message.new(command_code: 280,
+                      hbh: 1,
+                      ete: 1,
+                      app_id: 0,
+                      proxyable: false,
+                      avps: avps).to_wire
 
-    TCPStackHelper.any_instance.expects(:send).with do |dwa_bytes, cxn|
-      dwa = DiameterMessage.from_bytes dwa_bytes
+    Internals::TCPStackHelper.any_instance.expects(:send).with do |dwa_bytes, cxn|
+      dwa = Message.from_bytes dwa_bytes
       dwa.command_code.must_equal 280
       dwa.avp_by_name("Result-Code").uint32.must_equal 2001
     end

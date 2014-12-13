@@ -1,6 +1,8 @@
 require 'minitest_helper'
 require 'diameter/avp'
 
+include Diameter
+
 describe 'AVP', 'A simple example' do
 
   it 'can create an Unsigned32 AVP' do

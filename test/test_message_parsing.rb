@@ -1,13 +1,15 @@
 require 'minitest_helper'
 require 'diameter/message'
 
+include Diameter
+
 def parse(filename)
   path = "#{File.dirname(__FILE__)}/test_messages/#{filename}"
   header = IO.binread(path, 4)
   # read the header
-  length = DiameterMessage.length_from_header(header)
+  length = Message.length_from_header(header)
   bytes = IO.binread(path, length)
-  [bytes, DiameterMessage.from_bytes(bytes)]
+  [bytes, Message.from_bytes(bytes)]
 end
 
 describe 'Message parsing', 'Parsing a CER' do

@@ -2,6 +2,8 @@ require 'minitest_helper'
 require 'diameter/stack'
 require 'diameter/avp'
 
+include Diameter
+
 describe 'Stack interactions' do
 
   before do
@@ -18,7 +20,6 @@ describe 'Stack interactions' do
     @client_stack.start
     @peer = @client_stack.connect_to_peer("aaa://127.0.0.1:3869", "rkd2.local", "my-realm")
 
-    puts :waiting
     @peer.wait_for_state_change :UP
   end
 
@@ -43,7 +44,7 @@ describe 'Stack interactions' do
                        [AVP.create("SIP-Authentication-Scheme", "Unknown")]),
            ]
 
-    mar = DiameterMessage.new(command_code: 303, app_id: 16777216, avps: avps)
+    mar = Message.new(command_code: 303, app_id: 16777216, avps: avps)
 
     maa = @client_stack.send_request(mar)
     maa.value['User-Name'][0].octet_string.must_equal 'shibboleth'
@@ -51,7 +52,7 @@ describe 'Stack interactions' do
 
   it "can't send a request over a closed connection" do
     @server_stack.add_handler(16777216, auth: true, vendor: 10415) do |req, cxn|
-      cxn.close
+      @server_stack.close(cxn)
     end
 
     avps = [AVP.create("Vendor-Specific-Application-Id",
@@ -69,7 +70,7 @@ describe 'Stack interactions' do
                        [AVP.create("SIP-Authentication-Scheme", "Unknown")]),
            ]
 
-    mar = DiameterMessage.new(command_code: 303, app_id: 16777216, avps: avps)
+    mar = Message.new(command_code: 303, app_id: 16777216, avps: avps)
 
     maa = @client_stack.send_request(mar)
     sleep 0.1

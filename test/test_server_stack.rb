@@ -2,8 +2,10 @@ require 'minitest_helper'
 require 'diameter/stack'
 require 'mocha/mini_test'
 
+include Diameter
+
 def make_cer(avps)
-  DiameterMessage.new(command_code: 257, hbh: 1, ete: 1,
+  Message.new(command_code: 257, hbh: 1, ete: 1,
                       app_id: 0, proxyable: false,
                       avps: avps).to_wire
 end
@@ -14,8 +16,8 @@ describe 'A server DiameterStack' do
 
   before do
     # Mock out the interactions with the real world
-    TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
-    TCPStackHelper.any_instance.stubs(:start_main_loop).returns(nil)
+    Internals::TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
+    Internals::TCPStackHelper.any_instance.stubs(:start_main_loop).returns(nil)
 
     @bob_socket_id = 1005
     
@@ -58,9 +60,9 @@ describe 'A server DiameterStack' do
                        [AVP.create("Vendor-Id", @vendor_1),
                         AVP.create("Auth-Application-Id", @vendor_auth_app_id)]),]
 
-    TCPStackHelper.any_instance.expects(:send)
+    Internals::TCPStackHelper.any_instance.expects(:send)
       .with do |cea_bytes, cxn|
-      cea = DiameterMessage.from_bytes cea_bytes
+      cea = Message.from_bytes cea_bytes
       cea.command_code.must_equal 257
       cea.avp_by_name("Result-Code").uint32.must_equal 2001
       end
@@ -79,14 +81,14 @@ describe 'A server DiameterStack' do
       avps = [AVP.create('Origin-Host', 'bob'),
               AVP.create('Auth-Application-Id', @acct_app_id_1 - 6)]
 
-      TCPStackHelper.any_instance.expects(:send)
+      Internals::TCPStackHelper.any_instance.expects(:send)
         .with do |cea_bytes, cxn|
-        cea = DiameterMessage.from_bytes cea_bytes
+        cea = Message.from_bytes cea_bytes
         cea.command_code.must_equal 257
         cea.avp_by_name("Result-Code").uint32.must_equal 5010
       end
         .returns(nil)
-      TCPStackHelper.any_instance.expects(:close).with(@bob_socket_id)
+      Internals::TCPStackHelper.any_instance.expects(:close).with(@bob_socket_id)
 
       @s.handle_message(make_cer(avps), @bob_socket_id)
 
@@ -122,8 +124,8 @@ end
 describe 'A server DiameterStack with an existing connection' do
   before do
     # Mock out the interactions with the real world
-    TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
-    TCPStackHelper.any_instance.stubs(:start_main_loop).returns(nil)
+    Internals::TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
+    Internals::TCPStackHelper.any_instance.stubs(:start_main_loop).returns(nil)
 
     @bob_socket_id = 1005    
     @auth_app_id = 166578
@@ -150,7 +152,7 @@ describe 'A server DiameterStack with an existing connection' do
             AVP.create("Destination-Host", "rkd2.local"),
             AVP.create("Destination-Realm", "my-realm")]
 
-    msg = DiameterMessage.new(command_code: 1000, hbh: 1, ete: 1,
+    msg = Message.new(command_code: 1000, hbh: 1, ete: 1,
                               app_id: @auth_app_id, avps: avps).to_wire
 
     @s.handle_message(msg, nil)
