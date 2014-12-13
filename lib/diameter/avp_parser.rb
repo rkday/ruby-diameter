@@ -67,17 +67,10 @@ module Diameter
           position += avp_content_length + padding
 
           # Construct an AVP object from the parsed data
-          parsed_avp =
-            if avp_vendor != 0
-              VendorSpecificAVP.new(code,
-                                    avp_vendor,
-                                    mandatory: mandatory,
-                                    content: avp_content)
-            else
-              AVP.new(code,
-                      mandatory: mandatory,
-                      content: avp_content)
-            end
+          parsed_avp = AVP.new(code,
+                               vendor_id: avp_vendor,
+                               mandatory: mandatory,
+                               content: avp_content)
 
           avps.push parsed_avp
         end

@@ -47,12 +47,13 @@ module Diameter
   class AVP
     include Internals
     include Constants::AVPType
-    attr_reader :code, :mandatory
+    attr_reader :code, :mandatory, :vendor_id
 
     include AVPParser
 
     def initialize(code, options = {})
       @code = code
+      @vendor_id = options[:vendor_id] || 0
       @content = options[:content] || ''
       @mandatory = options[:mandatory]
       @mandatory = true if @mandatory.nil?
@@ -68,11 +69,8 @@ module Diameter
     # @return [AVP] The AVP that was created.
     def self.create(name, val, options = {})
       code, type, vendor = AVPNames.get(name)
-      avp = if (vendor != 0)
-              VendorSpecificAVP.new(code, vendor, options)
-            else
-              AVP.new(code, options)
-            end
+      options[:vendor_id] = vendor
+      avp = AVP.new(code, options)
 
       set_content(avp, type, val)
 
@@ -99,12 +97,28 @@ module Diameter
     #
     # @return [String] The bytes representing this AVP
     def to_wire
+      if vendor_specific?
+        to_wire_vendor
+      else
+        to_wire_novendor
+      end
+    end
+    
+    def to_wire_novendor
       length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 8)
       avp_flags = @mandatory ? '01000000' : '00000000'
       header = [@code, avp_flags, length_8, length_16].pack('NB8Cn')
       header + padded_content
     end
 
+    def to_wire_vendor
+      length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 12)
+      avp_flags = @mandatory ? '11000000' : '10000000'
+      header = [@code, avp_flags, length_8, length_16, @vendor_id].pack('NB8CnN')
+      header + padded_content
+    end
+
+    
     # Guessing the type of an AVP and displaying it sensibly is complex,
     # so this is a complex method (but one that has a unity of purpose,
     # so can't easily be broken down). Disable several Rubocop
@@ -134,7 +148,8 @@ module Diameter
                         could_be_32bit_num   ||
                         could_be_ip)
 
-      s = to_s_first_line
+      s = vendor_specific? ? "AVP #{@code}, Vendor-ID #{@vendor_id}, mandatory: #{@mandatory}" :
+              "AVP #{@code}, mandatory: #{@mandatory}"
       s += ", content as string: #{@content}" if has_all_ascii_values
       s += ", content as int32: #{uint32}" if could_be_32bit_num
       s += ", content as int64: #{uint64}" if could_be_64bit_num
@@ -150,7 +165,7 @@ module Diameter
     #   @return [true, false] Whether this AVP is mandatory
     #   (i.e. its M flag is set)
     def vendor_specific?
-      false
+      @vendor_id != 0
     end
 
     # @!group Data getters/setters for different AVP types
@@ -356,10 +371,6 @@ module Diameter
       end
     end
 
-    def to_s_first_line
-      "AVP #{@code}, mandatory: #{@mandatory}"
-    end
-
     protected
 
     def padded_content
@@ -370,36 +381,4 @@ module Diameter
   end
 
   # rubocop:enable Metrics/ClassLength
-
-  # A vendor-specific AVP.
-  class VendorSpecificAVP < AVP
-    attr_reader :vendor_id
-
-    # @param code The AVP Code of this AVP
-    # @param vendor_id  The Vendor-ID of this AVP
-    # {AVP#initialize}
-    def initialize(code, vendor_id, options = {})
-      @vendor_id = vendor_id
-      super(code, options)
-    end
-
-    # {AVP#vendor_specific?}
-    def vendor_specific?
-      true
-    end
-
-    # {AVP#to_wire}
-    def to_wire
-      length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 12)
-      avp_flags = @mandatory ? '11000000' : '10000000'
-      header = [@code, avp_flags, length_8, length_16, @vendor_id].pack('NB8CnN')
-      header + padded_content
-    end
-
-    private
-
-    def to_s_first_line
-      "AVP #{@code}, Vendor-ID #{@vendor_id}, mandatory: #{@mandatory}"
-    end
-  end
 end
