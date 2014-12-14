@@ -47,3 +47,7 @@ Only a small handful of AVPs are implemented - more can be added just by editing
 
 ### Tests
 * Set up an infrastructure for reading and parsing .pcap or PDML files, so parsed messages can be manually checked against Wireshark
+
+### Portability
+* Ruby 1.8? I'm not sure there will be demand.
+* JRuby - either resolve issues with stack_transport_helpers or write a JRuby-specific version calling Java classes
