@@ -3,6 +3,10 @@ require 'socket'
 require 'diameter/message'
 require 'diameter/avp'
 
+if RUBY_ENGINE != 'jruby'
+  ServerSocket = Socket
+end
+
 module Diameter
   module Internals
     # @private
@@ -16,7 +20,6 @@ module Diameter
         @accept_loop_thread = nil
         @connection_lock = Mutex.new
         @wakeup_pipe_rd, @wakeup_pipe_wr = IO.pipe
-        @all_connections << @wakeup_pipe_rd
       end
 
       def start_main_loop
@@ -33,7 +36,7 @@ module Diameter
       end
 
       def main_loop
-          rs, _ws, es = IO.select(@all_connections, [], @all_connections)
+          rs, _ws, es = IO.select(@all_connections + [@wakeup_pipe_rd], [], @all_connections)
 
         es.each do |e|
           Diameter.logger.log(Logger::WARN, "Exception on connection #{e}")
@@ -115,7 +118,7 @@ module Diameter
       end
       
       def setup_new_listen_connection(host, port)
-        sd = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
+        sd = ServerSocket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
         # reuse = [1,0].pack('ii')
         sd.setsockopt(Socket::SOL_SOCKET, Socket::SO_REUSEADDR, true)
         sd.bind(Socket.pack_sockaddr_in(port, host))

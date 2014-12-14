@@ -70,14 +70,15 @@ describe 'Stack interactions' do
                        [AVP.create("SIP-Authentication-Scheme", "Unknown")]),
            ]
 
-    mar = Message.new(command_code: 303, app_id: 16777216, avps: avps)
+    mar = Message.new(command_code: 304, app_id: 16777216, avps: avps)
+    mar2 = Message.new(command_code: 305, app_id: 16777216, avps: avps)
 
     maa = @client_stack.send_request(mar)
     sleep 0.1
     if RUBY_ENGINE != 'rbx'
-      proc do maa = @client_stack.send_request(mar) end.must_raise IOError
+      proc do maa = @client_stack.send_request(mar2) end.must_raise IOError
     else
-      proc do maa = @client_stack.send_request(mar) end.must_raise Errno::EBADF
+      proc do maa = @client_stack.send_request(mar2) end.must_raise Errno::EBADF
     end
   end
 end

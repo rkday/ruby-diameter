@@ -36,6 +36,10 @@ describe 'A client DiameterStack' do
     Internals::TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
   end
 
+  after do
+    @s.shutdown
+  end
+
   it 'moves into WAITING on initial connection' do
     @s.connect_to_peer('aaa://localhost', 'bob', 'bob-realm')
     @s.peer_state('bob').must_equal :WAITING
@@ -113,19 +117,24 @@ describe "A client DiameterStack with an established connection to 'bob'" do
     @s.peer_state('bob').must_equal :UP
   end
 
+  after do
+    @s.shutdown
+  end
+
   it 'routes subsequent messages on Destination-Host' do
     avps = [AVP.create('Destination-Host', 'bob')]
-    mar = Message.new(command_code: 303, app_id: 0, avps: avps)
+    mar = Message.new(command_code: 307, app_id: 0, avps: avps)
 
     Internals::TCPStackHelper.any_instance.expects(:send)
       .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
       .returns(nil)
     @s.send_request(mar)
+
   end
 
   it "can't send to a peer it isn't connected to" do
     avps = [AVP.create('Destination-Host', 'eve')]
-    mar = Message.new(command_code: 303, app_id: 0, avps: avps)
+    mar = Message.new(command_code: 305, app_id: 0, avps: avps)
 
     Internals::TCPStackHelper.any_instance.expects(:send).never
     @s.send_request(mar)
@@ -133,7 +142,7 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
   it "can't send to a peer that's not fully up" do
     avps = [AVP.create('Destination-Host', 'eve')]
-    mar = Message.new(command_code: 303, app_id: 0, avps: avps)
+    mar = Message.new(command_code: 306, app_id: 0, avps: avps)
 
     @s.connect_to_peer('aaa://localhost', 'eve', 'eve-realm')
     @s.peer_state('eve').must_equal :WAITING
@@ -143,7 +152,7 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
   it 'fulfils the promise when an answer is delivered' do
     avps = [AVP.create('Destination-Host', 'bob')]
-    mar = Message.new(command_code: 303, app_id: 0, avps: avps)
+    mar = Message.new(command_code: 304, app_id: 0, avps: avps)
 
     Internals::TCPStackHelper.any_instance.expects(:send)
       .with { |x,c| c == @bob_socket_id && x == mar.to_wire }

@@ -22,6 +22,15 @@ module Diameter
       @tcp_helper = TCPStackHelper.new(self)
       @peer_table = {}
       @handlers = {}
+
+      @threadpool = pool = Concurrent::ThreadPoolExecutor.new(
+                                                              min_threads: 5,
+                                                              max_threads: 5,
+                                                              max_queue: 100,
+                                                              overflow_policy: :caller_runs
+                                                              )
+
+      
       Diameter.logger.log(Logger::INFO, 'Stack initialized')
     end
 
@@ -51,6 +60,12 @@ module Diameter
 
     def shutdown
       @tcp_helper.shutdown
+      @pending_ete.each do |ete, q|
+        Diameter.logger.debug("Shutting down queue #{q} as no answer has been received with EtE #{ete}")
+        q.push :shutdown
+      end
+      @threadpool.kill
+      @threadpool.wait_for_termination(5)
     end
 
     def close(connection)
@@ -91,15 +106,15 @@ module Diameter
       fail "Must pass a request" unless req.request
       req.add_avp('Origin-Host', @local_host) unless req.has_avp? 'Origin-Host'
       req.add_avp('Origin-Realm', @local_realm) unless req.has_avp? 'Origin-Realm'
-      q = Queue.new
-      @pending_ete[req.ete] = q
       peer_name = req.avp_by_name('Destination-Host').octet_string
       state = peer_state(peer_name)
       if state == :UP
         peer = @peer_table[peer_name]
         @tcp_helper.send(req.to_wire, peer.cxn)
-        p = Concurrent::Promise.execute {
-          Diameter.logger.debug("Waiting for answer to message with EtE #{req.ete}")
+        q = Queue.new
+        @pending_ete[req.ete] = q
+        p = Concurrent::Promise.execute(executor: @threadpool) {
+          Diameter.logger.debug("Waiting for answer to message with EtE #{req.ete}, queue #{q}")
           val = q.pop
           Diameter.logger.debug("Promise fulfilled for message with EtE #{req.ete}")
           val
@@ -233,7 +248,6 @@ module Diameter
 
     def handle_cea(cea)
       peer = cea.avp_by_name('Origin-Host').octet_string
-      # puts peer
       if @peer_table.has_key? peer
         @peer_table[peer].state = :UP
         @peer_table[peer].reset_timer

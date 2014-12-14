@@ -50,4 +50,4 @@ Only a small handful of AVPs are implemented - more can be added just by editing
 
 ### Portability
 * Ruby 1.8? I'm not sure there will be demand.
-* JRuby - either resolve issues with stack_transport_helpers or write a JRuby-specific version calling Java classes
+* Testing on Windows/Mac OS X

@@ -39,6 +39,10 @@ describe 'A server DiameterStack' do
     @s.start
   end
 
+  after do
+    @s.shutdown
+  end
+
   it 'moves the peer from CLOSED into UP when a CER is received' do
     @s.peer_state('bob').must_equal :CLOSED
 
@@ -139,6 +143,10 @@ describe 'A server DiameterStack with an existing connection' do
     @s.handle_message(make_cer(avps), @bob_socket_id)
 
     @s.peer_state('bob').must_equal :UP
+  end
+
+  after do
+    @s.shutdown
   end
 
   it 'invokes handlers on receipt of a message' do
