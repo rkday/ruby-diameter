@@ -1,9 +1,10 @@
-This repository contains a simple Diameter parser/message creation library in Ruby. In the future, it will also contain a Diameter stack in Ruby.
+This repository contains a simple Diameter parser and stack in Ruby.
 
 ## Getting started
 
-`diameter-server.rb` is some example code which can:
+`functional_test/basic_stacks.rb` contains some code which can:
 
+* Set a handler for a particular Diameter application
 * Read Diameter messages off a TCP connection
 * Parse them and read individual AVPs
 * Create a response to Diameter messages
@@ -14,27 +15,29 @@ This repository contains a simple Diameter parser/message creation library in Ru
 
 The message parsing and sending code has been verified (using Wireshark to check that the parsed values are correct and that the sent message is valid).
 
-There's no full stack - you'll need to handle CERs and CEAs manually. For short scripted tests there should be no need to handle watchdog or disconnect requests.
+The Diameter stack works for basic use - it can create/accept peer connections, do the CER/CEA exchange, and allows you to register handlers for Diameter applications.
 
-Only a small handful of AVPs are implemented - more can be added just by editing the dictionary in the AVPNames class in `avp.rb`.
+Only a small handful of AVPs are implemented - more can be added just by editing the AVAILABLE_AVPS dictionary in  `constants.rb`, or at runtime by calling `AVP.define`.
 
 ## TODOs
 
 ### Infrastructure
-* Package as a gem
-* Set up appropriate YARD API documentation
-* Set up handwritten documentation
+* Set up handwritten documentation (readthedocs.org?)
 
 ### Completeness
-* Implement more AVPs
-* Make it possible to add AVPs without code edits (loading CSV files?)
+* Implement more AVPs (at least all the RFC 3877 and all the 3GPP ones)
 * Implement the remaining Derived AVP Data Formats (Time, UTF8String, DiameterURI, DiameterIdentity)
+* continue to improve the YARD API documentation
 
 ### Stack
-* Add a stack that can:
-  * handle TCP/SCTP connections to peers behind the scenes
-  * handle CER/CEA, DWR/DWA and DPR/DPA messages automatically
-  * handle failover/failback
+* Allow disconnecting from peers
+* SCTP support
+* Send watchdog requests on a timer and track unresponsive peers
+* Handle failover/failback
+* Handle more complex routing (e.g. based on realms or via a designated proxy)
+* Provide proxy/redirect/relay function
+* Flesh out the state machine, including e.g. disconnection support
+* Dynamic peer discovery
 
 ### APIs
 * Test the APIs in a variety of use-cases (e.g. server and client, test tools, maybe a real app?)
@@ -43,5 +46,4 @@ Only a small handful of AVPs are implemented - more can be added just by editing
 * Ensure conformance to https://github.com/bbatsov/ruby-style-guide
 
 ### Tests
-* Have more testcases
-* Set up an infrastructure for reading and parsing .pcap files, so parsed messages can be manually checked against Wireshark
+* Set up an infrastructure for reading and parsing .pcap or PDML files, so parsed messages can be manually checked against Wireshark
