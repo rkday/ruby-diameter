@@ -45,7 +45,7 @@ module Diameter
 
           existing_data = @data[r]
           if existing_data.length < 4
-            msg, _src = r.recvfrom_nonblock(4 - existing_data.length)
+            msg, _src = r.recv_nonblock(4 - existing_data.length)
             if msg == ''
               Diameter.logger.warn('Received 0 bytes on read, closing connection')
               close(r)
@@ -59,7 +59,7 @@ module Diameter
             expected_len = Message.length_from_header(existing_data[0..4])
             Diameter.logger.debug("Read 4 bytes #{existing_data[0..4].inspect}, " \
                                   "reading full message of length #{expected_len}")
-            msg, _src = r.recvfrom_nonblock(expected_len - existing_data.length)
+            msg, _src = r.recv_nonblock(expected_len - existing_data.length)
             existing_data += msg
             if msg == ''
               # Connection closed
@@ -78,7 +78,7 @@ module Diameter
       end
 
       def send(bytes, connection)
-        connection.sendmsg(bytes)
+        connection.send(bytes, 0)
       end
     end
 

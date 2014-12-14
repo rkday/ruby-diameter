@@ -74,6 +74,10 @@ describe 'Stack interactions' do
 
     maa = @client_stack.send_request(mar)
     sleep 0.1
-    proc do maa = @client_stack.send_request(mar) end.must_raise IOError
+    if RUBY_ENGINE != 'rbx'
+      proc do maa = @client_stack.send_request(mar) end.must_raise IOError
+    else
+      proc do maa = @client_stack.send_request(mar) end.must_raise Errno::EBADF
+    end
   end
 end
