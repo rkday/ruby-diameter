@@ -15,6 +15,8 @@ module Diameter
         @loop_thread = nil
         @accept_loop_thread = nil
         @connection_lock = Mutex.new
+        @wakeup_pipe_rd, @wakeup_pipe_wr = IO.pipe
+        @all_connections << @wakeup_pipe_rd
       end
 
       def start_main_loop
@@ -27,21 +29,21 @@ module Diameter
       end
 
       def wakeup
-        @loop_thread.raise
+        @wakeup_pipe_wr.puts "wakeup"
       end
 
       def main_loop
-        begin
           rs, _ws, es = IO.select(@all_connections, [], @all_connections)
-        rescue RuntimeError
-          return
-        end
 
         es.each do |e|
           Diameter.logger.log(Logger::WARN, "Exception on connection #{e}")
         end
 
         rs.each do |r|
+          if r == @wakeup_pipe_rd
+            r.gets
+            next
+          end
 
           existing_data = @data[r]
           if existing_data.length < 4
