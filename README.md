@@ -1,5 +1,8 @@
 This repository contains a simple Diameter parser and stack in Ruby.
 
+
+[![Gem Version](https://badge.fury.io/rb/diameter.png)](http://badge.fury.io/rb/diameter)[![Travis CI status](https://travis-ci.org/rkday/ruby-diameter.svg?branch=master)](https://travis-ci.org/rkday/ruby-diameter)[![Code Climate](https://codeclimate.com/github/rkday/ruby-diameter/badges/gpa.svg)](https://codeclimate.com/github/rkday/ruby-diameter)[![License](https://img.shields.io/badge/license-MIT-green.svg)](http://opensource.org/licenses/MIT)[![Inline docs](http://inch-ci.org/github/rkday/ruby-diameter.png?branch=master)](http://inch-ci.org/github/rkday/ruby-diameter)
+
 ## Getting started
 
 `functional_test/basic_stacks.rb` contains some code which can:
