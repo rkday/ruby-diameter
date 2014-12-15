@@ -51,12 +51,14 @@ module Diameter
 
     include AVPParser
 
+    # @api private
+    #
+    # Prefer {AVP.create} where possible.
     def initialize(code, options = {})
       @code = code
       @vendor_id = options[:vendor_id] || 0
       @content = options[:content] || ''
-      @mandatory = options[:mandatory]
-      @mandatory = true if @mandatory.nil?
+      @mandatory = options.fetch(:mandatory, true)
     end
 
     # Creates an AVP by name, and assigns it a value.
@@ -66,6 +68,10 @@ module Diameter
     #   that AVP - e.g. a Fixnum for an AVP defined as Unsigned32, a
     #   String for an AVP defined as OctetString, or an IPAddr for an AVP
     #   defined as IPAddress.
+    # @option opts [true, false] mandatory
+    #   Whether understanding this AVP is mandatory within this
+    #   application.
+    #
     # @return [AVP] The AVP that was created.
     def self.create(name, val, options = {})
       code, type, vendor = AVPNames.get(name)
@@ -103,22 +109,7 @@ module Diameter
         to_wire_novendor
       end
     end
-    
-    def to_wire_novendor
-      length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 8)
-      avp_flags = @mandatory ? '01000000' : '00000000'
-      header = [@code, avp_flags, length_8, length_16].pack('NB8Cn')
-      header + padded_content
-    end
 
-    def to_wire_vendor
-      length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 12)
-      avp_flags = @mandatory ? '11000000' : '10000000'
-      header = [@code, avp_flags, length_8, length_16, @vendor_id].pack('NB8CnN')
-      header + padded_content
-    end
-
-    
     # Guessing the type of an AVP and displaying it sensibly is complex,
     # so this is a complex method (but one that has a unity of purpose,
     # so can't easily be broken down). Disable several Rubocop
@@ -216,6 +207,8 @@ module Diameter
       grouped_value.select { |a| a.code == code }
     end
 
+    alias_method :[], :inner_avp
+    
     # Even though it is just "the raw bytes in the content",
     # octet_string is only one way of interpreting the AVP content and
     # shouldn't be treated differently to the others, so disable the
@@ -369,6 +362,20 @@ module Diameter
       when IPADDR
         avp.ip_address = val
       end
+    end
+
+    def to_wire_novendor
+      length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 8)
+      avp_flags = @mandatory ? '01000000' : '00000000'
+      header = [@code, avp_flags, length_8, length_16].pack('NB8Cn')
+      header + padded_content
+    end
+
+    def to_wire_vendor
+      length_8, length_16 = UInt24.to_u8_and_u16(@content.length + 12)
+      avp_flags = @mandatory ? '11000000' : '10000000'
+      header = [@code, avp_flags, length_8, length_16, @vendor_id].pack('NB8CnN')
+      header + padded_content
     end
 
     protected

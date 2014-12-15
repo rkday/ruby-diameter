@@ -1,6 +1,7 @@
 require 'diameter/avp_parser'
 require 'diameter/u24'
 
+# The Diameter module
 module Diameter
   # A Diameter message.
   #
@@ -17,16 +18,14 @@ module Diameter
   #   The end-to-end identifier of this message.
   # @!attribute [r] request
   #   Whether this message is a request.
+  # @!attribute [r] answer
+  #   Whether this message is an answer.
   class Message
-    attr_reader :version, :command_code, :app_id, :hbh, :ete, :request
+    attr_reader :version, :command_code, :app_id, :hbh, :ete, :request, :answer
     include Internals
-    
-    # @!attribute [r] answer
-    #   Whether this message is an answer.
-    def answer
-      !@request
-    end
 
+    # Creates a new Diameter message.
+    #
     # @option opts [Fixnum] command_code
     #   The Diameter Command-Code of this messsage.
     # @option opts [Fixnum] app_id
@@ -52,6 +51,7 @@ module Diameter
       @ete = options[:ete] || Message.next_ete
 
       @request = options.fetch(:request, true)
+      @answer = !@request
       @proxyable = options.fetch(:proxyable, false)
       @retransmitted = false
       @error = false
@@ -90,8 +90,10 @@ module Diameter
     # Returns the first AVP with the given name. Only covers "top-level"
     # AVPs - it won't look inside Grouped AVPs.
     #
+    # Also available as [], e.g. message['Result-Code']
+    #
     # @param name [String] The AVP name, either one predefined in
-    #   {AVPNames::AVAILABLE_AVPS} or user-defined with {AVP.define}
+    #   {Constants::AVAILABLE_AVPS} or user-defined with {AVP.define}
     #
     # @return [AVP] if there is an AVP with that name
     # @return [nil] if there is not an AVP with that name
@@ -104,7 +106,7 @@ module Diameter
     # AVPs - it won't look inside Grouped AVPs.
     #
     # @param name [String] The AVP name, either one predefined in
-    #   {AVPNames::AVAILABLE_AVPS} or user-defined with {AVP.define}
+    #   {Constants::AVAILABLE_AVPS} or user-defined with {AVP.define}
     #
     # @return [Array<AVP>]
     def all_avps_by_name(name)
@@ -115,7 +117,10 @@ module Diameter
     alias_method :avp, :avp_by_name
     alias_method :[], :avp_by_name
     alias_method :avps, :all_avps_by_name
-    
+
+    # @private
+    # Prefer AVP.define and the by-name versions to this
+    #
     # Returns the first AVP with the given code and vendor. Only covers "top-level"
     # AVPs - it won't look inside Grouped AVPs.
     #
@@ -133,6 +138,9 @@ module Diameter
       end
     end
 
+    # @private
+    # Prefer AVP.define and the by-name versions to this
+    #
     # Returns all AVPs with the given code and vendor. Only covers "top-level"
     # AVPs - it won't look inside Grouped AVPs.
     #
@@ -154,25 +162,24 @@ module Diameter
 
     # Does this message contain a (top-level) AVP with this name?
     # @param name [String] The AVP name, either one predefined in
-    #   {AVPNames::AVAILABLE_AVPS} or user-defined with {AVP.define}
+    #   {Constants::AVAILABLE_AVPS} or user-defined with {AVP.define}
     #
     # @return [true, false]  
     def has_avp?(name)
       !!avp(name)
     end
 
-    # @api private
+    # @private
     #
-    # Adds an AVP to this message. Not recommended for normal use -
-    # all AVPs should be given to the constructor. Used to allow the
-    # stack to add appropriate Origin-Host/Origin-Realm AVPs to outbound
-    # messages.
-    # @param name [String] The AVP name, either one predefined in
-    #   {AVPNames::AVAILABLE_AVPS} or user-defined with {AVP.define}
-    # @param value [Object] The AVP value, with type dependent on the
-    #   AVP itself.
-    def add_avp(name, value)
-      @avps << AVP.create(name, value)
+    # Not recommended for normal use - all AVPs should be given to the
+    # constructor. Used to allow the stack to add appropriate
+    # Origin-Host/Origin-Realm AVPs to outbound messages.
+    #
+    # @param host [String] The Diameter Identity for the stack.
+    # @param realm [String] The Diameter realm for the stack.
+    def add_origin_host_and_realm(host, realm)
+      @avps << AVP.create("Origin-Host", host) unless has_avp? 'Origin-Host'
+      @avps << AVP.create("Origin-Realm", realm) unless has_avp? 'Origin-Realm'
     end
     
     # @!endgroup
@@ -207,6 +214,7 @@ module Diameter
       avps = Internals::AVPParser.parse_avps_int(bytes[20..-1])
       Message.new(version: version, command_code: command_code, app_id: app_id, hbh: hbh, ete: ete, request: request, proxyable: proxyable, retransmitted: false, error: false, avps: avps)
     end
+    
     # @!endgroup
 
     # Generates an answer to this request, filling in a Result-Code or

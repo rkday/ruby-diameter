@@ -9,10 +9,21 @@ require 'concurrent'
 module Diameter
   class Stack
     include Internals
-    def initialize(host, realm, opts={})
+
+    # @!group Setup methods
+
+    # Stack constructor.
+    #
+    # @note The stack does not advertise any applications to peers by
+    #  default - {#add_handler} must be called early on.
+    #
+    # @param host [String] The Diameter Identity of this stack (for
+    #  the Origin-Host AVP).
+    # @param realm [String] The Diameter realm of this stack (for
+    #  the Origin-Realm AVP).
+    def initialize(host, realm)
       @local_host = host
       @local_realm = realm
-      @local_port = opts[:port] || 3868
 
       @auth_apps = []
       @acct_apps = []
@@ -34,15 +45,43 @@ module Diameter
       Diameter.logger.log(Logger::INFO, 'Stack initialized')
     end
 
-    # @!group Setup methods
+    # Complete the stack initialization and begin reading from the TCP connections.
     def start
       @tcp_helper.start_main_loop
     end
 
-    def listen_for_tcp
-      @tcp_helper.setup_new_listen_connection("0.0.0.0", @local_port)
+    # Begins listening for inbound Diameter connections (making this a
+    # Diameter server instead of just a client).
+    #
+    # @param port [Fixnum] The TCP port to listen on (default 3868)
+    def listen_for_tcp(port=3868)
+      @tcp_helper.setup_new_listen_connection("0.0.0.0", port)
     end
 
+    # Adds a handler for a specific Diameter application.
+    #
+    # @note If you expect to only send requests for this application,
+    #  not receive them, the block can be a no-op (e.g. `{ nil }`)
+    #
+    # @param app_id [Fixnum] The Diameter application ID.
+    # @option opts [true, false] auth
+    #   Whether we should advertise support for this application in
+    #   the Auth-Application-ID AVP. Note that at least one of auth or
+    #   acct must be specified.
+    # @option opts [true, false] acct
+    #   Whether we should advertise support for this application in
+    #   the Acct-Application-ID AVP. Note that at least one of auth or
+    #   acct must be specified.
+    # @option opts [Fixnum] vendor
+    #  If we should advertise support for this application in a
+    #  Vendor-Specific-Application-Id AVP, this specifies the
+    #  associated Vendor-Id.
+    #
+    # @yield [req, cxn] Passes a Diameter message (and its originating
+    #  connection) for application-specific handling.
+    # @yieldparam [Message] req The parsed Diameter message from the peer.
+    # @yieldparam [Socket] cxn The TCP connection to the peer, to be
+    #  passed to {Stack#send_answer}.
     def add_handler(app_id, opts={}, &blk)
       vendor = opts.fetch(:vendor, 0)
       auth = opts.fetch(:auth, false)
@@ -58,6 +97,8 @@ module Diameter
 
     # @!endgroup
 
+    # This shuts the stack down, closing all TCP connections and
+    # terminating any background threads still waiting for an answer.
     def shutdown
       @tcp_helper.shutdown
       @pending_ete.each do |ete, q|
@@ -68,6 +109,12 @@ module Diameter
       @threadpool.wait_for_termination(5)
     end
 
+    # Closes the given connection, blanking out any internal data
+    # structures associated with it.
+    #
+    # Likely to be moved to the Peer object in a future release/
+    #
+    # @param connection [Socket] The connection to close.
     def close(connection)
       @tcp_helper.close(connection)
     end
@@ -78,12 +125,11 @@ module Diameter
     # network location indicated by peer_uri.
     #
     # @param peer_uri [URI] The aaa:// URI identifying the peer. Should
-    #   contain a hostname/IP; may contain a port (default 3868) and a
-    #   transport param indicating TCP or SCTP (default TCP).
+    #   contain a hostname/IP; may contain a port (default 3868).
     # @param peer_host [String] The DiameterIdentity of this peer, which
     #   will uniquely identify it in the peer table.
     # @param realm [String] The Diameter realm of this peer.
-    def connect_to_peer(peer_uri, peer_host, _realm)
+    def connect_to_peer(peer_uri, peer_host, realm)
       uri = URI(peer_uri)
       cxn = @tcp_helper.setup_new_connection(uri.host, uri.port)
       avps = [AVP.create('Origin-Host', @local_host),
@@ -102,10 +148,16 @@ module Diameter
       # Will move to :UP when the CEA is received
     end
 
+    # Sends a Diameter request. This is routed to an appropriate peer
+    # based on the Destination-Host AVP.
+    #
+    # This adds this stack's Origin-Host and Origin-Realm AVPs, if
+    # those AVPs don't already exist.
+    #
+    # @param req [Message] The request to send.
     def send_request(req)
       fail "Must pass a request" unless req.request
-      req.add_avp('Origin-Host', @local_host) unless req.has_avp? 'Origin-Host'
-      req.add_avp('Origin-Realm', @local_realm) unless req.has_avp? 'Origin-Realm'
+      req.add_origin_host_and_realm(@local_host, @local_realm) 
       peer_name = req.avp_by_name('Destination-Host').octet_string
       state = peer_state(peer_name)
       if state == :UP
@@ -125,13 +177,28 @@ module Diameter
       end
     end
 
+    # Sends a Diameter answer. This is sent over the same connection
+    # the request was received on (which needs to be passed into to
+    # this method).
+    #
+    # This adds this stack's Origin-Host and Origin-Realm AVPs, if
+    # those AVPs don't already exist.
+    #
+    # @param ans [Message] The Diameter answer
+    # @param original_cxn [Socket] The connection which the request
+    #   came in on. This will have been passed to the block registered
+    #   with {Stack#add_handler}.
     def send_answer(ans, original_cxn)
       fail "Must pass an answer" unless ans.answer
-      ans.add_avp('Origin-Host', @local_host) unless ans.has_avp? 'Origin-Host'
-      ans.add_avp('Origin-Realm', @local_realm) unless ans.has_avp? 'Origin-Realm'
+      ans.add_origin_host_and_realm(@local_host, @local_realm) 
       @tcp_helper.send(ans.to_wire, original_cxn)
     end
 
+    # Retrieves the current state of a peer, defaulting to :CLOSED if
+    # the peer does not exist.
+    #
+    # @param id [String] The Diameter identity of the peer.
+    # @return [Keyword] The state of the peer (:UP, :WAITING or :CLOSED).
     def peer_state(id)
       if !@peer_table.key? id
         :CLOSED
@@ -143,6 +210,9 @@ module Diameter
     # @!endgroup
     
     # @private
+    # Handles a Diameter request straight from a network connection.
+    # Intended to be called by TCPStackHelper after it retrieves a
+    # message, not directly by users.
     def handle_message(msg_bytes, cxn)
       # Common processing - ensure that this message has come in on this
       # peer's expected connection, and update the last time we saw
