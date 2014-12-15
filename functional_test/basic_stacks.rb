@@ -7,12 +7,12 @@ include Diameter
 describe 'Stack interactions' do
 
   before do
-    @server_stack = Stack.new("rkd2.local", "my-realm", port: 3869)
+    @server_stack = Stack.new("rkd2.local", "my-realm")
     @server_stack.add_handler(16777216, auth: true, vendor: 10415) do |req, cxn|
       avps = [AVP.create('User-Name', 'shibboleth')]
       @server_stack.send_answer(req.create_answer(2001, avps: avps), cxn)
     end
-    @server_stack.listen_for_tcp
+    @server_stack.listen_for_tcp(3869)
     @server_stack.start
 
     @client_stack = Stack.new("rkd.local", "my-realm")
