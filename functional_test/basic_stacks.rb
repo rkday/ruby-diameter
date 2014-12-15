@@ -47,7 +47,7 @@ describe 'Stack interactions' do
     mar = Message.new(command_code: 303, app_id: 16777216, avps: avps)
 
     maa = @client_stack.send_request(mar)
-    maa.value['User-Name'][0].octet_string.must_equal 'shibboleth'
+    maa.value['User-Name'].octet_string.must_equal 'shibboleth'
   end
 
   it "can't send a request over a closed connection" do

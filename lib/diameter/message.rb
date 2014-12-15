@@ -113,7 +113,8 @@ module Diameter
     end
 
     alias_method :avp, :avp_by_name
-    alias_method :[], :all_avps_by_name
+    alias_method :[], :avp_by_name
+    alias_method :avps, :all_avps_by_name
     
     # Returns the first AVP with the given code and vendor. Only covers "top-level"
     # AVPs - it won't look inside Grouped AVPs.
