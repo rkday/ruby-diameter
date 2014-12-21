@@ -34,12 +34,12 @@ module Diameter
       @peer_table = {}
       @handlers = {}
 
-      @threadpool = pool = Concurrent::ThreadPoolExecutor.new(
-                                                              min_threads: 5,
-                                                              max_threads: 5,
-                                                              max_queue: 100,
-                                                              overflow_policy: :caller_runs
-                                                              )
+      @threadpool = Concurrent::ThreadPoolExecutor.new(
+                                                       min_threads: 5,
+                                                       max_threads: 5,
+                                                       max_queue: 1,
+                                                       overflow_policy: :caller_runs
+                                                       )
 
       
       Diameter.logger.log(Logger::INFO, 'Stack initialized')
