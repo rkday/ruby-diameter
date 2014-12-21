@@ -13,7 +13,8 @@ end
 describe 'A client DiameterStack' do
 
   before do
-    # Mock out the interactions with the real world
+
+    # Arbitrary set of application and vendor IDs
     @auth_app_id = 166578
     @acct_app_id_1 = 6767673
     @acct_app_id_2 = 76654
@@ -22,7 +23,8 @@ describe 'A client DiameterStack' do
 
     @vendor_1 = 56657
     @vendor_2 = 65543
-    
+
+    #  Create a stack with no-op handlers for those apps
     @s = Stack.new("testhost", "testrealm")
     @s.add_handler(@auth_app_id, auth: true) { nil }
     @s.add_handler(@acct_app_id_1, acct: true) { nil }
@@ -32,7 +34,11 @@ describe 'A client DiameterStack' do
 
     @socket_id = 1004
 
+    # Mock out the real-world TCP interactions
     Internals::TCPStackHelper.any_instance.stubs(:setup_new_connection).returns(@socket_id)
+
+    # Basic sanity check on every message sent - does it have the
+    # "version 1" Diameter first header byte?
     Internals::TCPStackHelper.any_instance.stubs(:send).with { |x, _c| x[0] == "\x01" }.returns(nil)
   end
 
@@ -166,6 +172,45 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
     promised_maa.wait
     promised_maa.state.must_equal :fulfilled
+  end
+
+  it 'adds the Origin-Host and Origin-Realm AVPs to answers' do
+    avps = [AVP.create('User-Name', 'shibboleth')]
+    maa = Message.new(command_code: 304, request: false, app_id: 0, avps: avps)
+
+    Internals::TCPStackHelper.any_instance.expects(:send)
+      .with do |x,c|
+      c.must_equal @bob_socket_id
+      maa2 = Message.from_bytes(x)
+      maa2['User-Name'].octet_string.must_equal 'shibboleth'
+      maa2['Origin-Host'].octet_string.must_equal 'testhost'
+      maa2['Origin-Realm'].octet_string.must_equal 'testrealm'
+    end
+      .returns(nil)
+
+    @s.send_answer(maa, @bob_socket_id)
+  end
+
+  it 'doesn\'t overwrite existing Origin-Host and Origin-Realm AVPs on answers' do
+    avps = [AVP.create('User-Name', 'shibboleth'),
+            AVP.create('Origin-Host', 'abcd'),
+            AVP.create('Origin-Realm', 'efgh'),
+           ]
+    maa = Message.new(command_code: 304, request: false, app_id: 0, avps: avps)
+
+    Internals::TCPStackHelper.any_instance.expects(:send)
+      .with do |x,c|
+      c.must_equal @bob_socket_id
+      maa2 = Message.from_bytes(x)
+      maa2['User-Name'].octet_string.must_equal 'shibboleth'
+      maa2['Origin-Host'].octet_string.must_equal 'abcd'
+      maa2['Origin-Realm'].octet_string.must_equal 'efgh'
+      maa2.avps('Origin-Host').length.must_equal 1
+      maa2.avps('Origin-Realm').length.must_equal 1
+    end
+      .returns(nil)
+
+    @s.send_answer(maa, @bob_socket_id)
   end
 
   it 'responds with a DWA when a DWR is received' do
