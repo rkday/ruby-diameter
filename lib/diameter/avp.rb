@@ -1,6 +1,7 @@
 require 'diameter/avp_parser'
 require 'diameter/u24'
 require 'diameter/constants'
+require 'diameter/avp_names'
 require 'ipaddr'
 
 module Diameter
@@ -353,13 +354,23 @@ module Diameter
 
     def self.set_content(avp, type, val)
       case type
-      when GROUPED
+      when Grouped
         avp.grouped_value = val
-      when U32
-        avp.uint32 = val
-      when OCTETSTRING
+      when OctetString
         avp.octet_string = val
-      when IPADDR
+      when Unsigned32
+        avp.uint32 = val
+      when Unsigned64
+        avp.uint64 = val
+      when Integer32
+        avp.int32 = val
+      when Integer64
+        avp.int64 = val
+      when Float32
+        avp.float32 = val
+      when Float64
+        avp.float64 = val
+      when IPAddress
         avp.ip_address = val
       end
     end
