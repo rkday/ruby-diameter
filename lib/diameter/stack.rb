@@ -5,6 +5,7 @@ require 'diameter/message'
 require 'diameter/stack_transport_helpers'
 require 'diameter/diameter_logger'
 require 'concurrent'
+require 'dnsruby'
 
 module Diameter
   class Stack
@@ -41,7 +42,7 @@ module Diameter
                                                        overflow_policy: :caller_runs
                                                        )
 
-      
+      @res = Dnsruby::Resolver.new
       Diameter.logger.log(Logger::INFO, 'Stack initialized')
     end
 
@@ -120,6 +121,23 @@ module Diameter
     end
     
     # @!group Peer connections and message sending
+
+    def connect_to_realm(realm)
+      possible_peers = []
+      @res.query("_diameter._tcp.#{realm}", "SRV").each_answer do |a|
+        possible_peers << {name: a.target.to_s, port: a.port, priority: a.priority, weight: a.weight}
+      end
+
+      # Prefer the lowest priority and the highest weight
+      possible_peers.sort!{ |a, b| (a[:priority] <=> b[:priority]) || (b[:weight] <=> a[:weight])}
+      Diameter.logger.debug("Sorted list of peers for realm #{realm} is #{possible_peers.inspect}")
+
+      primary = possible_peers[0]
+
+      url = "aaa://#{primary[:name]}:#{primary[:port]}"
+      Diameter.logger.info("Primary peer for realm #{realm} is #{primary[:name]}, (#{url})")
+      connect_to_peer(url, primary[:name], realm)
+    end
     
     # Creates a Peer connection to a Diameter agent at the specific
     # network location indicated by peer_uri.

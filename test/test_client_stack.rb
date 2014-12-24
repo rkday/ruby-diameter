@@ -63,6 +63,27 @@ describe 'A client DiameterStack' do
     @s.connect_to_peer('aaa://localhost', 'bob', 'bob-realm')
   end
 
+  it 'sends a CER to the top peer when connecting to a realm' do
+    primary_host = "peer1.bob-realm"
+    primary_port = 5676
+
+    host2 = "peer2.bob-realm"
+    host3 = "peer3.bob-realm"
+    host4 = "peer4.bob-realm"
+    
+    # Mock out the real-world TCP interactions
+    Internals::TCPStackHelper.any_instance.expects(:setup_new_connection).with(primary_host, primary_port).returns(@socket_id)
+
+    fake_answer = Dnsruby::Message.new
+    fake_answer.add_answer(Dnsruby::RR.create(type: "SRV", name: "_diameter._tcp.bob-realm", target: host2, port: primary_port, priority: 2, weight: 50))
+    fake_answer.add_answer(Dnsruby::RR.create(type: "SRV", name: "_diameter._tcp.bob-realm", target: primary_host, port: primary_port, priority: 1, weight: 100))
+    fake_answer.add_answer(Dnsruby::RR.create(type: "SRV", name: "_diameter._tcp.bob-realm", target: host3, port: primary_port, priority: 2, weight: 100))
+    fake_answer.add_answer(Dnsruby::RR.create(type: "SRV", name: "_diameter._tcp.bob-realm", target: host4, port: primary_port, priority: 4, weight: 100))
+    
+    Dnsruby::Resolver.any_instance.stubs(:query).with("_diameter._tcp.bob-realm", "SRV").returns(fake_answer)
+    @s.connect_to_realm('bob-realm')
+  end
+
   it 'moves into UP when a successful CEA is received' do
     @s.connect_to_peer('aaa://localhost', 'bob', 'bob-realm')
       

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'diameter'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1pre1'
   s.licenses    = ['MIT']
   s.summary     = "Pure-Ruby Diameter stack"
   s.authors     = ["Rob Day"]
@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://rkday.github.io/ruby-diameter/api-docs/master/'
 
   s.add_runtime_dependency 'concurrent-ruby', '~> 0.7'
+  s.add_runtime_dependency 'dnsruby', '~> 1'
 
   s.add_development_dependency 'rubocop', '~> 0.28'
   s.add_development_dependency 'yard', '0.8'
