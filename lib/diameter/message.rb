@@ -26,22 +26,23 @@ module Diameter
 
     # Creates a new Diameter message.
     #
-    # @option opts [Fixnum] command_code
+    # @param [Hash] options The options
+    # @option options [Fixnum] command_code
     #   The Diameter Command-Code of this messsage.
-    # @option opts [Fixnum] app_id
+    # @option options [Fixnum] app_id
     #   The Diameter application ID of this message, or 0 for base
     #   protocol messages.
-    # @option opts [Fixnum] hbh
+    # @option options [Fixnum] hbh
     #   The hop-by-hop identifier of this message.
-    # @option opts [Fixnum] ete
+    # @option options [Fixnum] ete
     #   The end-to-end identifier of this message.
-    # @option opts [true, false] request
+    # @option options [true, false] request
     #   Whether this message is a request. Defaults to true.
-    # @option opts [true, false] proxyable
+    # @option options [true, false] proxyable
     #   Whether this message can be forwarded on. Defaults to true.
-    # @option opts [true, false] error
+    # @option options [true, false] error
     #   Whether this message is a Diameter protocol error. Defaults to false.
-    # @option opts [Array<AVP>] avps
+    # @option options [Array<AVP>] avps
     #   The list of AVPs to include on this message.
     def initialize(options = {})
       @version = 1
