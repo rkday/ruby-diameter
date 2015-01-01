@@ -35,6 +35,15 @@ module Diameter
         @wakeup_pipe_wr.puts "wakeup"
       end
 
+      def read_from(connection, bytes)
+        msg, src = connection.recv_nonblock(bytes)
+        if msg == ''
+          Diameter.logger.warn('Received 0 bytes on read, closing connection')
+          close(connection)
+        end
+        return msg, src
+      end
+
       def main_loop
           rs, _ws, es = IO.select(@all_connections + [@wakeup_pipe_rd], [], @all_connections)
 
@@ -50,13 +59,8 @@ module Diameter
 
           existing_data = @data[r]
           if existing_data.length < 4
-            msg, _src = r.recv_nonblock(4 - existing_data.length)
-            if msg == ''
-              Diameter.logger.warn('Received 0 bytes on read, closing connection')
-              close(r)
-            else
-              existing_data += msg
-            end
+            msg, _src = read_from(r, 4 - existing_data.length)
+            existing_data += msg
           end
 
           expected_len = -1
@@ -64,13 +68,8 @@ module Diameter
             expected_len = Message.length_from_header(existing_data[0..4])
             Diameter.logger.debug("Read 4 bytes #{existing_data[0..4].inspect}, " \
                                   "reading full message of length #{expected_len}")
-            msg, _src = r.recv_nonblock(expected_len - existing_data.length)
+            msg, _src = read_from(r, expected_len - existing_data.length)
             existing_data += msg
-            if msg == ''
-              # Connection closed
-              Diameter.logger.warn('Received 0 bytes on read, closing connection')
-              close(r)
-            end
           end
 
           if existing_data.length == expected_len
