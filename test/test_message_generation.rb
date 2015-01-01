@@ -21,3 +21,19 @@ describe 'The End-to-End identifier of a message' do
   end
 end
 
+describe 'creating an answer to a message' do
+  before do
+    @req = Message.new(command_code: 100, app_id: 106, avps: [AVP.create("User-Name", "shibboleth")])
+  end
+  
+  it 'shares the same Command-Code and Application ID' do
+    ans = @req.create_answer(2001)
+    ans.command_code.must_equal 100
+    ans.app_id.must_equal 106
+  end
+
+  it 'copies the requested AVPs' do
+    ans = @req.create_answer(2001, copying_avps: ["User-Name"])
+    ans['User-Name'].octet_string.must_equal "shibboleth"
+  end
+end

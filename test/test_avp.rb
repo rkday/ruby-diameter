@@ -14,6 +14,24 @@ describe 'AVP', 'A simple example' do
     avp.to_wire.must_equal "\x00\x00\x01\x2b\x40\x00\x00\x0c\x00\x00\x00\x00"
   end
 
+  it 'can create an Integer32 AVP' do
+    avp = AVP.create('Acct-Input-Packets', -2)
+    avp.int32.must_equal -2
+  end
+
+  it 'can create an Unsigned64 AVP' do
+    avp = AVP.create('Accounting-Sub-Session-Id', 5_000_000_000)
+    avp.uint64.must_equal 5_000_000_000
+  end
+
+  it 'can create a Float32 AVP' do
+    avp = AVP.create('Token-Rate', 1.1)
+    avp.float32.must_be_within_epsilon 1.1
+
+    avp2 = AVP.create('Token-Rate', 1.125)
+    avp2.float32.must_equal 1.125
+  end
+
   it 'can create an unpadded string AVP' do
     avp = AVP.create('Origin-Host', 'abcde')
     avp.code.must_equal 264

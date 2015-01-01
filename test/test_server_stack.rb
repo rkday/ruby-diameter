@@ -167,4 +167,23 @@ describe 'A server DiameterStack with an existing connection' do
 
     handler_invoked.must_equal true
   end
+
+  it 'ignores a message with an unknown app ID' do
+    handler_invoked = false
+
+    # Change the handler
+    @s.add_handler(@auth_app_id, auth: true) { handler_invoked = true }
+    
+    avps = [AVP.create("Auth-Application-Id", @auth_app_id),
+            AVP.create('Origin-Host', 'bob'),
+            AVP.create("Destination-Host", "rkd2.local"),
+            AVP.create("Destination-Realm", "my-realm")]
+
+    msg = Message.new(command_code: 1000, hbh: 1, ete: 1,
+                              app_id: @auth_app_id+1, avps: avps).to_wire
+
+    @s.handle_message(msg, nil)
+
+    handler_invoked.must_equal false
+  end
 end

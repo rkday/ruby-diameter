@@ -267,7 +267,7 @@ module Diameter
       elsif @handlers.has_key? msg.app_id
         @handlers[msg.app_id].call(msg, cxn)
       else
-        fail "Received unknown message of type #{msg.command_code}"
+        Diameter.logger.warn("Ignoring message from unrecognised application #{msg.app_id} (Command-Code #{msg.command_code})")
       end
     end
 
@@ -300,16 +300,17 @@ module Diameter
     end
 
     def shared_apps(capabilities_msg)
-      peer_apps = capabilities_msg.all_avps_by_name("Auth-Application-Id").collect(&:uint32)
-      peer_apps += capabilities_msg.all_avps_by_name("Acct-Application-Id").collect(&:uint32)
+      peer_apps = []
 
-      capabilities_msg.all_avps_by_name("Vendor-Specific-Application-Id").each do |avp|
-        if avp.inner_avp("Auth-Application-Id")
-          peer_apps << avp.inner_avp("Auth-Application-Id").uint32
-        end
+      app_avps = ["Auth-Application-Id", "Acct-Application-Id"]
 
-        if avp.inner_avp("Acct-Application-Id")
-          peer_apps << avp.inner_avp("Acct-Application-Id").uint32
+      app_avps.each do |name|
+        peer_apps += capabilities_msg.all_avps_by_name(name).collect(&:uint32)
+
+        capabilities_msg.all_avps_by_name("Vendor-Specific-Application-Id").each do |avp|
+          if avp.inner_avp(name)
+            peer_apps << avp.inner_avp(name).uint32
+          end
         end
       end
 
