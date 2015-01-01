@@ -130,7 +130,7 @@ end
 describe "A client DiameterStack with an established connection to 'bob'" do
 
   before do
-    @s = Stack.new("testhost", "testrealm")
+    @s = Stack.new("testhost", "testrealm", timeout: 0.1)
     @bob_socket_id = 1004
 
     Internals::TCPStackHelper.any_instance.stubs(:setup_new_connection).returns(@bob_socket_id)
@@ -193,6 +193,23 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
     promised_maa.wait
     promised_maa.state.must_equal :fulfilled
+  end
+
+  it 'times out a request after 0.1 seconds' do
+    avps = [AVP.create('Destination-Host', 'bob')]
+    mar = Message.new(command_code: 304, app_id: 0, avps: avps)
+
+    Internals::TCPStackHelper.any_instance.expects(:send)
+      .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
+      .returns(nil)
+
+    promised_maa = @s.send_request(mar)
+    promised_maa.state.must_equal :pending
+
+    sleep(0.2)
+    
+    promised_maa.state.must_equal :fulfilled
+    promised_maa.value.must_equal :timeout
   end
 
   it 'adds the Origin-Host and Origin-Realm AVPs to answers' do

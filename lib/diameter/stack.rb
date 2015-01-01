@@ -22,7 +22,10 @@ module Diameter
     #  the Origin-Host AVP).
     # @param realm [String] The Diameter realm of this stack (for
     #  the Origin-Realm AVP).
-    def initialize(host, realm)
+    # @option opts [Fixnum] timeout (60)
+    #   The number of seconds to wait for an answer before notifying
+    #   the caller of a timeout and forgetting about the request.
+    def initialize(host, realm, opts={})
       @local_host = host
       @local_realm = realm
 
@@ -34,6 +37,8 @@ module Diameter
       @tcp_helper = TCPStackHelper.new(self)
       @peer_table = {}
       @handlers = {}
+
+      @answer_timeout = opts.fetch(:timeout, 60)
 
       @threadpool = Concurrent::ThreadPoolExecutor.new(
                                                        min_threads: 5,
@@ -184,8 +189,8 @@ module Diameter
         q = Queue.new
         @pending_ete[req.ete] = q
 
-        # Time this request out after 60 seconds
-        Concurrent::timer(60) do
+        # Time this request out if no answer is received
+        Concurrent::timer(@answer_timeout) do
           q = @pending_ete.delete(req.ete)
           if q
             q.push(:timeout)
