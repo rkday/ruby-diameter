@@ -228,7 +228,9 @@ module Diameter
         @pending_ete[req.ete] = q
 
         # Time this request out if no answer is received
+        Diameter.logger.debug("Scheduling timeout for #{@answer_timeout}s time")
         Concurrent::timer(@answer_timeout) do
+          Diameter.logger.debug("Timing out message with EtE #{req.ete}")
           q = @pending_ete.delete(req.ete)
           if q
             q.push(:timeout)
