@@ -183,6 +183,15 @@ module Diameter
         @tcp_helper.send(req.to_wire, peer.cxn)
         q = Queue.new
         @pending_ete[req.ete] = q
+
+        # Time this request out after 60 seconds
+        Concurrent::timer(60) do
+          q = @pending_ete.delete(req.ete)
+          if q
+            q.push(:timeout)
+          end
+        end
+            
         p = Concurrent::Promise.execute(executor: @threadpool) {
           Diameter.logger.debug("Waiting for answer to message with EtE #{req.ete}, queue #{q}")
           val = q.pop
