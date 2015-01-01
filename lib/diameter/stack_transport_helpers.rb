@@ -48,7 +48,9 @@ module Diameter
           rs, _ws, es = IO.select(@all_connections + [@wakeup_pipe_rd], [], @all_connections)
 
         es.each do |e|
+          # :nocov:
           Diameter.logger.log(Logger::WARN, "Exception on connection #{e}")
+          # :nocov:
         end
 
         rs.each do |r|
@@ -134,7 +136,9 @@ module Diameter
       def accept_loop
         rs, _ws, es = IO.select(@listen_connections, [], @listen_connections)
         es.each do |e|
+          # :nocov:
           Diameter.logger.log(Logger::WARN, "Exception on connection #{e}")
+          # :nocov:
         end
 
         rs.each do |r|
