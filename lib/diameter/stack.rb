@@ -143,7 +143,11 @@ module Diameter
     
     # @!group Peer connections and message sending
 
-    
+    # Looks up the given Diameter realm with DNS-SRV, and establishes
+    # a connection to one peer in that realm.
+    #
+    # @param realm [String] The Diameter realm to connect to.    
+    # @return [Peer] The Diameter peer chosen.
     def connect_to_realm(realm)
       possible_peers = []
       @res.query("_diameter._tcp.#{realm}", "SRV").each_answer do |a|
@@ -169,6 +173,7 @@ module Diameter
     # @param peer_host [String] The DiameterIdentity of this peer, which
     #   will uniquely identify it in the peer table.
     # @param realm [String] The Diameter realm of this peer.
+    # @return [Peer] The Diameter peer chosen.
     def connect_to_peer(peer_uri, peer_host, realm)
       uri = URI(peer_uri)
       cxn = @tcp_helper.setup_new_connection(uri.host, uri.port)
@@ -193,7 +198,8 @@ module Diameter
     end
 
     # Sends a Diameter request. This is routed to an appropriate peer
-    # based on the Destination-Host AVP.
+    # based on the Destination-Host AVP (or, if that is absent, on the
+    # Destination-Realm AVP).
     #
     # This adds this stack's Origin-Host and Origin-Realm AVPs, if
     # those AVPs don't already exist.
