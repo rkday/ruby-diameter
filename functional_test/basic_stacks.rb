@@ -7,18 +7,19 @@ include Diameter
 describe 'Stack interactions' do
 
   before do
+    @port_base = 3868 + rand(500)
     @server_stack = Stack.new("rkd2.local", "my-realm")
     @server_stack.add_handler(16777216, auth: true, vendor: 10415) do |req, cxn|
       avps = [AVP.create('User-Name', 'shibboleth')]
       @server_stack.send_answer(req.create_answer(2001, avps: avps), cxn)
     end
-    @server_stack.listen_for_tcp(3869)
+    @server_stack.listen_for_tcp(@port_base)
     @server_stack.start
 
     @client_stack = Stack.new("rkd.local", "my-realm")
     @client_stack.add_handler(16777216, auth: true, vendor: 10415) { nil }
     @client_stack.start
-    @peer = @client_stack.connect_to_peer("aaa://127.0.0.1:3869", "rkd2.local", "my-realm")
+    @peer = @client_stack.connect_to_peer("aaa://127.0.0.1:#{@port_base}", "rkd2.local", "my-realm")
 
     @peer.wait_for_state_change :UP
   end

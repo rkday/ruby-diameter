@@ -6,8 +6,4 @@ rvm:
   - rbx-2
   - jruby-19mode
 
-matrix:
-  allow_failures:
-    - jruby-19mode
-  
-script: "rake test functional_test"
+script: "rake test functional_test DEBUG_LOGS=true"
