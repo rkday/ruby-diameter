@@ -2,7 +2,7 @@ require 'simplecov'
 
 SimpleCov.start do
   add_filter '/functional_test/'
-  coverage_dir 'fv_coverage'
+  command_name "Live Tests"
 end
 
 require 'minitest/autorun'
