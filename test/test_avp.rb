@@ -32,6 +32,18 @@ describe 'AVP', 'A simple example' do
     avp2.float32.must_equal 1.125
   end
 
+  it 'can create a Float64 AVP' do
+    AVP.define('Dummy-AVP', 1024, :Float64)
+    avp = AVP.create('Dummy-AVP', 5_000_000_000.1)
+    avp.float64.must_be_within_epsilon 5_000_000_000.1
+  end
+
+  it 'can create a Integer64 AVP' do
+    AVP.define('Dummy-AVP', 1024, :Integer64)
+    avp = AVP.create('Dummy-AVP', -5_000_000_000)
+    avp.int64.must_equal -5_000_000_000
+  end
+
   it 'can create an unpadded string AVP' do
     avp = AVP.create('Origin-Host', 'abcde')
     avp.code.must_equal 264
