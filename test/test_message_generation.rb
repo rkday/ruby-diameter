@@ -36,4 +36,20 @@ describe 'creating an answer to a message' do
     ans = @req.create_answer(2001, copying_avps: ["User-Name"])
     ans['User-Name'].octet_string.must_equal "shibboleth"
   end
+
+  it 'creates a Result-Code AVP' do
+    ans = @req.create_answer(2001)
+    ans['Result-Code'].uint32.must_equal 2001
+  end
+
+  it 'creates an Experimental-Result AVP if the experimental_result_vendor option is used' do
+    ans = @req.create_answer(3002, experimental_result_vendor: 10999)
+    ans['Experimental-Result']['Experimental-Result-Code'].uint32.must_equal 3002
+    ans['Experimental-Result']['Vendor-Id'].uint32.must_equal 10999
+  end
+
+  it "doesn't create a Result-Code AVP if the experimental_result_vendor option is used" do
+    ans = @req.create_answer(3002, experimental_result_vendor: 10999)
+    ans['Result-Code'].must_equal nil
+  end
 end

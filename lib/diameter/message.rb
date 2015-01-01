@@ -235,7 +235,9 @@ module Diameter
       
       avps = opts.fetch(:avps, [])
       avps << if opts[:experimental_result_vendor]
-                fail
+                AVP.create("Experimental-Result",
+                           [AVP.create("Experimental-Result-Code", result_code),
+                            AVP.create("Vendor-Id", opts[:experimental_result_vendor])])
               else
                 AVP.create("Result-Code", result_code)
               end
