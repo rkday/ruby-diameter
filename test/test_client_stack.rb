@@ -1,6 +1,7 @@
 require 'minitest_helper'
 require 'diameter/stack'
 require 'mocha/mini_test'
+require 'timecop'
 
 include Diameter
 
@@ -193,6 +194,27 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
     promised_maa.wait
     promised_maa.state.must_equal :fulfilled
+  end
+
+  it 'times out a request after 60 seconds' do
+    avps = [AVP.create('Destination-Host', 'bob')]
+    mar = Message.new(command_code: 304, app_id: 0, avps: avps)
+
+    Internals::TCPStackHelper.any_instance.expects(:send)
+      .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
+      .returns(nil)
+
+    promised_maa = @s.send_request(mar)
+    promised_maa.state.must_equal :pending
+
+    Timecop.travel(Time.now + 61)
+
+    # Set a no-op timer to make the timers fire
+    Concurrent::timer(1) { nil }
+    
+    promised_maa.wait
+    promised_maa.state.must_equal :fulfilled
+    promised_maa.value.must_equal :timeout
   end
 
   it 'adds the Origin-Host and Origin-Realm AVPs to answers' do
