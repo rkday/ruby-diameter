@@ -229,6 +229,7 @@ module Diameter
 
         # Time this request out if no answer is received
         Diameter.logger.debug("Scheduling timeout for #{@answer_timeout}s time")
+=begin
         Concurrent::timer(@answer_timeout) do
           Diameter.logger.debug("Timing out message with EtE #{req.ete}")
           q = @pending_ete.delete(req.ete)
@@ -236,7 +237,8 @@ module Diameter
             q.push(:timeout)
           end
         end
-            
+=end
+
         p = Concurrent::Promise.execute(executor: @threadpool) {
           Diameter.logger.debug("Waiting for answer to message with EtE #{req.ete}, queue #{q}")
           val = q.pop
