@@ -8,6 +8,21 @@ require 'concurrent'
 require 'dnsruby'
 
 module Diameter
+  class Realm
+    def initialize(peer_name)
+      @peers = []
+      add_peer(peer_name)
+    end
+
+    def add_peer(name)
+      @peers << name
+    end
+
+    def best_peer
+      @peers[0]
+    end
+  end
+  
   class Stack
     include Internals
 
@@ -36,6 +51,7 @@ module Diameter
 
       @tcp_helper = TCPStackHelper.new(self)
       @peer_table = {}
+      @realm_table = {}
       @handlers = {}
 
       @answer_timeout = opts.fetch(:timeout, 60)
@@ -127,6 +143,7 @@ module Diameter
     
     # @!group Peer connections and message sending
 
+    
     def connect_to_realm(realm)
       possible_peers = []
       @res.query("_diameter._tcp.#{realm}", "SRV").each_answer do |a|
@@ -164,11 +181,15 @@ module Diameter
       avps += app_avps
       cer_bytes = Message.new(version: 1, command_code: 257, app_id: 0, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
       @tcp_helper.send(cer_bytes, cxn)
+
+      @realm_table[realm] = Realm.new(peer_host)
+
       @peer_table[peer_host] = Peer.new(peer_host)
       @peer_table[peer_host].state = :WAITING
-      @peer_table[peer_host].cxn = cxn
-      @peer_table[peer_host]
       # Will move to :UP when the CEA is received
+      @peer_table[peer_host].cxn = cxn
+
+      @peer_table[peer_host]
     end
 
     # Sends a Diameter request. This is routed to an appropriate peer
@@ -180,8 +201,19 @@ module Diameter
     # @param req [Message] The request to send.
     def send_request(req)
       fail "Must pass a request" unless req.request
-      req.add_origin_host_and_realm(@local_host, @local_realm) 
-      peer_name = req.avp_by_name('Destination-Host').octet_string
+      req.add_origin_host_and_realm(@local_host, @local_realm)
+      peer_name = if req['Destination-Host']
+                    req['Destination-Host'].octet_string
+                  elsif req['Destination-Realm']
+                    realm = req['Destination-Realm'].octet_string
+                    if @realm_table.has_key? realm
+                      @realm_table[realm].best_peer
+                    else
+                      fail "No connection to realm #{realm}"
+                    end
+                  else
+                    fail "Request must have Destination-Host or Destination-Realm"
+                  end
       state = peer_state(peer_name)
       if state == :UP
         peer = @peer_table[peer_name]

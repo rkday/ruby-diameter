@@ -164,6 +164,29 @@ describe "A client DiameterStack with an established connection to 'bob'" do
 
   end
 
+  it 'routes subsequent messages on Destination-Realm' do
+    avps = [AVP.create('Destination-Realm', 'bob-realm')]
+    mar = Message.new(command_code: 307, app_id: 0, avps: avps)
+
+    Internals::TCPStackHelper.any_instance.expects(:send)
+      .with { |x,c| c == @bob_socket_id && x == mar.to_wire }
+      .returns(nil)
+    @s.send_request(mar)
+  end
+
+  it "can't route to an unknown Destination-Realm" do
+    avps = [AVP.create('Destination-Realm', 'eve-realm')]
+    mar = Message.new(command_code: 307, app_id: 0, avps: avps)
+
+    proc { @s.send_request(mar) }.must_raise RuntimeError
+  end
+
+  it "can't route a request with no routing AVPs" do
+    mar = Message.new(command_code: 307, app_id: 0, avps: [])
+
+    proc { @s.send_request(mar) }.must_raise RuntimeError
+  end
+
   it "can't send to a peer it isn't connected to" do
     avps = [AVP.create('Destination-Host', 'eve')]
     mar = Message.new(command_code: 305, app_id: 0, avps: avps)
