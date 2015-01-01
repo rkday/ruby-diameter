@@ -82,6 +82,11 @@ describe 'A client DiameterStack' do
     
     Dnsruby::Resolver.any_instance.stubs(:query).with("_diameter._tcp.bob-realm", "SRV").returns(fake_answer)
     @s.connect_to_realm('bob-realm')
+
+    @s.peer_state('peer1.bob-realm').must_equal :WAITING
+    @s.peer_state('peer2.bob-realm').must_equal :CLOSED
+    @s.peer_state('peer3.bob-realm').must_equal :CLOSED
+    @s.peer_state('peer4.bob-realm').must_equal :CLOSED
   end
 
   it 'moves into UP when a successful CEA is received' do
