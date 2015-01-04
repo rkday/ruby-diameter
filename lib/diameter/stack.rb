@@ -427,7 +427,7 @@ module Diameter
       Diameter.logger.debug("Handling answer with End-to-End identifier #{msg.ete}")
       q = @pending_ete[msg.ete]
       q.push msg
-      Diameter.logger.debug("Passed answer to fulfil sender's Promise object'")
+      Diameter.logger.debug("Passed answer to fulfil sender's Promise object")
       @pending_ete.delete msg.ete
     end
   end

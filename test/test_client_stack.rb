@@ -206,6 +206,7 @@ describe "A client DiameterStack with an established connection to 'bob'" do
   end
 
   it 'fulfils the promise when an answer is delivered' do
+    Diameter.logger.debug("Beginning 'fulfils the promise when an answer is delivered' test")
     avps = [AVP.create('Destination-Host', 'bob')]
     mar = Message.new(command_code: 304, app_id: 0, avps: avps)
 
@@ -217,10 +218,13 @@ describe "A client DiameterStack with an established connection to 'bob'" do
     promised_maa.state.must_equal :pending
 
     maa = mar.create_answer(2001, avps: [AVP.create('Origin-Host', 'bob')])
+    Diameter.logger.debug("Injecting Multimedia-Auth-Answer")
     @s.handle_message(maa.to_wire, @bob_socket_id)
+    Diameter.logger.debug("Multimedia-Auth-Answer handled")
 
     promised_maa.wait
     promised_maa.state.must_equal :fulfilled
+    Diameter.logger.debug("Finishing 'fulfils the promise when an answer is delivered' test")
   end
 
   it 'times out an unanswered request' do
