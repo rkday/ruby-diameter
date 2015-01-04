@@ -348,6 +348,20 @@ module Diameter
       @content = bytes
     end
 
+    NTP_OFFSET = Time.new(1900).to_i
+
+    def time
+      seconds = @content.unpack('N')[0]
+      if ((seconds & 0x80000000) == 0)
+        seconds += 4_294_967_296
+      end
+      Time.at(seconds + NTP_OFFSET)
+    end
+
+    def time=(t)
+      @content = [t.to_i - NTP_OFFSET].pack('N')
+    end
+
     # @!endgroup
 
     private
@@ -372,6 +386,10 @@ module Diameter
         avp.float64 = val
       when IPAddress
         avp.ip_address = val
+      when NTPTime
+        avp.time = val
+      else
+        fail "Unrecognised AVP type #{type}"
       end
     end
 

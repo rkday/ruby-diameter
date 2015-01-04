@@ -84,6 +84,25 @@ describe 'AVP', 'A simple example' do
     avp.to_s.must_include '::1'
   end
 
+  it 'can create a Time AVP' do
+    AVP.define('Arbitrary-Time', 1001, :Time)
+    avp = AVP.create('Arbitrary-Time', Time.new(1991, 2, 1, 15, 59))
+    avp.time.year.must_equal 1991
+  end
+
+  it 'can create a post-2036 Time AVP' do
+    AVP.define('Arbitrary-Time', 1001, :Time)
+    avp = AVP.create('Arbitrary-Time', Time.new(2050, 2, 1, 15, 59))
+    avp.time.year.must_equal 2050
+  end
+
+  it 'can parse a post-2036 Time AVP from the wire format' do
+    AVP.define('Arbitrary-Time', 1001, :Time)
+    avp = AVP.create('Arbitrary-Time', Time.new)
+    avp.octet_string = "\x00\x00\x00\x01"
+    avp.time.year.must_equal 2036
+  end
+
   it 'can create a grouped AVP' do
     avp = AVP.create('Vendor-Specific-Application-Id',
                      [AVP.create('Auth-Application-Id', 16_777_216),
@@ -174,10 +193,15 @@ describe 'AVP', 'A simple example' do
     avp.octet_string.length.must_equal 8
   end
 
-  it 'can handle user-defined AVP' do
+  it 'can handle user-defined AVPs' do
     AVP.define('My-Own-Personal-AVP', 1004, :Unsigned32, 100)
     avp = AVP.create('My-Own-Personal-AVP', 0)
 
     avp.octet_string.length.must_equal 4
+  end
+
+  it 'ensures user-defined AVPs have a valid type' do
+    AVP.define('My-Own-Personal-AVP', 1004, nil, 100)
+    proc { avp = AVP.create('My-Own-Personal-AVP', 0) }.must_raise RuntimeError
   end
 end

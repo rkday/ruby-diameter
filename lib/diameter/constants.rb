@@ -28,9 +28,11 @@ module Diameter
       DiameterURI = OctetString
       UTF8String = OctetString
       
-
       # Represents an AVP of IPAddress type
       IPAddress = :Address
+
+      # Represents an AVP of Time type
+      NTPTime = :Time
     end
   end
 end
