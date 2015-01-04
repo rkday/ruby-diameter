@@ -88,19 +88,35 @@ describe 'AVP', 'A simple example' do
     AVP.define('Arbitrary-Time', 1001, :Time)
     avp = AVP.create('Arbitrary-Time', Time.new(1991, 2, 1, 15, 59))
     avp.time.year.must_equal 1991
+    avp.time.month.must_equal 2
+    avp.time.day.must_equal 1
+    avp.time.hour.must_equal 15
+    avp.time.min.must_equal 59
+    avp.time.sec.must_equal 0
   end
 
   it 'can create a post-2036 Time AVP' do
     AVP.define('Arbitrary-Time', 1001, :Time)
     avp = AVP.create('Arbitrary-Time', Time.new(2050, 2, 1, 15, 59))
     avp.time.year.must_equal 2050
+    avp.time.month.must_equal 2
+    avp.time.day.must_equal 1
+    avp.time.hour.must_equal 15
+    avp.time.min.must_equal 59
+    avp.time.sec.must_equal 0
   end
 
   it 'can parse a post-2036 Time AVP from the wire format' do
+    # See RFC 6733 section 4.3.1 for the overflow case tested here
     AVP.define('Arbitrary-Time', 1001, :Time)
     avp = AVP.create('Arbitrary-Time', Time.new)
     avp.octet_string = "\x00\x00\x00\x01"
     avp.time.year.must_equal 2036
+    avp.time.month.must_equal 2
+    avp.time.day.must_equal 7
+    avp.time.hour.must_equal 6
+    avp.time.min.must_equal 28
+    avp.time.sec.must_equal 17
   end
 
   it 'can create a grouped AVP' do
