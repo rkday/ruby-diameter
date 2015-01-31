@@ -60,7 +60,7 @@ module Diameter
                                                        min_threads: 5,
                                                        max_threads: 5,
                                                        max_queue: 1,
-                                                       overflow_policy: :caller_runs
+                                                       fallback_policy: :caller_runs
                                                        )
 
       @res = Dnsruby::Resolver.new
