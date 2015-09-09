@@ -8,21 +8,6 @@ require 'concurrent'
 require 'dnsruby'
 
 module Diameter
-  class Realm
-    def initialize(peer_name)
-      @peers = []
-      add_peer(peer_name)
-    end
-
-    def add_peer(name)
-      @peers << name
-    end
-
-    def best_peer
-      @peers[0]
-    end
-  end
-  
   class Stack
     include Internals
 
@@ -51,7 +36,6 @@ module Diameter
 
       @tcp_helper = TCPStackHelper.new(self)
       @peer_table = {}
-      @realm_table = {}
       @handlers = {}
 
       @answer_timeout = opts.fetch(:timeout, 60)
@@ -187,8 +171,6 @@ module Diameter
       cer_bytes = Message.new(version: 1, command_code: 257, app_id: 0, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
       @tcp_helper.send(cer_bytes, cxn)
 
-      @realm_table[realm] = Realm.new(peer_host)
-
       @peer_table[peer_host] = Peer.new(peer_host)
       @peer_table[peer_host].state = :WAITING
       # Will move to :UP when the CEA is received
@@ -212,10 +194,11 @@ module Diameter
                     req['Destination-Host'].octet_string
                   elsif req['Destination-Realm']
                     realm = req['Destination-Realm'].octet_string
-                    if @realm_table.has_key? realm
-                      @realm_table[realm].best_peer
-                    else
+                    peer = @peer_table.values.select { |p| p.realm = realm }.sample
+                    if peer.nil?
                       fail "No connection to realm #{realm}"
+                    else
+                      peer.identity
                     end
                   else
                     fail "Request must have Destination-Host or Destination-Realm"
@@ -302,7 +285,7 @@ module Diameter
       end
 
       if msg.command_code == 257 && msg.answer
-        handle_cea(msg)
+        handle_cea(msg, cxn)
       elsif msg.command_code == 257 && msg.request
         handle_cer(msg, cxn)
       elsif msg.command_code == 280 && msg.request
@@ -391,14 +374,26 @@ module Diameter
       end
     end
 
-    def handle_cea(cea)
-      peer = cea.avp_by_name('Origin-Host').octet_string
-      if @peer_table.has_key? peer
-        @peer_table[peer].state = :UP
-        @peer_table[peer].reset_timer
+    def handle_cea(cea, cxn)
+      host = cea.avp_by_name('Origin-Host').octet_string
+      if @peer_table.has_key? host
+        @peer_table[host].state = :UP
+        @peer_table[host].reset_timer
       else
-        Diameter.logger.warn("Ignoring CEA from unknown peer #{peer}")
-        Diameter.logger.debug("Known peers are #{@peer_table.keys}")
+        entry = @peer_table.find { |h, p| p.cxn = cxn }
+        if entry.nil?
+          Diameter.logger.warn("Ignoring CEA from unknown peer #{peer}")
+          Diameter.logger.debug("Known peers are #{@peer_table.keys}")
+        else
+          old_host, peer = entry
+          Diameter.logger.warn("Peer identity changed #{old_host} => #{host}")
+
+          @peer_table.delete(old_host)
+          peer.identity = host
+          @peer_table[host] = peer
+          @peer_table[host].state = :UP
+          @peer_table[host].reset_timer
+        end
       end
     end
 
