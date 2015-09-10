@@ -187,32 +187,37 @@ module Diameter
     # those AVPs don't already exist.
     #
     # @param req [Message] The request to send.
-    def send_request(req)
+    # @param peer [Peer] (Optional) A peer to use as the first hop for the message
+    def send_request(req, peer: nil)
       fail "Must pass a request" unless req.request
       req.add_origin_host_and_realm(@local_host, @local_realm)
-      peer_name = if req['Destination-Host']
-                    req['Destination-Host'].octet_string
-                  elsif req['Destination-Realm']
-                    realm = req['Destination-Realm'].octet_string
-                    peer = @peer_table.values.select { |p| p.realm = realm }.sample
-                    if peer.nil?
-                      fail "No connection to realm #{realm}"
-                    else
-                      peer.identity
-                    end
-                  else
-                    fail "Request must have Destination-Host or Destination-Realm"
-                  end
-      state = peer_state(peer_name)
-      if state == :UP
-        peer = @peer_table[peer_name]
+
+      if peer.nil?
+        peer = if req['Destination-Host']
+                 peer_identity = req['Destination-Host'].octet_string
+                 Diameter.logger.debug("Selecting peer by Destination-Host (#{peer_identity})")
+                 @peer_table[peer_identity]
+               elsif req['Destination-Realm']
+                 realm = req['Destination-Realm'].octet_string
+                 Diameter.logger.debug("Selecting peer by Destination-Realm (#{realm})")
+                 @peer_table.values.select { |p| p.realm = realm }.sample
+               else
+                 fail "Request must have Destination-Host or Destination-Realm"
+               end
+      else
+        Diameter.logger.debug("Peer selection forced to #{peer.identity}")
+      end
+
+      if peer.nil?
+        Diameter.logger.warn("No peer is available to send message - cannot route")
+      elsif peer.state == :UP
         @tcp_helper.send(req.to_wire, peer.cxn)
         q = Queue.new
         @pending_ete[req.ete] = q
 
+=begin
         # Time this request out if no answer is received
         Diameter.logger.debug("Scheduling timeout for #{@answer_timeout}s time")
-=begin
         Concurrent::timer(@answer_timeout) do
           Diameter.logger.debug("Timing out message with EtE #{req.ete}")
           q = @pending_ete.delete(req.ete)
@@ -230,7 +235,7 @@ module Diameter
         }
         return p
       else
-        Diameter.logger.log(Logger::WARN, "Peer #{peer_name} is in state #{state} - cannot route")
+        Diameter.logger.warn("Peer #{peer.identity} is in state #{peer.state} - cannot route")
       end
     end
 
