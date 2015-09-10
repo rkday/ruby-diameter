@@ -188,9 +188,11 @@ module Diameter
     #
     # @param req [Message] The request to send.
     # @param peer [Peer] (Optional) A peer to use as the first hop for the message
-    def send_request(req, peer: nil)
+    def send_request(req, options={})
       fail "Must pass a request" unless req.request
       req.add_origin_host_and_realm(@local_host, @local_realm)
+
+      peer = options[:peer]
 
       if peer.nil?
         peer = if req['Destination-Host']
