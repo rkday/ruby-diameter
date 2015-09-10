@@ -16,4 +16,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov', '0.9' 
   s.add_development_dependency 'mocha', '1.1'
   s.add_development_dependency 'minitest-spec-context', '0.0.3'
+  s.add_development_dependency 'minitest', '5.8.0'
 end

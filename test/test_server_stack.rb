@@ -47,6 +47,7 @@ describe 'A server DiameterStack' do
     @s.peer_state('bob').must_equal :CLOSED
 
     avps = [AVP.create('Origin-Host', 'bob'),
+            AVP.create('Origin-Realm', 'bob-realm'),
             AVP.create("Vendor-Specific-Application-Id",
                        [AVP.create("Vendor-Id", @vendor_1),
                         AVP.create("Auth-Application-Id", @vendor_auth_app_id)])]
@@ -60,6 +61,7 @@ describe 'A server DiameterStack' do
     @s.peer_state('bob').must_equal :CLOSED
 
     avps = [AVP.create('Origin-Host', 'bob'),
+            AVP.create('Origin-Realm', 'bob-realm'),
             AVP.create("Vendor-Specific-Application-Id",
                        [AVP.create("Vendor-Id", @vendor_1),
                         AVP.create("Auth-Application-Id", @vendor_auth_app_id)]),]
@@ -83,6 +85,7 @@ describe 'A server DiameterStack' do
       @s.peer_state('bob').must_equal :CLOSED
 
       avps = [AVP.create('Origin-Host', 'bob'),
+              AVP.create('Origin-Realm', 'bob-realm'),
               AVP.create('Auth-Application-Id', @acct_app_id_1 - 6)]
 
       Internals::TCPStackHelper.any_instance.expects(:send)
@@ -103,6 +106,7 @@ describe 'A server DiameterStack' do
       @s.peer_state('bob').must_equal :CLOSED
 
       avps = [AVP.create('Origin-Host', 'bob'),
+              AVP.create('Origin-Realm', 'bob-realm'),
               AVP.create("Vendor-Specific-Application-Id",
                          [AVP.create("Vendor-Id", @vendor_1),
                           AVP.create("Auth-Application-Id", @vendor_auth_app_id)]),
@@ -117,6 +121,7 @@ describe 'A server DiameterStack' do
       @s.peer_state('bob').must_equal :CLOSED
 
       avps = [AVP.create('Origin-Host', 'bob'),
+              AVP.create('Origin-Realm', 'bob-realm'),
               AVP.create('Auth-Application-Id', @vendor_auth_app_id)]
       
       @s.handle_message(make_cer(avps), nil)
@@ -139,6 +144,7 @@ describe 'A server DiameterStack with an existing connection' do
     @s.start
 
     avps = [AVP.create('Origin-Host', 'bob'),
+            AVP.create('Origin-Realm', 'bob-realm'),
             AVP.create('Auth-Application-Id', @auth_app_id)]
     @s.handle_message(make_cer(avps), @bob_socket_id)
 
@@ -157,6 +163,7 @@ describe 'A server DiameterStack with an existing connection' do
     
     avps = [AVP.create("Auth-Application-Id", @auth_app_id),
             AVP.create('Origin-Host', 'bob'),
+            AVP.create('Origin-Realm', 'bob-realm'),
             AVP.create("Destination-Host", "rkd2.local"),
             AVP.create("Destination-Realm", "my-realm")]
 
@@ -176,6 +183,7 @@ describe 'A server DiameterStack with an existing connection' do
     
     avps = [AVP.create("Auth-Application-Id", @auth_app_id),
             AVP.create('Origin-Host', 'bob'),
+            AVP.create('Origin-Realm', 'bob-realm'),
             AVP.create("Destination-Host", "rkd2.local"),
             AVP.create("Destination-Realm", "my-realm")]
 

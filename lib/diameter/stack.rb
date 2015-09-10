@@ -171,7 +171,7 @@ module Diameter
       cer_bytes = Message.new(version: 1, command_code: 257, app_id: 0, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
       @tcp_helper.send(cer_bytes, cxn)
 
-      @peer_table[peer_host] = Peer.new(peer_host)
+      @peer_table[peer_host] = Peer.new(peer_host, realm)
       @peer_table[peer_host].state = :WAITING
       # Will move to :UP when the CEA is received
       @peer_table[peer_host].cxn = cxn
@@ -200,7 +200,7 @@ module Diameter
                elsif req['Destination-Realm']
                  realm = req['Destination-Realm'].octet_string
                  Diameter.logger.debug("Selecting peer by Destination-Realm (#{realm})")
-                 @peer_table.values.select { |p| p.realm = realm }.sample
+                 @peer_table.values.select { |p| p.realm == realm }.sample
                else
                  fail "Request must have Destination-Host or Destination-Realm"
                end
@@ -210,6 +210,7 @@ module Diameter
 
       if peer.nil?
         Diameter.logger.warn("No peer is available to send message - cannot route")
+        fail "No acceptable peer"
       elsif peer.state == :UP
         @tcp_helper.send(req.to_wire, peer.cxn)
         q = Queue.new
@@ -369,8 +370,9 @@ module Diameter
 
       if rc == 2001
         peer = cer.avp_by_name('Origin-Host').octet_string
-        Diameter.logger.debug("Creating peer table entry for peer #{peer}")
-        @peer_table[peer] = Peer.new(peer)
+        realm = cer.avp_by_name('Origin-Realm').octet_string
+        Diameter.logger.debug("Creating peer table entry for peer #{peer} in realm #{realm}")
+        @peer_table[peer] = Peer.new(peer, realm)
         @peer_table[peer].state = :UP
         @peer_table[peer].reset_timer
         @peer_table[peer].cxn = cxn

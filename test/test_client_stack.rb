@@ -100,15 +100,16 @@ describe 'A client DiameterStack' do
     @s.peer_state('bob').must_equal :UP
   end
 
-  it "doesn't move into UP when a CEA from an unknown host is received" do
-    @s.connect_to_peer('aaa://localhost', 'bob', 'bob-realm')
+  it "moves into UP and learns the Destination-Host on the CEA" do
+    peer = @s.connect_to_peer('aaa://localhost', 'bob', 'bob-realm')
 
     avps = [AVP.create('Origin-Host', 'eve'),
-           AVP.create('Acct-Application-Id', @acct_app_id_1)]
+            AVP.create('Acct-Application-Id', @acct_app_id_1)]
 
     @s.handle_message(make_cea(avps), @socket_id)
 
-    @s.peer_state('bob').must_equal :WAITING
+    peer.identity.must_equal 'eve'
+    peer.state.must_equal :UP
   end
 
   it 'wait_for_state_change triggers when a successful CEA is received' do
@@ -192,7 +193,7 @@ describe "A client DiameterStack with an established connection to 'bob'" do
     mar = Message.new(command_code: 305, app_id: 0, avps: avps)
 
     Internals::TCPStackHelper.any_instance.expects(:send).never
-    @s.send_request(mar)
+    proc { @s.send_request(mar) }.must_raise RuntimeError
   end
 
   it "can't send to a peer that's not fully up" do
