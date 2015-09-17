@@ -8,21 +8,6 @@ require 'concurrent'
 require 'dnsruby'
 
 module Diameter
-  class Realm
-    def initialize(peer_name)
-      @peers = []
-      add_peer(peer_name)
-    end
-
-    def add_peer(name)
-      @peers << name
-    end
-
-    def best_peer
-      @peers[0]
-    end
-  end
-  
   class Stack
     include Internals
 
@@ -51,7 +36,6 @@ module Diameter
 
       @tcp_helper = TCPStackHelper.new(self)
       @peer_table = {}
-      @realm_table = {}
       @handlers = {}
 
       @answer_timeout = opts.fetch(:timeout, 60)
@@ -187,9 +171,7 @@ module Diameter
       cer_bytes = Message.new(version: 1, command_code: 257, app_id: 0, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
       @tcp_helper.send(cer_bytes, cxn)
 
-      @realm_table[realm] = Realm.new(peer_host)
-
-      @peer_table[peer_host] = Peer.new(peer_host)
+      @peer_table[peer_host] = Peer.new(peer_host, realm)
       @peer_table[peer_host].state = :WAITING
       # Will move to :UP when the CEA is received
       @peer_table[peer_host].cxn = cxn
@@ -205,31 +187,40 @@ module Diameter
     # those AVPs don't already exist.
     #
     # @param req [Message] The request to send.
-    def send_request(req)
+    # @param peer [Peer] (Optional) A peer to use as the first hop for the message
+    def send_request(req, options={})
       fail "Must pass a request" unless req.request
       req.add_origin_host_and_realm(@local_host, @local_realm)
-      peer_name = if req['Destination-Host']
-                    req['Destination-Host'].octet_string
-                  elsif req['Destination-Realm']
-                    realm = req['Destination-Realm'].octet_string
-                    if @realm_table.has_key? realm
-                      @realm_table[realm].best_peer
-                    else
-                      fail "No connection to realm #{realm}"
-                    end
-                  else
-                    fail "Request must have Destination-Host or Destination-Realm"
-                  end
-      state = peer_state(peer_name)
-      if state == :UP
-        peer = @peer_table[peer_name]
+
+      peer = options[:peer]
+
+      if peer.nil?
+        peer = if req['Destination-Host']
+                 peer_identity = req['Destination-Host'].octet_string
+                 Diameter.logger.debug("Selecting peer by Destination-Host (#{peer_identity})")
+                 @peer_table[peer_identity]
+               elsif req['Destination-Realm']
+                 realm = req['Destination-Realm'].octet_string
+                 Diameter.logger.debug("Selecting peer by Destination-Realm (#{realm})")
+                 @peer_table.values.select { |p| p.realm == realm }.sample
+               else
+                 fail "Request must have Destination-Host or Destination-Realm"
+               end
+      else
+        Diameter.logger.debug("Peer selection forced to #{peer.identity}")
+      end
+
+      if peer.nil?
+        Diameter.logger.warn("No peer is available to send message - cannot route")
+        fail "No acceptable peer"
+      elsif peer.state == :UP
         @tcp_helper.send(req.to_wire, peer.cxn)
         q = Queue.new
         @pending_ete[req.ete] = q
 
+=begin
         # Time this request out if no answer is received
         Diameter.logger.debug("Scheduling timeout for #{@answer_timeout}s time")
-=begin
         Concurrent::timer(@answer_timeout) do
           Diameter.logger.debug("Timing out message with EtE #{req.ete}")
           q = @pending_ete.delete(req.ete)
@@ -247,7 +238,7 @@ module Diameter
         }
         return p
       else
-        Diameter.logger.log(Logger::WARN, "Peer #{peer_name} is in state #{state} - cannot route")
+        Diameter.logger.warn("Peer #{peer.identity} is in state #{peer.state} - cannot route")
       end
     end
 
@@ -302,7 +293,7 @@ module Diameter
       end
 
       if msg.command_code == 257 && msg.answer
-        handle_cea(msg)
+        handle_cea(msg, cxn)
       elsif msg.command_code == 257 && msg.request
         handle_cer(msg, cxn)
       elsif msg.command_code == 280 && msg.request
@@ -381,8 +372,9 @@ module Diameter
 
       if rc == 2001
         peer = cer.avp_by_name('Origin-Host').octet_string
-        Diameter.logger.debug("Creating peer table entry for peer #{peer}")
-        @peer_table[peer] = Peer.new(peer)
+        realm = cer.avp_by_name('Origin-Realm').octet_string
+        Diameter.logger.debug("Creating peer table entry for peer #{peer} in realm #{realm}")
+        @peer_table[peer] = Peer.new(peer, realm)
         @peer_table[peer].state = :UP
         @peer_table[peer].reset_timer
         @peer_table[peer].cxn = cxn
@@ -391,14 +383,26 @@ module Diameter
       end
     end
 
-    def handle_cea(cea)
-      peer = cea.avp_by_name('Origin-Host').octet_string
-      if @peer_table.has_key? peer
-        @peer_table[peer].state = :UP
-        @peer_table[peer].reset_timer
+    def handle_cea(cea, cxn)
+      host = cea.avp_by_name('Origin-Host').octet_string
+      if @peer_table.has_key? host
+        @peer_table[host].state = :UP
+        @peer_table[host].reset_timer
       else
-        Diameter.logger.warn("Ignoring CEA from unknown peer #{peer}")
-        Diameter.logger.debug("Known peers are #{@peer_table.keys}")
+        entry = @peer_table.find { |h, p| p.cxn == cxn }
+        if entry.nil?
+          Diameter.logger.warn("Ignoring CEA from unknown peer #{peer}")
+          Diameter.logger.debug("Known peers are #{@peer_table.keys}")
+        else
+          old_host, peer = entry
+          Diameter.logger.warn("Peer identity changed #{old_host} => #{host}")
+
+          @peer_table.delete(old_host)
+          peer.identity = host
+          @peer_table[host] = peer
+          @peer_table[host].state = :UP
+          @peer_table[host].reset_timer
+        end
       end
     end
 

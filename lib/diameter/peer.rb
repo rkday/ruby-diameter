@@ -25,8 +25,9 @@ module Diameter
     attr_accessor :identity, :static, :cxn, :realm, :expiry_time, :last_message_seen
     attr_reader :state
 
-    def initialize(identity)
+    def initialize(identity, realm)
       @identity = identity
+      @realm = realm
       @state = :CLOSED
       @state_change_q = Queue.new
     end

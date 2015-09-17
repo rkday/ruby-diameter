@@ -24,7 +24,7 @@ else
 end
 
 # Compatability with minitest/autorun
-Concurrent.configuration.auto_terminate = false
+Concurrent.disable_at_exit_handlers!
 
-Concurrent.configuration.logger = Proc.new { |level, progname, message = nil, &block| Diameter.logger.debug(message) }
+Concurrent.global_logger = Proc.new { |level, progname, message = nil, &block| Diameter.logger.debug(message) }
 
