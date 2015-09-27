@@ -6,6 +6,6 @@ rvm:
   - rbx-2
   - jruby-19mode
 
-script: "rake test functional_test DEBUG_LOGS=true"
+script: "bundle exec rake test functional_test DEBUG_LOGS=true"
 sudo: false
 cache: bundler
