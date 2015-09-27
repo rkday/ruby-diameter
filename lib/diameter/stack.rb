@@ -214,9 +214,9 @@ module Diameter
         Diameter.logger.warn("No peer is available to send message - cannot route")
         fail "No acceptable peer"
       elsif peer.state == :UP
-        @tcp_helper.send(req.to_wire, peer.cxn)
         q = Queue.new
         @pending_ete[req.ete] = q
+        @tcp_helper.send(req.to_wire, peer.cxn)
 
 =begin
         # Time this request out if no answer is received
