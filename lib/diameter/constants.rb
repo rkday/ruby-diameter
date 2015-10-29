@@ -4,6 +4,7 @@ module Diameter
     module Vendors
       # The 3GPP/IMS Vendor-ID
       TGPP = 10_415
+      ETSI = 13_019
     end
 
     # Represents the type of data a particular AVP should be interpreted

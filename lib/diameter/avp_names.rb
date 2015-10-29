@@ -121,6 +121,7 @@ module Diameter
                        'Digest-Domain' => [119, UTF8String],
                        'Digest-Stale' => [120, UTF8String],
                        'Digest-HA1' => [121, UTF8String],
+                       'Line-Identifier' => [500, OctetString, ETSI],
                        'SIP-AOR' => [122, UTF8String],
                        'Delegated-IPv6-Prefix' => [123, OctetString],
                        'MIP6-Feature-Vector' => [124, Unsigned64],
