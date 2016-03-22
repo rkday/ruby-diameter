@@ -391,7 +391,7 @@ module Diameter
       else
         entry = @peer_table.find { |h, p| p.cxn == cxn }
         if entry.nil?
-          Diameter.logger.warn("Ignoring CEA from unknown peer #{peer}")
+          Diameter.logger.warn("Ignoring CEA from unknown peer #{host}")
           Diameter.logger.debug("Known peers are #{@peer_table.keys}")
         else
           old_host, peer = entry
