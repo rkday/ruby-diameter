@@ -233,7 +233,9 @@ module Diameter
     def create_answer(result_code, opts={})
       fail "Cannot answer an answer" if answer
       
-      avps = opts.fetch(:avps, [])
+      avps = []
+      avps << avp_by_name("Session-Id") unless avp_by_name("Session-Id").nil?
+      avps += opts.fetch(:avps, [])
       avps << if opts[:experimental_result_vendor]
                 AVP.create("Experimental-Result",
                            [AVP.create("Experimental-Result-Code", result_code),

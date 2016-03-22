@@ -10,7 +10,7 @@ module Diameter
                        'NAS-Port' => [5, Unsigned32],
                        'Service-Type' => [6, Enumerated],
                        'Framed-Protocol' => [7, Enumerated],
-                       'Framed-IP-Address' => [8, IPAddress],
+                       'Framed-IP-Address' => [8, OctetString],
                        'Framed-IP-Netmask' => [9, IPAddress],
                        'Framed-Routing' => [10, Enumerated],
                        'Filter-Id' => [11, UTF8String],
