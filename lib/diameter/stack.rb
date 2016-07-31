@@ -159,8 +159,14 @@ module Diameter
     # @param realm [String] The Diameter realm of this peer.
     # @return [Peer] The Diameter peer chosen.
     def connect_to_peer(peer_uri, peer_host, realm)
+      @peer_table[peer_host] = Peer.new(peer_host, realm)
+      @peer_table[peer_host].state = :WAITING
+      # Will move to :UP when the CEA is received
+
       uri = URI(peer_uri)
       cxn = @tcp_helper.setup_new_connection(uri.host, uri.port)
+      @peer_table[peer_host].cxn = cxn
+
       avps = [AVP.create('Origin-Host', @local_host),
               AVP.create('Origin-Realm', @local_realm),
               AVP.create('Host-IP-Address', IPAddr.new('127.0.0.1')),
@@ -170,11 +176,6 @@ module Diameter
       avps += app_avps
       cer_bytes = Message.new(version: 1, command_code: 257, app_id: 0, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
       @tcp_helper.send(cer_bytes, cxn)
-
-      @peer_table[peer_host] = Peer.new(peer_host, realm)
-      @peer_table[peer_host].state = :WAITING
-      # Will move to :UP when the CEA is received
-      @peer_table[peer_host].cxn = cxn
 
       @peer_table[peer_host]
     end
