@@ -265,7 +265,6 @@ module Diameter
     def self.next_ete
       @ete ||= (Time.now.to_i & 0x00000fff) + (rand(2**32) & 0xfffff000)
       @ete += 1
-      @ete
     end
 
   end
