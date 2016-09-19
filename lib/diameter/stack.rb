@@ -159,7 +159,8 @@ module Diameter
     # @param realm [String] The Diameter realm of this peer.
     # @return [Peer] The Diameter peer chosen.
     def connect_to_peer(peer_uri, peer_host, realm)
-      @peer_table[peer_host] = Peer.new(peer_host, realm)
+      peer = Peer.new(peer_host, realm)
+      @peer_table[peer_host] = peer
       @peer_table[peer_host].state = :WAITING
       # Will move to :UP when the CEA is received
 
@@ -177,7 +178,7 @@ module Diameter
       cer_bytes = Message.new(version: 1, command_code: 257, app_id: 0, request: true, proxyable: false, retransmitted: false, error: false, avps: avps).to_wire
       @tcp_helper.send(cer_bytes, cxn)
 
-      @peer_table[peer_host]
+      peer
     end
 
     # Sends a Diameter request. This is routed to an appropriate peer
