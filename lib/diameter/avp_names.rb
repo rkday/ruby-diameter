@@ -1026,7 +1026,6 @@ module Diameter
                        'Redirect-Server-Address' => [435, UTF8String],
                        'Requested-Action' => [436, Enumerated],
                        'Requested-Service-Unit' => [437, Grouped],
-                       'Restriction-Filter-Rule' => [438, IPFiltrRule],
                        'Service-Context-Id' => [461, UTF8String],
                        'Service-Identifier' => [439, Unsigned32],
                        'Service-Parameter-Info' => [440, Grouped],
